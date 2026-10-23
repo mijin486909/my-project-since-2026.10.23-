@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f0e4">
+<title>나의 프로젝트</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f6f0e4;--paper2:#fbf7ee;--ink:#3b3530;--ink2:#857868;--line:#e6dccb;--accent:#c96f53}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(214,202,182,.35) 31px 32px);color:var(--ink);font-family:'Gowun Dodum',system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:560px;margin:0 auto;padding:40px 16px 60px}
+h1{font-family:'Gaegu',cursive;font-size:40px;margin:0}
+.sub{color:var(--ink2);margin:4px 0 28px;font-size:14px}
+a.card{display:flex;align-items:center;gap:14px;background:var(--paper2);border:1.5px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;color:inherit;text-decoration:none;transition:transform .15s,box-shadow .15s}
+a.card:hover,a.card:active{transform:translateY(-2px);box-shadow:0 3px 0 var(--ink);border-color:var(--ink)}
+.ic{width:52px;height:52px;border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:7px;background:#fff;border:1.5px solid var(--line);flex:none}
+.ic i{border-radius:3px}
+.t{font-family:'Gaegu',cursive;font-size:26px;font-weight:700;line-height:1.1}
+.d{font-size:13px;color:var(--ink2)}
+.soon{border:1.5px dashed var(--line);border-radius:16px;padding:16px;color:var(--ink2);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>나의 프로젝트</h1>
+  <p class="sub">2026.10.23부터 하나씩 만들어 가는 것들</p>
+
+  <a class="card" href="haru24/">
+    <div class="ic"><i style="background:#8e9bb5"></i><i style="background:#8e9bb5"></i><i style="background:#c97b63"></i><i style="background:#c97b63"></i><i style="background:#7fa36b"></i><i style="background:#e3b85b"></i><i style="background:#d68fa6"></i><i style="background:#e3b85b"></i><i style="background:#8e9bb5"></i></div>
+    <div><div class="t">하루 24칸</div><div class="d">하루를 24칸에 칠하고, 기분과 활동의 패턴을 찾는 기록 앱</div></div>
+  </a>
+
+  <div class="soon">다음 프로젝트가 여기에 추가될 예정이에요</div>
+</div>
+</body>
+</html>
