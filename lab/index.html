@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="실험 플래너">
+<title>실험 플래너</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#1d2730;--ink2:#6b7782;--line:#dfe4e9;--accent:#1f6feb;--accS:#e7f0fe;--warn:#c27c12;--warnS:#fdf3e1;--bad:#c4473a;--badS:#fbe8e5;--good:#2f8a55;--goodS:#e3f3e9;
+  --font:'IBM Plex Sans KR',system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);background-image:radial-gradient(#d9dfe5 1px,transparent 1px);background-size:18px 18px;color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:620px;margin:0 auto;padding:calc(8px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.logo{font-weight:700;font-size:20px;letter-spacing:-.3px}
+.logo i{font-style:normal;color:var(--accent)}
+.icon{border:0;background:none;width:44px;height:44px;border-radius:50%;font-size:22px}
+h2{font-size:24px;margin:6px 0 2px;letter-spacing:-.4px}
+h3{font-size:16px;margin:0 0 8px}
+h4{font-size:12px;color:var(--ink2);margin:14px 0 6px;font-weight:600;letter-spacing:.3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.muted{color:var(--ink2)} .small{font-size:13px} .hint{font-size:13px;color:var(--ink2);margin:0 0 8px}
+label{display:block;font-size:12px;color:var(--ink2);margin:12px 0 4px;font-weight:600}
+.in{font:inherit;width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;color:var(--ink)}
+input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;min-height:40px}
+.ta{font:inherit;font-size:14px;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--ink);resize:vertical;line-height:1.55}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.danger{color:var(--bad);border-color:#efc7c1}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.full{width:100%;margin-top:10px}
+.lnk{border:0;background:none;color:var(--accent);text-decoration:underline;font-size:13px;padding:2px 4px}
+.row{display:flex;gap:8px;align-items:center} .row>.btn{flex:1} .row>.btn.sm{flex:none} .sb{justify-content:space-between}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;padding:6px 8px;font-size:13px}
+.seg button.on{background:var(--ink);color:#fff}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 10px;font-size:12px}
+.chip.on{background:var(--accS);border-color:var(--accent);color:var(--accent);font-weight:600}
+.tag{display:inline-block;font-size:11px;border-radius:6px;padding:1px 6px;background:var(--accS);color:var(--accent);margin-right:3px;font-weight:600}
+.tag.w{background:var(--warnS);color:var(--warn)} .tag.h{background:#eef1f4;color:var(--ink)} .tag.g{background:var(--goodS);color:var(--good)}
+.tabs{display:flex;gap:4px;background:#e9edf1;border-radius:12px;padding:4px;margin:10px 0}
+.tabs button{flex:1;border:0;background:none;border-radius:9px;padding:8px 4px;font-size:14px;color:var(--ink2);font-weight:600}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* 단계 */
+.st{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
+.st.wait{background:#f7fafe}
+.st .top{display:flex;gap:8px;align-items:flex-start}
+.st .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.st.wait .n{background:var(--accent)}
+.st textarea{flex:1;font:inherit;font-size:14px;border:0;resize:none;padding:2px 0;background:transparent;min-height:22px;line-height:1.45}
+.st .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;font-size:13px}
+.st .ctl input[type=number]{width:64px;font:inherit;border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+.st .ctl label{margin:0;display:flex;align-items:center;gap:4px;font-weight:400;color:var(--ink);font-size:13px}
+.blk{border-left:3px dashed var(--line);margin:4px 0 12px 12px;padding-left:10px;font-size:12px;color:var(--ink2)}
+/* 계획 */
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.sum div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.sum b{display:block;font-size:22px;line-height:1.1}
+.sum small{font-size:11px;color:var(--ink2)}
+.tip{display:flex;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.tip:last-child{border:0}
+.tip i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;font-style:normal;margin-top:1px}
+.tip.g i{background:var(--good)} .tip.w i{background:var(--warn)} .tip.b i{background:var(--bad)} .tip.i i{background:var(--accent)}
+.ses{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
+.ses.past{opacity:.6}
+.ses .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ses .hd b{font-size:16px}
+.gantt{margin:10px 0 6px;font-size:10px}
+.gr{display:grid;grid-template-columns:48px 1fr;align-items:center;margin-bottom:3px}
+.gr span{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
+.track{position:relative;height:26px;background:#f1f4f7;border-radius:6px;overflow:hidden}
+.bar{position:absolute;top:2px;bottom:2px;border-radius:4px;color:#fff;font-size:10px;line-height:22px;padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.bar.wt{color:var(--ink);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 4px,transparent 4px 8px)}
+.bar.flex:after{content:"→";position:absolute;right:3px}
+.axis{position:relative;height:14px;margin-left:48px;font-size:10px;color:var(--ink2)}
+.axis span{position:absolute;transform:translateX(-50%)}
+.task{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.task:last-child{border:0}
+.task input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--accent)}
+.task .t{flex:none;width:86px;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:13px}
+.task.done .x{text-decoration:line-through;color:var(--ink2)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:0}
+.mem{font-weight:700;font-size:13px;margin:10px 0 2px}
+.prow{display:grid;grid-template-columns:70px 1fr 1fr auto;gap:6px;align-items:center;margin-bottom:6px}
+.prow select,.prow input{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:6px;background:#fff;min-width:0;width:100%}
+.eqr{display:grid;grid-template-columns:1fr 70px auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.eqr input[type=number]{width:60px;font:inherit;border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+.pcard{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;margin-bottom:8px}
+.pcard b{display:block}
+.pcard small{color:var(--ink2);font-size:12px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.nav .in2{max-width:620px;margin:0 auto;display:flex}
+.nav button{flex:1;border:0;background:none;padding:9px 0 12px;font-size:13px;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:1px;font-weight:600}
+.nav button span{font-size:19px;filter:grayscale(1);opacity:.55}
+.nav button.on{color:var(--accent)} .nav button.on span{filter:none;opacity:1}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+@media print{.nav,header,.noprint,#toast{display:none!important}body{background:#fff}.app{padding:0;max-width:none}.ses{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="logo">실험 <i>플래너</i></div><button class="icon" data-nav="set" aria-label="설정">⚙︎</button></header>
+  <main id="main"></main>
+</div>
+<nav class="nav noprint"><div class="in2"><button data-nav="plan"><span>🗓️</span>계획</button><button data-nav="protos"><span>🧪</span>프로토콜</button><button data-nav="team"><span>👥</span>시간·팀</button></div></nav>
+<div id="toast"></div>
+<script>
+/* ============ 유틸 ============ */
+const pad=n=>String(n).padStart(2,'0');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dateOf=k=>{const[a,b,c]=k.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
+const TK=()=>keyOf(today());
+const DOW=['일','월','화','수','목','금','토'];
+const md=k=>{const d=dateOf(k);return `${d.getMonth()+1}/${d.getDate()} (${DOW[d.getDay()]})`};
+const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
+const hm=m=>{m=((m%1440)+1440)%1440;return pad(Math.floor(m/60))+':'+pad(m%60)};
+const dur=m=>{m=Math.round(m);if(m>=1440){const d=Math.floor(m/1440),h=Math.round((m%1440)/60);return `${d}일${h?' '+h+'시간':''}`}const h=Math.floor(m/60),r=m%60;return h?(r?`${h}시간 ${r}분`:`${h}시간`):`${r}분`};
+const absMin=(k,m)=>Math.round(dateOf(k).getTime()/60000)+m;
+const absToDate=a=>{const d=new Date(a*60000);return keyOf(d)};
+const nowAbs=()=>Math.floor(Date.now()/60000);
+const D=m=>Math.max(5,Math.ceil((+m||0)/5)*5), D0=m=>(+m||0)>0?Math.ceil(+m/5)*5:0;
+function toast(m,ms){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms||2600)}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+const COLORS=['#1f6feb','#d9534f','#2f8a55','#8a4fd1','#d98a12','#16a2a6','#c2417f','#5b6b7a','#7a8f16','#a0522d'];
+
+/* ============ 장비 ============ */
+// key: [이름, 찾는 말, 여럿이 같이 쓸 수 있음(공용)]
+const EQ={centrifuge:['원심분리기',/원심|centrifug/i,0],incubator:['인큐베이터',/인큐베이터|incubator|배양기/i,1],shaker:['셰이커',/셰이커|shaker|진탕/i,1],bath:['항온수조',/수조|water ?bath|중탕/i,1],
+  hood:['흄후드',/후드|hood/i,0],balance:['전자저울',/저울|balance|무게|weigh|칭량|\d+(?:\.\d+)?\s*(?:g|mg)(?![a-zA-Z])/i,0],hotplate:['핫플레이트·교반기',/핫플레이트|hot ?plate|교반|stirr/i,0],
+  oven:['건조기·오븐',/건조기|오븐|oven/i,1],autoclave:['오토클레이브',/오토클레이브|autoclave|멸균/i,1],pcr:['PCR 기기',/pcr|thermal ?cycler/i,0],spectro:['분광광도계',/분광|흡광|spectro|absorb|\bOD\s*\d/i,0],
+  micro:['현미경',/현미경|microscop/i,0],fridge:['냉장·냉동고',/냉장|냉동|-20|-80|4\s*°\s*C|4℃/i,1],vacuum:['감압 여과 장치',/감압|vacuum|흡인 여과|뷰흐너|buchner/i,0],melt:['녹는점 측정기',/녹는점|melting point/i,0],
+  clean:['클린벤치',/클린벤치|clean ?bench|무균/i,0],ph:['pH 미터',/ph ?미터|ph meter|pH\s*(?:측정|조절)/i,0]};
+
+/* ============ 프로토콜 읽기 ============ */
+const RX_WAIT=/인큐베이|배양|incubat|방치|정치|반응시키|반응 ?시키|원심|centrifug|건조|(?<![a-z])dry|냉각|식히|(?<![a-z])cool|가열|heat|끓|환류|reflux|오토클레이브|autoclave|멸균|침지|soak|(?<![a-z])stand|굳히|교반|stir|shak|흔들|얼음에서|얼음물|on ice|두기|둔다|놓아|기다|wait|열충격|heat shock|증류|증발|evapor|석출|결정화|녹이기|해동|thaw|PCR|전기영동|electrophores/i;
+const RX_HANDS=/측정|무게|weigh|칭량|피펫|넣|첨가|add|mix|섞|옮기|옮겨|transfer|도말|plating|spread|세척|wash|준비|prepare|기록|계산|관찰|사진|여과|filter|적정|titrat|개수|세고|세기|(?<![a-z])count|분주|aliquot|라벨|label|조절|맞추/i;
+const RX_PAUSE=/보관|저장|(?<![a-z])store|stored|-20\s*°?|-80\s*°?|냉장|냉동|pause|멈춰도|stopping point|미리/i;
+const RX_PREP=/준비|제조|만들|조제|prepare|make up|stock|배지 ?만들|용액 ?만들/i;
+function parseDur(t){
+  t=t.replace(/,/g,'');
+  if(/overnight|over night|밤새|하룻밤|o\/n(?![a-z])|하루 밤/i.test(t))return {min:16*60,over:true};
+  let total=0,found=false,m;
+  const up=(a,b)=>b?Math.max(+a,+b):+a;
+  if((m=t.match(/(\d+(?:\.\d+)?)\s*(?:[~\-–]\s*(\d+(?:\.\d+)?)\s*)?(?:일|days?)(?![a-z가-힣])/i))){total+=up(m[1],m[2])*1440;found=true}
+  if((m=t.match(/(\d+(?:\.\d+)?)\s*(?:[~\-–]\s*(\d+(?:\.\d+)?)\s*)?(?:시간|hours?|hrs?|h)(?![a-z])/i))){total+=up(m[1],m[2])*60;found=true}
+  if((m=t.match(/(\d+(?:\.\d+)?)\s*(?:[~\-–]\s*(\d+(?:\.\d+)?)\s*)?(?:분|min(?:ute)?s?)(?![a-z])/i))){total+=up(m[1],m[2]);found=true}
+  if((m=t.match(/(\d+(?:\.\d+)?)\s*(?:[~\-–]\s*(\d+(?:\.\d+)?)\s*)?(?:초|sec(?:ond)?s?|s)(?![a-zA-Zµ])/i))){total+=up(m[1],m[2])/60;found=true}
+  if(found&&/각|each|씩/i.test(t)&&(m=t.match(/(\d+)\s*(?:회|번|times)|[x×]\s*(\d+)/i)))total*=+(m[1]||m[2]);
+  return found?{min:Math.round(total*10)/10}:null;
+}
+function parseProtocol(text){
+  const lines=text.replace(/\r/g,'').split('\n').map(l=>l.trim()).filter(Boolean),raw=[];
+  const start=/^(?:step\s*\d+[.:)]?|\d+\s*[.)．]|\(\d+\)|[①-⑳]|[-•·*▪︎]\s)/i;
+  lines.forEach(l=>{if(start.test(l)||!raw.length)raw.push(l.replace(start,'').trim());else raw[raw.length-1]+=' '+l});
+  return raw.filter(Boolean).map(t=>{
+    const d=parseDur(t),eq=Object.keys(EQ).filter(k=>EQ[k][1].test(t)),isWait=RX_WAIT.test(t)&&!(/여과|세척|wash/i.test(t)&&!/건조|dry|원심/i.test(t)),hands=RX_HANDS.test(t);
+    const pause=RX_PAUSE.test(t)||RX_PREP.test(t);
+    let kind=isWait&&d?'wait':isWait&&!hands?'wait':'hands',min=d?d.min:null,est=false;
+    if(min==null){if(/보관|store/i.test(t)){min=5}else{min=kind==='wait'?30:10;est=true}}
+    const flex=kind==='wait'&&(!!(d&&d.over)||min>=180);
+    return {id:uid(),text:t,kind,min,setup:kind==='wait'?(hands||flex?5:0):0,flex,pause,eq,est};
+  });
+}
+
+/* ============ 저장 ============ */
+const KEY='labplan-v1';
+function fresh(){const T=today();return {v:1,members:['나'],pattern:[{dow:2,start:'16:00',end:'18:00'},{dow:4,start:'16:00',end:'18:00'}],from:TK(),weeks:4,extra:[],skip:[],
+  eqCount:{},protos:[],done:{},startNow:false}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.protos)return Object.assign(fresh(),s)}catch(e){}return fresh()}
+let state=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('저장 공간이 부족해요')}}
+const eqCount=k=>EQ[k][2]?99:(state.eqCount[k]||1);
+function sessions(){
+  const out=[],from=dateOf(state.from||TK()),skip=new Set(state.skip);
+  for(let i=0;i<state.weeks*7;i++){const d=addDays(from,i),k=keyOf(d);if(skip.has(k))continue;state.pattern.filter(p=>p.dow===d.getDay()&&p.start<p.end).forEach(p=>out.push({date:k,s:toMin(p.start),e:toMin(p.end)}))}
+  state.extra.forEach(x=>{if(x.start<x.end&&!skip.has(x.date))out.push({date:x.date,s:toMin(x.start),e:toMin(x.end),extra:1})});
+  return out.map(x=>Object.assign(x,{a:absMin(x.date,x.s),b:absMin(x.date,x.e),id:x.date+'@'+x.s})).sort((x,y)=>x.a-y.a);
+}
+
+/* ============ 계획 짜기 ============ */
+function buildRuns(members){
+  const runs=[];let ci=0;
+  state.protos.forEach(p=>{for(let r=0;r<(p.runs||1);r++){const key=p.id+'#'+r;runs.push({key,p,r,label:(p.labels&&p.labels[r])||String.fromCharCode(65+r),owner:members[runs.length%members.length],color:COLORS[ci++%COLORS.length]})}});
+  return runs;
+}
+function blocksOf(run,useDone){
+  const st=run.p.steps,done=useDone?(state.done[run.key]||{}):{};let i=0;while(i<st.length&&done[st[i].id])i++;
+  const blocks=[];let cur=[];
+  for(let j=i;j<st.length;j++){const s=st[j];cur.push(j);if((s.kind==='wait'&&s.flex)||s.pause||j===st.length-1){blocks.push(cur);cur=[]}}
+  return blocks.map(ix=>{let len=0,gap=0;ix.forEach(j=>{const s=st[j];if(s.kind==='hands')len+=D(s.min);else{len+=D0(s.setup);if(s.flex)gap=D(s.min);else len+=D(s.min)}});return {ix,len,gap}});
+}
+function overlap(list,a,b){return list.some(x=>x[0]<b&&a<x[1])}
+function schedule(opt){
+  const members=opt.members,runs=buildRuns(members),S=sessions().filter(x=>x.b>opt.now),maxLen=Math.max(0,...S.map(x=>x.b-Math.max(x.a,opt.now)));
+  const res={p:{},e:{}};members.forEach(m=>res.p[m]=[]);
+  runs.forEach(r=>{r.blocks=blocksOf(r,opt.useDone);r.bi=0;r.earliest=opt.now;r.remain=r.blocks.reduce((s,b)=>s+b.len+b.gap,0);r.tooLong=r.blocks.find(b=>b.len>maxLen);r.waits=[]});
+  const plan=S.map(x=>({...x,ops:[]}));
+  const tryPlace=(run,blk,t,ses)=>{
+    let cur=t;const ops=[],tmpP={},tmpE={};
+    const pFree=(m,a,b)=>!overlap(res.p[m],a,b)&&!overlap(tmpP[m]||[],a,b);
+    const pickP=(a,b)=>{const order=[run.owner].concat(members.filter(m=>m!==run.owner).sort((x,y)=>res.p[x].length-res.p[y].length));return order.find(m=>pFree(m,a,b))};
+    const eFree=(eq,a,b)=>eq.every(k=>{if(EQ[k][2])return true;const L=(res.e[k]||[]).concat(tmpE[k]||[]);return L.filter(x=>x[0]<b&&a<x[1]).length<eqCount(k)});
+    const useP=(m,a,b)=>(tmpP[m]=tmpP[m]||[]).push([a,b]),useE=(eq,a,b)=>eq.forEach(k=>{if(!EQ[k][2])(tmpE[k]=tmpE[k]||[]).push([a,b])});
+    for(const j of blk.ix){const s=run.p.steps[j];
+      if(s.kind==='hands'){const d=D(s.min),who=pickP(cur,cur+d);if(!who||!eFree(s.eq,cur,cur+d))return null;useP(who,cur,cur+d);useE(s.eq,cur,cur+d);ops.push({j,t:'h',who,a:cur,b:cur+d});cur+=d}
+      else{const su=D0(s.setup),w=D(s.min);let who=null;if(su){who=pickP(cur,cur+su);if(!who)return null;useP(who,cur,cur+su)}
+        if(!eFree(s.eq,cur,cur+su+w))return null;useE(s.eq,cur,cur+su+w);if(su)ops.push({j,t:'s',who,a:cur,b:cur+su});ops.push({j,t:'w',a:cur+su,b:cur+su+w,flex:!!s.flex});cur+=su;if(!s.flex)cur+=w}
+      if(cur>ses.b)return null}
+    return {ops,tmpP,tmpE,end:cur,next:cur+blk.gap};
+  };
+  const avail=(r,i)=>{if(r.bi>=r.blocks.length||r.tooLong)return false;if(!opt.interleave){for(let k=0;k<i;k++)if(runs[k].bi<runs[k].blocks.length&&!runs[k].tooLong)return false}return true};
+  for(const ses of plan){
+    const st0=Math.max(ses.a,opt.now);
+    for(let guard=0;guard<200;guard++){
+      let best=null;
+      runs.forEach((r,i)=>{if(!avail(r,i))return;let e0=r.earliest;if(!opt.interleave&&i>0)e0=Math.max(e0,runs[i-1].finish||0);const blk=r.blocks[r.bi];
+        for(let t=Math.max(st0,Math.ceil(e0/5)*5);t+blk.len<=ses.b;t+=5){const p=tryPlace(r,blk,t,ses);if(p){if(!best||t<best.t||t===best.t&&r.remain>best.r.remain)best={t,r,p,blk};break}}});
+      if(!best)break;
+      const {r,p,blk}=best;Object.entries(p.tmpP).forEach(([m,L])=>res.p[m].push(...L));Object.entries(p.tmpE).forEach(([k,L])=>(res.e[k]=res.e[k]||[]).push(...L));
+      p.ops.forEach(o=>ses.ops.push(Object.assign(o,{run:r,step:r.p.steps[o.j]})));
+      if(r.pendingWait){r.waits.push({end:r.pendingWait,start:best.t,step:r.pendingStep});r.pendingWait=null}
+      const fw=p.ops.find(o=>o.flex);if(fw){r.pendingWait=fw.b;r.pendingStep=r.p.steps[fw.j]}
+      r.earliest=p.next;r.remain-=blk.len+blk.gap;r.bi++;if(r.bi>=r.blocks.length)r.finish=p.next;
+    }
+  }
+  const used=plan.filter(x=>x.ops.length),left=runs.filter(r=>r.bi<r.blocks.length);
+  return {runs,plan,used,left,finish:used.length?used[used.length-1].date:null,members,S};
+}
+function analyze(P,base,opt){
+  const tips=[],add=(lv,t)=>tips.push({lv,t});
+  const est=state.protos.reduce((s,p)=>s+p.steps.filter(x=>x.est).length,0);
+  if(est)add('w',`시간이 안 적힌 단계 ${est}개는 손작업 10분·기다림 30분으로 가정했어요. 프로토콜에서 확인해 주세요.`);
+  P.runs.filter(r=>r.tooLong).forEach(r=>{const b=r.tooLong;add('b',`${r.p.name} ${r.label}: 한 번에 이어서 해야 하는 구간이 ${dur(b.len)}인데, 가장 긴 연구 시간보다 길어요. 중간에 '여기서 멈출 수 있음'(보관)을 표시하거나 더 긴 연구 시간을 추가해 주세요.`)});
+  if(P.left.length&&!P.runs.every(r=>r.tooLong&&r.bi===0))add('b',`정해진 연구 시간 안에 다 못 끝나요. 남은 실험: ${P.left.map(r=>r.p.name+' '+r.label).join(', ')}. 연구 시간을 늘리거나 기간(주)을 늘려 보세요.`);
+  if(base&&P.used.length&&!P.left.length){const how=`기다리는 시간에 다른 실험을 끼워 넣고 ${P.members.length>1?'팀원끼리 나눠서 ':''}연구 시간 ${P.used.length}번 만에 끝내요.`;
+    if(base.left.length)add('g',`혼자 하나씩 순서대로 하면 이 기간 안에 다 못 끝나는 일을, ${how}`);
+    else if(base.used.length>P.used.length)add('g',`혼자 하나씩 순서대로 하면 연구 시간 ${base.used.length}번이 걸릴 일을, ${how}`);
+    else add('i','이미 순서대로 해도 효율적인 일정이에요. 실험 조건(반복 수)이 늘어나면 동시 진행 효과가 커져요.')}
+  const ext={};P.runs.forEach(r=>r.waits.forEach(w=>{const x=w.start-w.end;if(x>=12*60&&w.step){const k=r.p.id+w.step.id;(ext[k]=ext[k]||{r,step:w.step,labels:[],max:0});ext[k].labels.push(r.label);ext[k].max=Math.max(ext[k].max,x)}}));
+  Object.values(ext).forEach(({r,step,labels,max})=>{const cult=/배양|culture|incubat|인큐베이/i.test(step.text);
+    add('w',`${r.p.name}${labels.length>1?` (${labels.join(', ')})`:' '+labels[0]}: '${step.text.slice(0,22)}…' 단계가 끝나고 다음 연구 시간까지 최대 ${dur(max)} 더 기다려요. ${cult?'배양이 너무 오래되면 지나치게 자라거나 마를 수 있어요. 끝나는 시간에 맞춰 4°C로 옮겨 줄 사람을 정하거나, 끝난 다음 날 짧은 연구 시간을 추가해 보세요.':'길어져도 괜찮은 단계인지 확인해 주세요.'}`)});
+  const tot=P.used.reduce((s,x)=>s+(x.b-x.a),0)||1,eqUse={};P.used.forEach(x=>x.ops.forEach(o=>{if(o.t!=='s')o.step.eq.forEach(k=>{if(!EQ[k][2])eqUse[k]=(eqUse[k]||0)+(o.b-o.a)})}));
+  Object.entries(eqUse).forEach(([k,m])=>{if(m/tot>.45)add('w',`${EQ[k][0]}가 병목이에요 (연구 시간의 ${Math.round(m/tot*100)}% 사용). 시료를 모아서 한 번에 돌리거나, 한 대 더 쓸 수 있으면 시간·팀 탭에서 개수를 늘려 주세요.`)});
+  const prepP=state.protos.filter(p=>(p.runs||1)>1&&p.steps[0]&&RX_PREP.test(p.steps[0].text));
+  if(prepP.length)add('i',`${prepP.map(p=>p.name).join(', ')}: 첫 단계(시약·배지 준비)를 조건마다 따로 하고 있어요. 모든 조건 것을 한 번에 만들면 더 빨라요. '공통 준비' 프로토콜을 따로 만들고 반복 1회로 넣어 보세요.`);
+  let idle=0,cap=0;P.used.forEach(x=>{cap+=(x.b-x.a)*P.members.length;idle+=(x.b-x.a)*P.members.length-x.ops.filter(o=>o.t!=='w').reduce((s,o)=>s+(o.b-o.a),0)});
+  if(cap&&idle/cap>.4)add('i',`기다리는 시간이 꽤 있어요 (손이 비는 시간 ${Math.round(idle/cap*100)}%). 그 시간에 다음 시약 준비, 데이터 정리, 보고서 그래프를 미리 해 두세요.`);
+  return tips;
+}
+
+/* ============ 화면 ============ */
+const main=document.getElementById('main');
+let R={v:'plan'};
+function go(v,o){R=Object.assign({v},o||{});render();window.scrollTo(0,0)}
+function render(){document.querySelectorAll('.nav [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===({proto:'protos'}[R.v]||R.v)));({plan:vPlan,protos:vProtos,proto:vProto,team:vTeam,set:vSet})[R.v]()}
+
+function vPlan(){
+  if(!state.protos.length){main.innerHTML=`<h2>실험 계획</h2><div class="card"><h3>시작하기</h3><p class="hint">① 시간·팀 탭에서 연구 시간과 팀원을 넣고 ② 프로토콜 탭에서 실험 순서를 붙여넣으면, 누가 언제 무엇을 할지 짜 드려요.</p>
+    <button class="btn pri full" data-go="team">연구 시간·팀 정하기</button><button class="btn full" data-act="newProto">프로토콜 붙여넣기</button><button class="btn full" data-act="sample">예시로 둘러보기 (형질전환 + 아스피린 합성)</button></div>`;return}
+  const useDone=Object.keys(state.done).length>0,fromA=absMin(state.from||TK(),0),now=useDone||state.startNow?Math.max(nowAbs(),fromA):fromA;
+  const P=schedule({members:state.members,interleave:true,now,useDone});
+  const B=schedule({members:[state.members[0]],interleave:false,now,useDone});
+  const tips=analyze(P,B);const cnt=P.used.length;
+  const names=new Set(P.runs.map(r=>r.p.name));
+  main.innerHTML=`<h2>실험 계획</h2>
+  <div class="sum"><div><b>${cnt}</b><small>필요한 연구 시간</small></div><div><b>${P.finish?md(P.finish).replace(/ \(.\)/,''):'–'}</b><small>끝나는 날</small></div><div><b>${P.left.length?'<span style="color:var(--bad)">'+P.left.length+'</span>':'0'}</b><small>못 끝낸 실험</small></div></div>
+  <div class="chips">${P.runs.map(r=>`<span class="chip"><span class="dot" style="background:${r.color}"></span>${esc(r.p.name)} ${esc(r.label)} · ${esc(r.owner)}</span>`).join('')}</div>
+  <section class="card"><h3>효율 분석</h3>${tips.map(t=>`<div class="tip ${t.lv}"><i>${{g:'✓',w:'!',b:'!',i:'i'}[t.lv]}</i><span>${esc(t.t)}</span></div>`).join('')||'<p class="hint">특별히 고칠 점이 없어요.</p>'}</section>
+  <div class="row noprint"><button class="btn sm" data-act="print">🖨️ 인쇄·PDF</button>${useDone?'<button class="btn sm" data-act="resetDone">체크 모두 풀기</button>':''}<label style="margin:0;display:flex;gap:4px;align-items:center;font-weight:400;color:var(--ink)"><input type="checkbox" data-act2="startNow" ${state.startNow?'checked':''}> 지금부터 다시 계획</label></div>
+  ${P.used.map(x=>sesHtml(x,P)).join('')}
+  ${P.left.length?`<div class="card" style="border-color:#efc7c1"><b style="color:var(--bad)">시간 안에 못 들어간 단계</b>${P.left.map(r=>`<div class="small" style="margin-top:4px"><span class="dot" style="background:${r.color}"></span>${esc(r.p.name)} ${esc(r.label)}: ${r.p.steps.length-r.blocks.slice(r.bi).reduce((s,b)=>s+b.ix.length,0)+1}단계부터 ${r.tooLong?'(한 번에 하기엔 너무 긴 구간)':''}</div>`).join('')}</div>`:''}`;
+}
+function sesHtml(x,P){
+  const len=x.b-x.a,pct=a=>Math.max(0,Math.min(100,(a-x.a)/len*100)),past=x.b<nowAbs();
+  const label=o=>`${o.run.label}${o.j+1}`;
+  const rows=P.members.map(m=>{const L=x.ops.filter(o=>o.who===m);return `<div class="gr"><span>${esc(m)}</span><div class="track">${L.map(o=>`<div class="bar" style="left:${pct(o.a)}%;width:${pct(o.b)-pct(o.a)}%;background:${o.run.color}" title="${esc(o.step.text)}">${label(o)}</div>`).join('')}</div></div>`}).join('');
+  const W=x.ops.filter(o=>o.t==='w'),lanes=[];W.forEach(o=>{let l=lanes.findIndex(L=>L.every(p=>p.b<=o.a||o.b<=p.a));if(l<0){lanes.push([]);l=lanes.length-1}lanes[l].push(o)});
+  const wrows=lanes.map((L,i)=>`<div class="gr"><span>${i?'':'기다림'}</span><div class="track">${L.map(o=>`<div class="bar wt${o.b>x.b?' flex':''}" style="left:${pct(o.a)}%;width:${Math.max(1.5,pct(o.b)-pct(o.a))}%;background-color:${o.run.color}55" title="${esc(o.step.text)}">${label(o)}</div>`).join('')}</div></div>`).join('');
+  const ticks=[];for(let m=Math.ceil(x.s/30)*30;m<=x.e;m+=30)ticks.push(`<span style="left:${(m-x.s)/len*100}%">${hm(m)}</span>`);
+  const eqs=[...new Set(x.ops.flatMap(o=>o.step.eq))];
+  const byM=P.members.map(m=>({m,L:x.ops.filter(o=>o.who===m).sort((a,b)=>a.a-b.a)})).filter(z=>z.L.length);
+  const flexOut=x.ops.filter(o=>o.flex);
+  return `<div class="ses${past?' past':''}"><div class="hd"><b>${md(x.date)} ${hm(x.s)}~${hm(x.e)}</b><span class="small muted">${x.ops.filter(o=>o.t!=='w').length}개 작업</span></div>
+  <div class="gantt">${rows}${wrows}<div class="axis">${ticks.join('')}</div></div>
+  ${eqs.length?`<div class="small" style="margin-bottom:4px">🧰 필요한 장비: ${eqs.map(k=>EQ[k][0]).join(', ')}</div>`:''}
+  ${byM.map(z=>`<div class="mem">${esc(z.m)}</div>${z.L.map(o=>{const dn=state.done[o.run.key]&&state.done[o.run.key][o.step.id];const w=x.ops.find(p=>p.run===o.run&&p.j===o.j&&p.t==='w');
+    return `<label class="task${dn?' done':''}" style="margin:0;font-weight:400;color:var(--ink)"><input type="checkbox" data-done="${o.run.key}" data-sid="${o.step.id}" ${dn?'checked':''}><span class="t">${hm(o.a-absMin(x.date,0))}~${hm((w?w.b:o.b)-absMin(x.date,0))}${w&&w.b>x.b?'+':''}</span><span class="x"><span class="dot" style="background:${o.run.color}"></span><b>${esc(o.run.p.name)} ${esc(o.run.label)}-${o.j+1}</b> ${esc(o.step.text)}${o.t==='s'?` <span class="tag">넣고 ${dur(D(o.step.min))} 기다림</span>`:''}</span></label>`}).join('')}`).join('')}
+  ${flexOut.length?`<p class="small" style="margin:8px 0 0">⏳ ${flexOut.map(o=>`${esc(o.run.p.name)} ${esc(o.run.label)}-${o.j+1}는 ${absToDate(o.b)===x.date?hm(o.b-absMin(x.date,0)):md(absToDate(o.b))+' '+hm(o.b-absMin(absToDate(o.b),0))}까지 진행돼요`).join(' · ')}</p>`:''}</div>`;
+}
+function vProtos(){
+  main.innerHTML=`<h2>프로토콜</h2><p class="hint">실험마다 프로토콜을 넣고, 몇 번(조건·반복) 할지 정해요.</p>
+  ${state.protos.map(p=>`<button class="pcard" data-proto="${p.id}"><div><b>${esc(p.name)}</b><small>${p.steps.length}단계 · ${p.runs||1}번 (${(p.labels||[]).slice(0,p.runs||1).map(esc).join(', ')||'A…'}) · 손작업 ${dur(p.steps.filter(s=>s.kind==='hands').reduce((a,s)=>a+D(s.min),0)+p.steps.reduce((a,s)=>a+D0(s.kind==='wait'?s.setup:0),0))}</small></div><span class="muted">›</span></button>`).join('')||'<p class="hint">아직 없어요.</p>'}
+  <button class="btn pri full" data-act="newProto">+ 프로토콜 붙여넣기</button>`;
+}
+function vProto(){
+  const p=R.d;
+  main.innerHTML=`<div><button class="lnk" data-act="protoBack">‹ 프로토콜 목록</button></div><h2>${p.steps.length?'프로토콜 확인':'프로토콜 붙여넣기'}</h2>
+  <section class="card"><label style="margin-top:0">실험 이름</label><input class="in" data-p="name" value="${esc(p.name)}" placeholder="예: 대장균 형질전환">
+  <div class="row"><div style="flex:none;width:110px"><label>몇 번 해요?</label><input class="in" type="number" min="1" max="12" data-p="runs" value="${p.runs||1}"></div><div style="flex:1"><label>조건·반복 이름 <small>(쉼표로)</small></label><input class="in" data-p="labels" value="${esc((p.labels||[]).join(', '))}" placeholder="예: 0.1M, 0.5M, 대조군"></div></div>
+  <label>프로토콜 붙여넣기</label><textarea class="ta" rows="${p.steps.length?4:10}" data-p="text" placeholder="1. 시료 2 g을 저울로 측정 (5분)\n2. 증류수 50 mL에 녹이기\n3. 37°C 인큐베이터에서 2시간 배양\n...">${esc(p.text)}</textarea>
+  <button class="btn ${p.steps.length?'':'pri'} full" data-act="parse">${p.steps.length?'다시 읽기 (아래 수정 내용이 사라져요)':'단계로 나누기'}</button></section>
+  ${p.steps.length?`<section class="card"><h3>읽은 결과 확인</h3><p class="hint"><span class="tag h">손작업</span>사람이 붙어서 하는 일 · <span class="tag">기다림</span>그동안 다른 일을 할 수 있는 단계 (배양, 원심분리, 건조 등). 시간과 종류가 맞는지 확인하고 고쳐 주세요.</p>
+  ${stepsHtml(p)}</section>
+  <button class="btn pri full" data-act="saveProto">저장하고 계획 보기</button>`:''}
+  ${state.protos.some(x=>x.id===p.id)?'<button class="btn danger full" data-act="delProto">이 프로토콜 삭제</button>':''}`;
+}
+function stepsHtml(p){
+  let h='',bl=1;
+  p.steps.forEach((s,i)=>{
+    h+=`<div class="st${s.kind==='wait'?' wait':''}"><div class="top"><span class="n">${i+1}</span><textarea rows="2" data-s="${i}" data-f="text">${esc(s.text)}</textarea><button class="lnk" data-rmstep="${i}" aria-label="삭제">×</button></div>
+    <div class="ctl"><div class="seg" style="width:150px"><button class="${s.kind==='hands'?'on':''}" data-kind="${i}" data-v="hands">손작업</button><button class="${s.kind==='wait'?'on':''}" data-kind="${i}" data-v="wait">기다림</button></div>
+    <span><input type="number" min="0" step="1" data-s="${i}" data-f="min" value="${s.min}">분${s.min>=60?` <small class="muted">(${dur(s.min)})</small>`:''}</span>${s.est?'<span class="tag w">시간 추정</span>':''}
+    ${s.kind==='wait'?`<span>넣는 데 <input type="number" min="0" data-s="${i}" data-f="setup" value="${s.setup}">분</span><label><input type="checkbox" data-s="${i}" data-f="flex" ${s.flex?'checked':''}>연구 시간 밖으로 이어져도 됨 (밤새 등)</label>`:''}
+    <label><input type="checkbox" data-s="${i}" data-f="pause" ${s.pause?'checked':''}>이 단계 뒤 멈출 수 있음 (보관)</label></div>
+    <div class="chips" style="margin-top:6px">${Object.keys(EQ).filter(k=>s.eq.includes(k)||s.showEq).map(k=>`<button class="chip ${s.eq.includes(k)?'on':''}" data-eq="${i}" data-k="${k}">${EQ[k][0]}</button>`).join('')}<button class="chip" data-moreeq="${i}">${s.showEq?'접기':'+ 장비'}</button></div></div>`;
+    if((s.kind==='wait'&&s.flex)||s.pause){bl++;if(i<p.steps.length-1)h+=`<div class="blk">${s.kind==='wait'&&s.flex?'⏳ 여기서 기다리는 동안 연구 시간이 끝나도 괜찮아요':'⏸️ 여기서 멈추고 다음 연구 시간에 이어서 할 수 있어요'} — 아래부터 구간 ${bl}</div>`}
+  });
+  return h+`<button class="btn sm" data-act="addStep">+ 단계 추가</button><p class="hint" style="margin-top:8px">구간 안의 단계들은 한 번에 이어서 해야 하는 묶음이에요. 묶음이 너무 길면 연구 시간 안에 안 들어가니, 실제로 멈출 수 있는 곳에 '멈출 수 있음'을 체크하세요.</p>`;
+}
+function vTeam(){
+  main.innerHTML=`<h2>연구 시간·팀</h2>
+  <section class="card"><h3>팀원</h3><p class="hint">손작업은 한 사람이 한 번에 하나씩만 할 수 있다고 보고 나눠요.</p><div class="chips">${state.members.map((m,i)=>`<button class="chip on" data-rmmem="${i}">${esc(m)}${state.members.length>1?' ×':''}</button>`).join('')}</div>
+  <div class="row" style="margin-top:8px"><input class="in" id="memIn" placeholder="이름"><button class="btn sm" data-act="addMem">추가</button></div></section>
+  <section class="card"><h3>매주 연구 시간</h3>${state.pattern.map((p,i)=>`<div class="prow"><select data-pt="${i}" data-f="dow">${DOW.map((d,j)=>`<option value="${j}"${p.dow===j?' selected':''}>${d}요일</option>`).join('')}</select><input type="time" data-pt="${i}" data-f="start" value="${p.start}"><input type="time" data-pt="${i}" data-f="end" value="${p.end}"><button class="lnk" data-rmpt="${i}">빼기</button></div>`).join('')}
+  <button class="btn sm" data-act="addPt">+ 요일 추가</button>
+  <div class="row"><div style="flex:1"><label>시작하는 날</label><input type="date" class="in" data-set="from" value="${state.from}"></div><div style="flex:none;width:110px"><label>기간 (주)</label><input type="number" class="in" min="1" max="26" data-set="weeks" value="${state.weeks}"></div></div></section>
+  <section class="card"><h3>따로 추가·빼는 날</h3>${state.extra.map((x,i)=>`<div class="row small" style="padding:3px 0"><span>➕ ${md(x.date)} ${x.start}~${x.end}</span><button class="lnk" data-rmex="${i}">삭제</button></div>`).join('')}${state.skip.map((k,i)=>`<div class="row small" style="padding:3px 0"><span>➖ ${md(k)} 쉼</span><button class="lnk" data-rmskip="${i}">삭제</button></div>`).join('')}
+  <div class="prow" style="grid-template-columns:1fr 1fr 1fr;margin-top:8px"><input type="date" id="exD"><input type="time" id="exS" value="09:00"><input type="time" id="exE" value="12:00"></div>
+  <div class="row"><button class="btn sm" data-act="addEx">이 날 연구 시간 추가</button><button class="btn sm" data-act="addSkip">이 날은 쉬어요</button></div></section>
+  <section class="card"><h3>장비 개수</h3><p class="hint">공용 장비(인큐베이터, 수조, 건조기 등)는 여러 실험이 같이 써도 된다고 봐요. 나머지는 개수만큼만 동시에 쓸 수 있어요.</p>
+  ${Object.keys(EQ).filter(k=>!EQ[k][2]).map(k=>`<div class="eqr"><span>${EQ[k][0]}</span><input type="number" min="1" max="9" data-eqc="${k}" value="${state.eqCount[k]||1}"><span class="small muted">대</span></div>`).join('')}</section>`;
+}
+function vSet(){
+  main.innerHTML=`<h2>설정</h2>
+  <section class="card"><h3>백업</h3><div class="row"><button class="btn" data-act="export">내보내기</button><button class="btn" data-act="import">불러오기</button></div><input type="file" id="impF" accept=".json,application/json" hidden></section>
+  <section class="card"><h3>예시</h3><p class="hint">팀원 3명, 화·목 16~18시 + 토 9~12시, 대장균 형질전환 3조건과 아스피린 합성 2번을 넣어요. 지금 내용은 지워져요.</p><button class="btn full" data-act="sample">예시 넣기</button></section>
+  <section class="card"><h3>읽는 방법</h3><p class="hint" style="margin:0">'30분', '1.5시간', '45초', 'overnight·하룻밤', '2일', '3회 세척 각 5분' 같은 표현에서 시간을 찾아요. 배양·원심분리·건조·냉각·가열·얼음에서 같은 말이 있으면 기다리는 단계로, 보관·냉장·준비 같은 말이 있으면 그 뒤에 멈출 수 있는 단계로 봐요. 규칙으로 읽는 거라 꼭 확인해 주세요.</p></section>
+  <section class="card"><h3>초기화</h3><button class="btn danger full" data-act="wipe">모두 지우기</button></section>`;
+}
+
+/* ============ 예시 ============ */
+const SAMPLE_BIO=`1. LB 배지와 항생제 플레이트 준비 (30분)
+2. 컴피턴트 세포를 얼음에서 10분 녹이기
+3. 플라스미드 DNA 2 µL 넣고 얼음에서 30분 두기
+4. 42°C 수조에서 45초 열충격
+5. 얼음에서 2분
+6. SOC 배지 250 µL 넣고 37°C 셰이커에서 1시간 배양
+7. 플레이트에 100 µL 도말
+8. 37°C 인큐베이터에서 overnight 배양 (16시간)
+9. 콜로니 개수 세고 사진 찍기 (20분)
+10. 4°C 냉장 보관`;
+const SAMPLE_CHEM=`1. 살리실산 2.0 g을 전자저울로 칭량 (10분)
+2. 무수아세트산 5 mL와 진한 황산 5방울을 후드에서 넣기 (10분)
+3. 85°C 수조에서 15분 가열
+4. 얼음물에서 20분 냉각하여 결정 석출
+5. 감압 여과 후 찬물로 3회 세척 (20분)
+6. 건조기에서 하룻밤 건조
+7. 무게 측정 후 수득률 계산 (15분)
+8. 녹는점 측정 (30분)`;
+function makeSample(){
+  const s=fresh(),T=today();let d=T;while(d.getDay()!==1)d=addDays(d,1);
+  s.members=['나','민수','지은'];s.pattern=[{dow:2,start:'16:00',end:'18:00'},{dow:4,start:'16:00',end:'18:00'},{dow:6,start:'09:00',end:'12:00'}];s.from=keyOf(d);s.weeks=2;
+  s.protos=[{id:uid(),name:'형질전환',text:SAMPLE_BIO,steps:parseProtocol(SAMPLE_BIO),runs:3,labels:['플라스미드A','플라스미드B','대조군']},{id:uid(),name:'아스피린 합성',text:SAMPLE_CHEM,steps:parseProtocol(SAMPLE_CHEM),runs:2,labels:['1차','2차']}];
+  state=s;save();
+}
+
+/* ============ 이벤트 ============ */
+document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.nav)));
+const keepTA=()=>main.querySelectorAll('textarea[data-s]').forEach(t=>{R.d.steps[+t.dataset.s].text=t.value});
+main.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.go)return go(d.go);
+  if(d.proto){const p=state.protos.find(x=>x.id===d.proto);return go('proto',{d:JSON.parse(JSON.stringify(p))})}
+  if(d.kind!==undefined){keepTA();const s=R.d.steps[+d.kind];s.kind=d.v;if(d.v==='wait'&&s.setup==null)s.setup=5;if(d.v==='hands')s.flex=false;return rerender()}
+  if(d.eq!==undefined){keepTA();const s=R.d.steps[+d.eq],i=s.eq.indexOf(d.k);i>=0?s.eq.splice(i,1):s.eq.push(d.k);return rerender()}
+  if(d.moreeq!==undefined){keepTA();const s=R.d.steps[+d.moreeq];s.showEq=!s.showEq;return rerender()}
+  if(d.rmstep!==undefined){keepTA();R.d.steps.splice(+d.rmstep,1);return rerender()}
+  if(d.rmmem!==undefined){if(state.members.length<=1)return;state.members.splice(+d.rmmem,1);save();return render()}
+  if(d.rmpt!==undefined){state.pattern.splice(+d.rmpt,1);save();return render()}
+  if(d.rmex!==undefined){state.extra.splice(+d.rmex,1);save();return render()}
+  if(d.rmskip!==undefined){state.skip.splice(+d.rmskip,1);save();return render()}
+  const A=ACT[d.act];if(A)A(t);
+});
+function rerender(){const y=scrollY;render();scrollTo(0,y)}
+const ACT={
+  newProto(){go('proto',{d:{id:uid(),name:'',text:'',steps:[],runs:1,labels:[]}})},
+  protoBack(){go('protos')},
+  parse(){const p=R.d;if(!p.text.trim()){toast('프로토콜을 붙여넣어 주세요');return}if(p.steps.length&&!confirm('다시 읽으면 아래에서 고친 내용이 사라져요. 계속할까요?'))return;p.steps=parseProtocol(p.text);
+    toast(`${p.steps.length}단계로 나눴어요${p.steps.some(s=>s.est)?' · 시간 추정한 단계를 확인해 주세요':''}`,3500);render()},
+  addStep(){keepTA();R.d.steps.push({id:uid(),text:'',kind:'hands',min:10,setup:0,flex:false,pause:false,eq:[],est:false});rerender()},
+  saveProto(){keepTA();const p=R.d;if(!p.name.trim()){toast('실험 이름을 넣어 주세요');return}if(!p.steps.length){toast('단계가 없어요');return}
+    p.steps.forEach(s=>{delete s.showEq;s.min=+s.min||0;s.setup=+s.setup||0;if(s.kind!=='wait')s.flex=false});p.runs=Math.max(1,Math.min(12,+p.runs||1));
+    const i=state.protos.findIndex(x=>x.id===p.id);if(i>=0)state.protos[i]=p;else state.protos.push(p);save();toast('저장했어요');go('plan')},
+  delProto(){if(!confirm('이 프로토콜을 삭제할까요?'))return;state.protos=state.protos.filter(x=>x.id!==R.d.id);save();go('protos')},
+  addMem(){const v=document.getElementById('memIn').value.trim();if(!v||state.members.includes(v))return;state.members.push(v);save();render()},
+  addPt(){state.pattern.push({dow:6,start:'09:00',end:'12:00'});save();render()},
+  addEx(){const dd=document.getElementById('exD').value,s=document.getElementById('exS').value,e2=document.getElementById('exE').value;if(!dd||!s||!e2||s>=e2){toast('날짜와 시간을 확인해 주세요');return}state.extra.push({date:dd,start:s,end:e2});save();render()},
+  addSkip(){const dd=document.getElementById('exD').value;if(!dd){toast('날짜를 골라 주세요');return}if(!state.skip.includes(dd))state.skip.push(dd);save();render()},
+  print(){window.print()},
+  resetDone(){if(!confirm('완료 체크를 모두 풀까요?'))return;state.done={};save();render()},
+  export(){download(new Blob([JSON.stringify({app:'labplan',state})],{type:'application/json'}),`lab-plan-${TK()}.json`);toast('백업 파일을 내보냈어요')},
+  import(){document.getElementById('impF').click()},
+  sample(){if(state.protos.length&&!confirm('지금 내용을 지우고 예시를 넣을까요?'))return;makeSample();toast('예시를 넣었어요');go('plan')},
+  wipe(){if(!confirm('모두 지울까요?'))return;state=fresh();save();go('plan')}
+};
+main.addEventListener('input',e=>{const t=e.target,d=t.dataset;
+  if(d.p!==undefined){if(d.p==='labels')R.d.labels=t.value.split(',').map(x=>x.trim()).filter(Boolean);else if(d.p==='runs')R.d.runs=+t.value;else R.d[d.p]=t.value;return}
+  if(d.s!==undefined&&d.f==='text'){R.d.steps[+d.s].text=t.value;t.style.height='auto';t.style.height=t.scrollHeight+'px'}
+});
+main.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+  if(d.s!==undefined&&d.f!=='text'){keepTA();const s=R.d.steps[+d.s];if(t.type==='checkbox')s[d.f]=t.checked;else{s[d.f]=+t.value;if(d.f==='min')s.est=false}return rerender()}
+  if(d.done){const m=state.done[d.done]=state.done[d.done]||{};const run=state.protos.find(p=>p.id===d.done.split('#')[0]),idx=run.steps.findIndex(s=>s.id===d.sid);
+    if(t.checked)run.steps.slice(0,idx+1).forEach(s=>m[s.id]=true);else run.steps.slice(idx).forEach(s=>delete m[s.id]);save();toast(t.checked?'완료! 남은 단계로 다시 계획했어요':'체크를 풀었어요');return rerender()}
+  if(d.act2==='startNow'){state.startNow=t.checked;save();return rerender()}
+  if(d.pt!==undefined){const p=state.pattern[+d.pt];p[d.f]=d.f==='dow'?+t.value:t.value;save();return}
+  if(d.set){state[d.set]=d.set==='weeks'?Math.max(1,Math.min(26,+t.value||1)):t.value;save();return}
+  if(d.eqc){state.eqCount[d.eqc]=Math.max(1,+t.value||1);save();return}
+  if(t.id==='impF'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(j.app!=='labplan')throw 0;if(!confirm('지금 내용을 백업으로 바꿀까요?'))return;state=Object.assign(fresh(),j.state);save();toast('불러왔어요');go('plan')}catch(err){toast('올바른 백업 파일이 아니에요')}};r.readAsText(t.files[0]);t.value=''}
+});
+render();
+setInterval(()=>{if(R.v==='plan'&&state.startNow)rerender()},60000);
+</script>
+</body>
+</html>
