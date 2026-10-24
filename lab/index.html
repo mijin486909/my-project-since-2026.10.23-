@@ -165,7 +165,15 @@ function parseDur(t){
 function parseProtocol(text){
   const lines=text.replace(/\r/g,'').split('\n').map(l=>l.trim()).filter(Boolean),raw=[];
   const start=/^(?:step\s*\d+[.:)]?|\d+\s*[.)．]|\(\d+\)|[①-⑳]|[-•·*▪︎]\s)/i;
-  lines.forEach(l=>{if(start.test(l)||!raw.length)raw.push(l.replace(start,'').trim());else raw[raw.length-1]+=' '+l});
+  const num=/^(?:step\s*\d+|\d+\s*[.)．]|\(\d+\)|[①-⑳])/i,HEAD=/^[\s\dⅠ-Ⅹ.)\-]*(실험\s*)?(목적|원리|이론|배경|가설|준비물|재료|시약|기구|장치|재료\s*및\s*방법|결과|고찰|결론|참고|주의|안전|references?|materials?|reagents?|equipment|results?|discussion|purpose|background|notes?)\s*[:：]?\s*$/i,PROC=/^[\s\dⅠ-Ⅹ.)\-]*(실험\s*)?(방법|과정|절차|순서|procedure|methods?|protocol)\s*[:：]?\s*$/i;
+  const hasHead=lines.some(l=>l.length<=24&&(HEAD.test(l)||PROC.test(l))),numbered=lines.filter(l=>num.test(l)).length>=2;let cap=!hasHead,started=false;
+  lines.forEach(l=>{
+    if(l.length<=24&&PROC.test(l)){cap=true;started=false;return}
+    if(l.length<=24&&HEAD.test(l)){cap=false;return}
+    if(!cap)return;
+    if(numbered&&!started&&!num.test(l))return;
+    if(!numbered||start.test(l)||!raw.length){raw.push(l.replace(start,'').trim());started=true}else raw[raw.length-1]+=' '+l});
+  if(!raw.length&&hasHead)lines.forEach(l=>{if(start.test(l)||!raw.length)raw.push(l.replace(start,'').trim());else raw[raw.length-1]+=' '+l});
   return raw.filter(Boolean).map(t=>{
     const d=parseDur(t),eq=Object.keys(EQ).filter(k=>EQ[k][1].test(t)),isWait=RX_WAIT.test(t)&&!(/여과|세척|wash/i.test(t)&&!/건조|dry|원심/i.test(t)),hands=RX_HANDS.test(t);
     const pause=RX_PAUSE.test(t)||RX_PREP.test(t);
@@ -174,6 +182,55 @@ function parseProtocol(text){
     const flex=kind==='wait'&&(!!(d&&d.over)||min>=180);
     return {id:uid(),text:t,kind,min,setup:kind==='wait'?(hands||flex?5:0):0,flex,pause,eq,est};
   });
+}
+
+/* ============ 파일 읽기 ============ */
+async function unzip(buf,want){
+  const v=new DataView(buf),u8=new Uint8Array(buf),out={};let e=-1;
+  for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-65557);i--)if(v.getUint32(i,true)===0x06054b50){e=i;break}
+  if(e<0)throw new Error('zip');
+  const n=v.getUint16(e+10,true);let p=v.getUint32(e+16,true);
+  for(let k=0;k<n;k++){if(v.getUint32(p,true)!==0x02014b50)break;
+    const method=v.getUint16(p+10,true),csize=v.getUint32(p+20,true),nl=v.getUint16(p+28,true),xl=v.getUint16(p+30,true),cl=v.getUint16(p+32,true),lho=v.getUint32(p+42,true);
+    const name=new TextDecoder().decode(u8.subarray(p+46,p+46+nl));p+=46+nl+xl+cl;if(!want(name))continue;
+    const ds=lho+30+v.getUint16(lho+26,true)+v.getUint16(lho+28,true),data=u8.subarray(ds,ds+csize);let bytes;
+    if(method===0)bytes=data;else if(method===8){if(typeof DecompressionStream==='undefined')throw new Error('nodecomp');bytes=new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}else continue;
+    out[name]=new TextDecoder('utf-8').decode(bytes)}
+  return out;
+}
+const byLocal=(root,n)=>[...root.getElementsByTagName('*')].filter(x=>x.localName===n);
+function docxText(xml){
+  const doc=new DOMParser().parseFromString(xml,'application/xml'),cnt={},out=[];
+  let run=0;
+  byLocal(doc,'p').forEach(p=>{let t='';p.querySelectorAll('*').forEach(x=>{if(x.localName==='t')t+=x.textContent;else if(x.localName==='tab'||x.localName==='br')t+=' '});t=t.trim();if(!t)return;
+    const ps=(byLocal(p,'pStyle')[0]||{getAttribute:()=>''}).getAttribute('w:val')||'',styled=/list ?number|listnumber|번호|numbered/i.test(ps);
+    if(styled&&!byLocal(p,'numPr')[0]&&!/^\s*(\d+\s*[.)]|\(\d+\)|[①-⑳])/.test(t)){run++;out.push(run+'. '+t);return}
+    if(!styled)run=0;
+    const np=byLocal(p,'numPr')[0];if(np&&!/^\s*(\d+\s*[.)]|\(\d+\)|[①-⑳])/.test(t)){const id=(byLocal(np,'numId')[0]||{getAttribute:()=>0}).getAttribute('w:val')||'0',lv=+((byLocal(np,'ilvl')[0]||{getAttribute:()=>0}).getAttribute('w:val')||0);
+      if(lv===0){cnt[id]=(cnt[id]||0)+1;t=cnt[id]+'. '+t}}
+    out.push(t)});
+  return out.join('\n');
+}
+function hwpxText(xmls){return xmls.map(x=>{const doc=new DOMParser().parseFromString(x,'application/xml');return byLocal(doc,'p').map(p=>byLocal(p,'t').map(t=>t.textContent).join('').trim()).filter(Boolean).join('\n')}).join('\n')}
+let pdfLib=null;
+function loadPdfJs(){return pdfLib||(pdfLib=new Promise((res,rej)=>{const s=document.createElement('script');s.src='vendor/pdf.min.js';s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc='vendor/pdf.worker.min.js';res(window.pdfjsLib)};s.onerror=()=>{pdfLib=null;rej(new Error('pdfjs'))};document.head.appendChild(s)}))}
+async function pdfText(buf){
+  const lib=await loadPdfJs(),pdf=await lib.getDocument({data:buf}).promise,lines=[];
+  for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i),tc=await pg.getTextContent(),rows=[];
+    tc.items.forEach(it=>{if(!it.str)return;const y=Math.round(it.transform[5]),x=it.transform[4],fs=Math.hypot(it.transform[0],it.transform[1])||10;let r=rows.find(r=>Math.abs(r.y-y)<=3);if(!r){r={y,items:[]};rows.push(r)}r.items.push({x,w:it.width||0,fs,s:it.str})});
+    rows.sort((a,b)=>b.y-a.y).forEach(r=>{let t='',end=null;r.items.sort((a,b)=>a.x-b.x).forEach(it=>{if(end!=null&&it.x-end>it.fs*.22&&!/\s$/.test(t))t+=' ';t+=it.s;end=it.x+it.w});t=t.replace(/\s+/g,' ').trim();if(t&&!/^\d{1,3}$/.test(t)&&!/^-\s*\d+\s*-$/.test(t))lines.push(t)})}
+  return lines.join('\n');
+}
+async function readProtocolFile(f){
+  const name=f.name.toLowerCase(),ext=name.split('.').pop();
+  if(ext==='hwp')throw new Error('한글(.hwp)은 직접 못 읽어요. 한글에서 [다른 이름으로 저장]으로 .hwpx나 PDF로 저장해서 올려 주세요.');
+  if(/^(jpe?g|png|heic|webp|gif)$/.test(ext)||f.type.startsWith('image/'))throw new Error('사진 속 글자는 못 읽어요. 아이폰은 사진의 글자를 길게 눌러 복사할 수 있어요. 복사해서 아래에 붙여넣어 주세요.');
+  if(ext==='txt'||ext==='md'||f.type==='text/plain')return await f.text();
+  const buf=await f.arrayBuffer();
+  if(ext==='docx'){const z=await unzip(buf,n=>n==='word/document.xml');if(!z['word/document.xml'])throw new Error('Word 문서 내용을 찾지 못했어요.');return docxText(z['word/document.xml'])}
+  if(ext==='hwpx'){const z=await unzip(buf,n=>/^Contents\/section\d+\.xml$/i.test(n));const ks=Object.keys(z).sort((a,b)=>parseInt(a.match(/\d+/)[0])-parseInt(b.match(/\d+/)[0]));if(!ks.length)throw new Error('한글 문서 내용을 찾지 못했어요.');return hwpxText(ks.map(k=>z[k]))}
+  if(ext==='pdf'||f.type==='application/pdf'){const t=await pdfText(buf);if(t.replace(/\s/g,'').length<20)throw new Error('PDF에서 글자를 찾지 못했어요. 스캔한(사진으로 된) PDF는 읽을 수 없어요.');return t}
+  throw new Error('txt, docx, hwpx, pdf 파일만 읽을 수 있어요.');
 }
 
 /* ============ 저장 ============ */
@@ -311,7 +368,9 @@ function vProto(){
   main.innerHTML=`<div><button class="lnk" data-act="protoBack">‹ 프로토콜 목록</button></div><h2>${p.steps.length?'프로토콜 확인':'프로토콜 붙여넣기'}</h2>
   <section class="card"><label style="margin-top:0">실험 이름</label><input class="in" data-p="name" value="${esc(p.name)}" placeholder="예: 대장균 형질전환">
   <div class="row"><div style="flex:none;width:110px"><label>몇 번 해요?</label><input class="in" type="number" min="1" max="12" data-p="runs" value="${p.runs||1}"></div><div style="flex:1"><label>조건·반복 이름 <small>(쉼표로)</small></label><input class="in" data-p="labels" value="${esc((p.labels||[]).join(', '))}" placeholder="예: 0.1M, 0.5M, 대조군"></div></div>
-  <label>프로토콜 붙여넣기</label><textarea class="ta" rows="${p.steps.length?4:10}" data-p="text" placeholder="1. 시료 2 g을 저울로 측정 (5분)\n2. 증류수 50 mL에 녹이기\n3. 37°C 인큐베이터에서 2시간 배양\n...">${esc(p.text)}</textarea>
+  <label>프로토콜 불러오기</label><label class="btn full" style="position:relative;overflow:hidden;margin:0;color:var(--accent);text-align:center">📄 파일에서 불러오기 <small class="muted">(txt · docx · hwpx · pdf)</small><input type="file" id="protoFile" accept=".txt,.md,.docx,.hwpx,.pdf,.hwp,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="position:absolute;inset:0;opacity:0"></label>
+  <p class="hint" id="fileMsg" style="margin:6px 0 0"></p>
+  <label>또는 붙여넣기</label><textarea class="ta" rows="${p.steps.length?4:10}" data-p="text" placeholder="1. 시료 2 g을 저울로 측정 (5분)\n2. 증류수 50 mL에 녹이기\n3. 37°C 인큐베이터에서 2시간 배양\n...">${esc(p.text)}</textarea>
   <button class="btn ${p.steps.length?'':'pri'} full" data-act="parse">${p.steps.length?'다시 읽기 (아래 수정 내용이 사라져요)':'단계로 나누기'}</button></section>
   ${p.steps.length?`<section class="card"><h3>읽은 결과 확인</h3><p class="hint"><span class="tag h">손작업</span>사람이 붙어서 하는 일 · <span class="tag">기다림</span>그동안 다른 일을 할 수 있는 단계 (배양, 원심분리, 건조 등). 시간과 종류가 맞는지 확인하고 고쳐 주세요.</p>
   ${stepsHtml(p)}</section>
@@ -421,7 +480,14 @@ main.addEventListener('input',e=>{const t=e.target,d=t.dataset;
   if(d.p!==undefined){if(d.p==='labels')R.d.labels=t.value.split(',').map(x=>x.trim()).filter(Boolean);else if(d.p==='runs')R.d.runs=+t.value;else R.d[d.p]=t.value;return}
   if(d.s!==undefined&&d.f==='text'){R.d.steps[+d.s].text=t.value;t.style.height='auto';t.style.height=t.scrollHeight+'px'}
 });
-main.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+main.addEventListener('change',async e=>{const t=e.target,d=t.dataset;
+  if(t.id==='protoFile'&&t.files[0]){const f=t.files[0];t.value='';const msg=document.getElementById('fileMsg');if(msg)msg.textContent='읽는 중…';
+    try{const text=(await readProtocolFile(f)).trim();if(!text)throw new Error('파일에 글자가 없어요.');
+      if(R.d.steps.length&&!confirm('파일 내용으로 바꾸면 아래에서 고친 내용이 사라져요. 계속할까요?')){if(msg)msg.textContent='';return}
+      R.d.text=text;if(!R.d.name)R.d.name=f.name.replace(/\.[^.]+$/,'');R.d.steps=parseProtocol(text);
+      render();const m2=document.getElementById('fileMsg');if(m2)m2.textContent=`✓ ${f.name}에서 ${R.d.steps.length}단계를 읽었어요. 재료·결과 같은 부분은 건너뛰고 실험 방법만 골랐어요. 아래에서 확인해 주세요.`;
+    }catch(err){const m=String(err&&err.message||err);if(msg)msg.textContent=m==='nodecomp'?'이 브라우저는 이 파일을 열 수 없어요. 최신 사파리·크롬에서 열거나 내용을 복사해 붙여넣어 주세요.':m==='zip'?'파일이 손상됐거나 형식이 달라요.':m==='pdfjs'?'PDF 읽기 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.':m}
+    return}
   if(d.s!==undefined&&d.f!=='text'){keepTA();const s=R.d.steps[+d.s];if(t.type==='checkbox')s[d.f]=t.checked;else{s[d.f]=+t.value;if(d.f==='min')s.est=false}return rerender()}
   if(d.done){const m=state.done[d.done]=state.done[d.done]||{};const run=state.protos.find(p=>p.id===d.done.split('#')[0]),idx=run.steps.findIndex(s=>s.id===d.sid);
     if(t.checked)run.steps.slice(0,idx+1).forEach(s=>m[s.id]=true);else run.steps.slice(idx).forEach(s=>delete m[s.id]);save();toast(t.checked?'완료! 남은 단계로 다시 계획했어요':'체크를 풀었어요');return rerender()}
