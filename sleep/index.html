@@ -39,7 +39,20 @@ h3{font-size:17px;margin:0 0 10px}
 .sb{justify-content:space-between}
 .icon{border:0;background:none;width:40px;height:40px;border-radius:50%;font-size:22px;color:var(--ink2)}
 .in{font:inherit;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0;width:100%}
-.in[type=time],.in[type=date]{color-scheme:dark}
+input[type=time],input[type=date]{color-scheme:dark;-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;display:block;text-align:center;min-height:40px}
+input[type=time]::-webkit-date-and-time-value,input[type=date]::-webkit-date-and-time-value{text-align:center}
+.tr{display:grid;grid-template-columns:1fr 132px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.tr:last-of-type{border:0}
+.tr .lab{font-size:15px}
+.tr .lab small{display:block;font-size:12px;color:var(--ink2);line-height:1.4}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}
+.sw input{width:20px;height:20px;accent-color:var(--moon);flex:none}
+.grp{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:4px 12px 8px;margin-top:10px}
+.grp h4{margin:8px 0 2px;font-size:15px}
+.chk{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chk label{margin:0;display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:13px;color:var(--ink)}
+.chk input{accent-color:var(--moon)}
+.ex{font-size:13px;color:var(--ink2);background:rgba(143,180,255,.07);border-radius:10px;padding:8px 10px;margin:6px 0 4px}
 .big{font-size:44px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
 .bigin{font:inherit;font-size:44px;font-weight:700;background:none;border:0;border-bottom:2px dashed var(--line);color:var(--ink);width:auto;padding:0;color-scheme:dark;letter-spacing:-1px}
 .opt{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
@@ -122,7 +135,9 @@ function download(blob,name){const a=document.createElement('a');a.href=URL.crea
 
 /* ---------- 저장 ---------- */
 const KEY='byeoljam-v1';
-function fresh(){return {v:1,cycle:90,auto:true,latency:15,goal:480,wake:{0:'09:00',1:'06:30',2:'06:30',3:'06:30',4:'06:30',5:'06:30',6:'09:00'},special:[],earliest:'',latest:'',logs:[],plan:null}}
+function fresh(){return {v:1,cycle:90,auto:true,latency:15,goal:480,wake:{0:'09:00',1:'06:30',2:'06:30',3:'06:30',4:'06:30',5:'06:30',6:'09:00'},special:[],wakeEach:false,dorm:{wk:{on:false,earliest:'22:30',latest:'23:30'},we:{on:false,earliest:'23:00',latest:'00:30'},weNights:[5,6]},logs:[],plan:null}}
+const NIGHT=['일','월','화','수','목','금','토'];
+function dormFor(nightDow){const d=state.dorm,g=d.weNights.includes(nightDow)?d.we:d.wk;return g.on?{...g,we:d.weNights.includes(nightDow)}:null}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.wake)return Object.assign(fresh(),s)}catch(e){}return fresh()}
 let state=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('이 브라우저에서는 저장이 안 돼요')}}
@@ -143,11 +158,11 @@ function estimate(){
   return {ok:true,c:best.c,n:L.length};
 }
 const cycleNow=()=>{const e=estimate();return state.auto&&e.ok?e.c:state.cycle};
-function bedOpts(wakeM){
-  const c=cycleNow(),lat=state.latency,E=toMin(state.earliest),Lt=toMin(state.latest),rel=t=>norm(wakeM-t);
+function bedOpts(wakeM,nightDow){
+  const c=cycleNow(),lat=state.latency,dm=nightDow==null?null:dormFor(nightDow),E=dm?toMin(dm.earliest):null,Lt=dm?toMin(dm.latest):null,rel=t=>norm(wakeM-t);
   const ops=[7,6,5,4].map(n=>{const sl=n*c,before=lat+sl,o={n,sl,lie:norm(wakeM-before),before,why:''};
-    if(E!==null&&before>rel(E))o.why=`${state.earliest} 전이라 못 누워요`;
-    else if(Lt!==null&&before<rel(Lt))o.why=`소등(${state.latest})보다 늦어요`;
+    if(E!==null&&before>rel(E))o.why=`점호 끝(${dm.earliest}) 전이라 못 누워요`;
+    else if(Lt!==null&&before<rel(Lt))o.why=`소등(${dm.latest})보다 늦어요`;
     o.ok=!o.why;return o});
   const f=ops.filter(o=>o.ok);
   const rec=f.filter(o=>o.sl>=state.goal&&o.sl<=600).sort((a,b)=>a.sl-b.sl)[0]||f.slice().sort((a,b)=>b.sl-a.sl)[0];
@@ -189,7 +204,7 @@ function vCalc(){
   let h=`<h2>${new Date().getHours()<5||new Date().getHours()>=18?'오늘 밤은 언제 잘까요?':'잠 계획 세우기'}</h2>
   <div class="seg">${[['wake','일어날 시간으로'],['now','지금 자면'],['nap','낮잠']].map(([k,l])=>`<button class="${mode===k?'on':''}" data-mode="${k}">${l}</button>`).join('')}</div>`;
   if(mode==='wake'){
-    calcDate=calcDate||targetKey();const w=wakeFor(calcDate),wt=calcWake||w.t,wm=toMin(wt),ops=bedOpts(wm);
+    calcDate=calcDate||targetKey();const w=wakeFor(calcDate),wt=calcWake||w.t,wm=toMin(wt),nd=addDays(dateOf(calcDate),-1).getDay(),dm=dormFor(nd),ops=bedOpts(wm,nd);
     if(sel===null||!ops[sel]||!ops[sel].ok)sel=Math.max(0,ops.findIndex(o=>o.rec));
     const o=ops[sel];
     h+=`<section class="card"><div class="row sb"><button class="icon" data-act="dprev">‹</button><div style="text-align:center"><div class="small muted">${md(calcDate)}${w.label?' · '+esc(w.label):''} 기상</div><input type="time" class="bigin" id="wakeIn" value="${wt}"></div><button class="icon" data-act="dnext">›</button></div>
@@ -198,6 +213,7 @@ function vCalc(){
     ${ops.map((x,i)=>`<button class="opt${i===sel?' sel':''}${x.ok?'':' no'}${x.rec?' rec':''}" data-opt="${i}"><span class="t">${hm(x.lie)}</span><span>${x.n}주기 · ${dur(x.sl)} 잠<small>${x.why||`잠드는 ${state.latency}분 포함`}</small></span>${tagOf(x)}</button>`).join('')}
     ${o?wave(o.lie,state.latency,o.n,c,true):''}
     ${o&&o.ok?`<button class="btn pri full" data-act="plan">${hm(o.lie)}에 자고 ${wt}에 일어날게요</button>`:''}
+    ${dm?`<p class="note">${NIGHT[nd]}요일 밤 기숙사 시간 적용: ${dm.earliest} 점호 끝 ~ ${dm.latest} 소등</p>`:''}
     <p class="note">주기 ${c}분 기준${state.auto&&e.ok?` (내 기록 ${e.n}개로 추정)`:state.auto?' · 기록이 쌓이면 내 주기로 바꿔 줘요':' (직접 설정)'}. 실제 주기는 사람마다, 밤마다 달라서 대략적인 시간이에요.</p></section>`;
   }else if(mode==='now'){
     const n0=nowMin(),tk=targetKey(),w=wakeFor(tk),allow=norm(toMin(w.t)-n0);
@@ -270,17 +286,29 @@ function vLog(){
 
 function vSet(){
   const e=estimate(),order=[1,2,3,4,5,6,0];
+  const W=state.wake,D=state.dorm,tr=(lab,sub,attr,val)=>`<div class="tr"><div class="lab">${lab}${sub?`<small>${sub}</small>`:''}</div><input type="time" class="in" ${attr} value="${val}"></div>`;
+  const dormG=(k,title,nights)=>{const g=D[k];return `<div class="grp"><div class="sw"><h4>${title}</h4><input type="checkbox" data-dorm-on="${k}" ${g.on?'checked':''} aria-label="${title} 사용"></div>
+    <div class="small muted">${nights}</div>
+    ${g.on?tr('점호 끝나는 시각','이보다 일찍은 못 누워요','data-dorm="'+k+'" data-f="earliest"',g.earliest)+tr('소등 시각','이보다 늦게 누우면 안 돼요','data-dorm="'+k+'" data-f="latest"',g.latest):'<p class="hint" style="margin:6px 0 0">꺼져 있어요 · 제한 없이 계산해요</p>'}</div>`};
+  const wkN=[0,1,2,3,4,5,6].filter(n=>!D.weNights.includes(n)).map(n=>NIGHT[n]).join('·'),weN=D.weNights.slice().sort().map(n=>NIGHT[n]).join('·')||'없음';
   main.innerHTML=`<h2>설정</h2>
-  <section class="card"><h3>요일별 기상 시간</h3><div class="wk">${order.map(d=>`<div><span>${DOW[d]}</span><input type="time" data-wake="${d}" value="${state.wake[d]}"></div>`).join('')}</div>
-  <button class="lnk" data-act="copyMon" style="margin-top:6px">월요일 시간을 화~금에 똑같이</button></section>
+  <section class="card"><h3>몇 시에 일어나야 해요?</h3>
+  <div class="ex">알람이 울려야 하는 시각을 넣으세요. 기숙사라면 <b>기상 점호 시각</b>에서 준비하는 데 걸리는 시간을 뺀 시각이에요.</div>
+  ${state.wakeEach?order.map(d=>tr(DOW[d]+'요일','','data-wake="'+d+'"',W[d])).join(''):
+    tr('평일','월~금','data-wakeg="wk"',W[1])+tr('토요일','','data-wake="6"',W[6])+tr('일요일','','data-wake="0"',W[0])}
+  <button class="lnk" data-act="toggleEach">${state.wakeEach?'평일은 한 번에 정하기':'요일마다 따로 정하기'}</button></section>
+  <section class="card"><h3>기숙사 시간</h3>
+  <div class="ex">자기 전에 꼭 지켜야 하는 시간이 있으면 켜세요. 이 범위를 벗어나는 취침 시간은 '불가'로 표시돼요. 기숙사가 아니면 꺼 두면 돼요.</div>
+  ${dormG('wk','평일 밤',wkN+'요일 밤')}${dormG('we','주말 밤',weN+'요일 밤')}
+  <label>주말 규칙을 쓰는 밤</label><div class="chk">${[0,1,2,3,4,5,6].map(n=>`<label><input type="checkbox" data-wen="${n}" ${D.weNights.includes(n)?'checked':''}>${NIGHT[n]} 밤</label>`).join('')}</div>
+  <p class="hint">예: 금요일 밤과 토요일 밤에 점호가 늦다면 금·토에 체크</p></section>
   <section class="card"><h3>특별한 날</h3><p class="hint">시험 날처럼 평소와 다르게 일어나야 하는 날이에요.</p>
-  ${state.special.slice().sort((a,b)=>a.date<b.date?-1:1).map(s=>`<div class="sp"><div class="lab">${esc(s.label||'특별한 날')}<small>${md(s.date)}</small></div><input type="time" class="in" data-spw="${s.date}" value="${s.wake}"><button class="lnk" data-spdel="${s.date}">삭제</button></div>`).join('')||'<p class="muted small">없음</p>'}
-  <div class="grid2" style="margin-top:8px"><input type="date" class="in" id="spD"><input type="time" class="in" id="spT" value="06:00"></div>
-  <div class="row" style="margin-top:6px"><input class="in" id="spL" placeholder="이름 (예: 기말 1일차)"><button class="btn sm" data-act="addSp">추가</button></div></section>
-  <section class="card"><h3>기숙사·생활 시간</h3><p class="hint">비워 두면 제한 없이 계산해요. 이 범위를 벗어나는 취침 시간은 '불가'로 표시돼요.</p>
-  <div class="grid2"><div><label>이때부터 누울 수 있어요 <small>(점호 후)</small></label><input type="time" class="in" data-set="earliest" value="${state.earliest}"></div>
-  <div><label>이때까지는 누워야 해요 <small>(소등)</small></label><input type="time" class="in" data-set="latest" value="${state.latest}"></div></div>
-  ${state.earliest||state.latest?'<button class="lnk" data-act="clearDorm">비우기</button>':''}</section>
+  ${state.special.slice().sort((a,b)=>a.date<b.date?-1:1).map(s=>`<div class="tr"><div class="lab">${esc(s.label||'특별한 날')}<small>${md(s.date)} · <button class="lnk" style="padding:0" data-spdel="${s.date}">삭제</button></small></div><input type="time" class="in" data-spw="${s.date}" value="${s.wake}"></div>`).join('')||'<p class="muted small">없음</p>'}
+  <div class="grp"><h4>새로 추가</h4>
+  <label>날짜</label><input type="date" class="in" id="spD">
+  <label>일어날 시각</label><input type="time" class="in" id="spT" value="06:00">
+  <label>이름</label><input class="in" id="spL" placeholder="예: 기말 1일차">
+  <button class="btn full" data-act="addSp">추가하기</button></div></section>
   <section class="card"><h3>잠 설정</h3>
   <label>목표 수면 시간 <small>· 청소년 권장 8~10시간</small></label>
   <select class="in" data-set="goal">${[420,450,480,510,540,570,600].map(v=>`<option value="${v}"${state.goal===v?' selected':''}>${dur(v)}</option>`).join('')}</select>
@@ -322,11 +350,12 @@ main.addEventListener('click',e=>{
     dprev(){const p=addDays(dateOf(calcDate),-1);if(keyOf(p)<keyOf(today()))return;calcDate=keyOf(p);calcWake=null;sel=null;render()},
     dnext(){calcDate=keyOf(addDays(dateOf(calcDate),1));calcWake=null;sel=null;render()},
     resetWake(){calcWake=null;sel=null;render()},
-    plan(){const w=calcWake||wakeFor(calcDate).t,o=bedOpts(toMin(w))[sel];state.plan={date:calcDate,bed:hm(o.lie),wake:w};save();toast(`휴대폰 알람을 ${w}에 맞추고, ${hm(o.lie)}에 누우세요`);render()},
+    plan(){const w=calcWake||wakeFor(calcDate).t,o=bedOpts(toMin(w),addDays(dateOf(calcDate),-1).getDay())[sel];state.plan={date:calcDate,bed:hm(o.lie),wake:w};save();toast(`휴대폰 알람을 ${w}에 맞추고, ${hm(o.lie)}에 누우세요`);render()},
     saveLog, copyMon(){[2,3,4,5].forEach(i=>state.wake[i]=state.wake[1]);save();render();toast('화~금을 월요일과 같게 맞췄어요')},
     addSp(){const dd=document.getElementById('spD').value,tt=document.getElementById('spT').value,ll=document.getElementById('spL').value.trim();if(!dd||!tt){toast('날짜와 시간을 넣어 주세요');return}
       state.special=state.special.filter(s=>s.date!==dd).concat([{date:dd,wake:tt,label:ll}]);save();render()},
-    clearDorm(){state.earliest='';state.latest='';save();render()},
+    toggleEach(){if(state.wakeEach&&[2,3,4,5].some(i=>state.wake[i]!==state.wake[1])&&!confirm('평일을 한 번에 정하면 화~금이 월요일 시간으로 바뀌어요. 괜찮을까요?'))return;
+      if(state.wakeEach)[2,3,4,5].forEach(i=>state.wake[i]=state.wake[1]);state.wakeEach=!state.wakeEach;save();render()},
     export(){download(new Blob([JSON.stringify(state)],{type:'application/json'}),`byeoljam-backup-${keyOf(today())}.json`);toast('백업 파일을 내보냈어요')},
     import(){document.getElementById('impF').click()},
     sample(){if(!confirm('지금 기록을 지우고 샘플 데이터로 바꿀까요?'))return;makeSample();save();toast('샘플 데이터를 넣었어요');go('log')},
@@ -339,6 +368,10 @@ main.addEventListener('change',e=>{
   if(t.id==='wakeIn'){calcWake=t.value||null;sel=null;return render()}
   if(t.id==='logDate'){logDate=t.value||keyOf(today());logFeel=null;return render()}
   if(d.wake!==undefined){if(t.value){state.wake[d.wake]=t.value;save()}return}
+  if(d.wakeg){if(t.value){[1,2,3,4,5].forEach(i=>state.wake[i]=t.value);save()}return}
+  if(d.dormOn){state.dorm[d.dormOn].on=t.checked;save();return render()}
+  if(d.dorm){if(t.value){state.dorm[d.dorm][d.f]=t.value;save()}return}
+  if(d.wen!==undefined){const n=+d.wen,a=state.dorm.weNights;state.dorm.weNights=t.checked?[...new Set(a.concat(n))]:a.filter(x=>x!==n);save();return render()}
   if(d.spw){const s=state.special.find(x=>x.date===d.spw);if(s&&t.value){s.wake=t.value;save()}return}
   if(d.set){const k=d.set;state[k]=k==='auto'?t.checked:(k==='earliest'||k==='latest')?t.value:+t.value;save();return render()}
   if(t.id==='impF'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const s=JSON.parse(r.result);if(!s.wake)throw 0;if(!confirm('지금 기록을 백업 내용으로 바꿀까요?'))return;state=Object.assign(fresh(),s);save();toast('불러왔어요');render()}catch(err){toast('올바른 백업 파일이 아니에요')}};r.readAsText(t.files[0]);t.value=''}
