@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="옷장 노트">
+<title>옷장 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ef;--card:#fff;--ink:#22201d;--ink2:#7b746c;--line:#e7e1d9;--accent:#3b4a8c;--accS:#e8ebf7;--rose:#d9766b;--warn:#c9802a;--warnS:#fbf0e0;--good:#3c8a5a;--goodS:#e4f2e9;--tipS:#eef0f8;
+  --title:'Black Han Sans',sans-serif;--body:'Gowun Dodum',system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:560px;margin:0 auto;padding:calc(8px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.logo{font-family:var(--title);font-size:24px;letter-spacing:-.5px}
+.logo i{font-style:normal;color:var(--accent)}
+.icon{border:0;background:none;width:44px;height:44px;border-radius:50%;font-size:22px}
+h2{font-family:var(--title);font-weight:400;font-size:28px;margin:6px 0 2px;letter-spacing:-.5px}
+h3{font-size:17px;margin:0 0 8px}
+h4{font-size:13px;color:var(--ink2);margin:14px 0 6px;font-weight:400}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+.muted{color:var(--ink2)} .small{font-size:13px} .hint{font-size:13px;color:var(--ink2);margin:0 0 8px}
+label{display:block;font-size:13px;color:var(--ink2);margin:12px 0 5px}
+.in{font:inherit;width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink)}
+.btn{border:0;background:var(--accS);color:var(--accent);border-radius:12px;padding:11px 16px;font-size:15px;font-weight:700}
+.btn.pri{background:var(--ink);color:#fff}
+.btn.ghost{background:transparent;border:1.5px dashed var(--line);color:var(--ink2);font-weight:400}
+.btn.danger{background:#fbe6e3;color:#b8483b}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:9px}
+.btn{white-space:nowrap}.row>.btn.sm{flex:none}
+.btn.full{width:100%;margin-top:10px}
+.lnk{border:0;background:none;color:var(--accent);text-decoration:underline;font-size:13px;padding:2px 4px}
+.row{display:flex;gap:8px;align-items:center} .row>.btn{flex:1} .sb{justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px}
+.chip.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.hs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.hs::-webkit-scrollbar{display:none}
+.hs .chip{flex:none}
+.subtabs{display:flex;gap:6px;margin:10px 0 2px;overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:14px}
+.subtabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tag{display:inline-block;font-size:11px;border-radius:999px;padding:1px 8px;background:var(--accS);color:var(--accent);margin-right:3px}
+.tag.w{background:var(--warnS);color:var(--warn)} .tag.g{background:var(--goodS);color:var(--good)}
+.banner{border-radius:14px;padding:11px 14px;margin:10px 0;font-size:14px;background:var(--accS)}
+.banner.w{background:var(--warnS)}
+/* 옷 그림 */
+.it{position:relative;background:#faf8f5;border-radius:12px;overflow:hidden;aspect-ratio:1;display:grid;place-items:center}
+.it img{width:100%;height:100%;object-fit:cover;display:block}
+.it svg{width:82%;height:82%}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cell{border:0;background:none;padding:0;text-align:left}
+.cell small{display:block;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.cell .it .badge{position:absolute;left:5px;top:5px;font-size:10px;background:rgba(255,255,255,.9);border-radius:6px;padding:0 5px}
+.cell.sel .it{outline:3px solid var(--accent);outline-offset:-3px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.15);vertical-align:-2px}
+.cols{display:flex;flex-wrap:wrap;gap:6px}
+.cols button{width:38px;height:38px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);padding:0;position:relative}
+.cols button.on{box-shadow:0 0 0 3px var(--ink)}
+.cols button span{position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:var(--ink2)}
+.colwrap{padding-bottom:16px}
+/* 코디 */
+.fit{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.fit.n3{grid-template-columns:repeat(3,1fr)} .fit.n2{grid-template-columns:repeat(2,1fr)}
+.oc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:12px 0}
+.oc .hd{display:flex;justify-content:space-between;align-items:center}
+.oc .hd b{font-family:var(--title);font-weight:400;font-size:20px}
+.res{display:flex;gap:8px;font-size:13px;padding:4px 0;align-items:flex-start}
+.res i{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10px;color:#fff;font-style:normal;margin-top:1px}
+.res.g i{background:var(--good)} .res.t i{background:var(--accent)} .res.w i{background:var(--warn)}
+.slot{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.slot:last-child{border:0}
+.slot .it{width:72px}
+.slot button.pick{border:1.5px dashed var(--line);background:none;border-radius:12px;width:72px;aspect-ratio:1;font-size:22px;color:var(--ink2)}
+/* 날씨 */
+.wx{display:flex;align-items:center;gap:14px}
+.wx .t{font-family:var(--title);font-size:44px;line-height:1}
+.wx small{display:block;color:var(--ink2);font-size:13px}
+.guide{background:var(--bg);border-radius:12px;padding:8px 12px;font-size:14px;margin-top:10px}
+/* 테스트 */
+.q{margin:12px 0}
+.q b{display:block;margin-bottom:6px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-size:14px}
+.opts button.on{border-color:var(--ink);background:#f1eee9}
+.big{font-family:var(--title);font-size:32px;text-align:center;color:var(--accent);line-height:1.2}
+.tip{padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.tip:last-child{border:0}
+.tip b{display:block}
+.tip small{color:var(--ink2);font-size:13px}
+.drape{border-radius:22px;padding:26px 26px 60px;display:flex;justify-content:center;transition:background .2s}
+.drape .face{width:150px;height:150px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.4);background:#ddd;display:grid;place-items:center;font-size:44px}
+.pal{display:flex;flex-wrap:wrap;gap:6px}
+.pal span{width:44px;height:44px;border-radius:10px;display:block;border:1px solid rgba(0,0,0,.08)}
+.mt{width:100%;border-collapse:collapse;font-size:14px}
+.mt td,.mt th{padding:6px 4px;border-bottom:1px dashed var(--line);text-align:left}
+.mt th{color:var(--ink2);font-weight:400;font-size:12px}
+.mt input{width:70px;font:inherit;border:1px solid var(--line);border-radius:8px;padding:5px 6px}
+.ok{color:var(--good)} .ng{color:var(--warn)}
+#pv{width:100%;border-radius:12px;display:block;touch-action:manipulation;cursor:crosshair}
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.nav .in2{max-width:560px;margin:0 auto;display:flex}
+.nav button{flex:1;border:0;background:none;padding:9px 0 12px;font-size:13px;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:1px}
+.nav button span{font-size:20px;filter:grayscale(1);opacity:.55}
+.nav button.on{color:var(--ink);font-weight:700}
+.nav button.on span{filter:none;opacity:1}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="logo">옷장 <i>노트</i></div><button class="icon" data-nav="set" aria-label="설정">⚙︎</button></header>
+  <main id="main"></main>
+</div>
+<nav class="nav"><div class="in2"><button data-nav="today"><span>🌤️</span>오늘</button><button data-nav="closet"><span>👚</span>옷장</button><button data-nav="coord"><span>🧩</span>코디</button><button data-nav="me"><span>🪞</span>나</button></div></nav>
+<div id="toast"></div>
+<script>
+/* ============ 유틸 ============ */
+const pad=n=>String(n).padStart(2,'0');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dateOf=k=>{const[a,b,c]=k.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
+const TK=()=>keyOf(today());
+const diffDays=(a,b)=>Math.round((dateOf(b)-dateOf(a))/864e5);
+const DOW=['일','월','화','수','목','금','토'];
+const md=k=>{const d=dateOf(k);return `${d.getMonth()+1}/${d.getDate()}`};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+function toast(m,ms){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms||2600)}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+const hash=s=>{let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return (h>>>0)/4294967295};
+const hex2rgb=h=>{const n=parseInt(h.slice(1),16);return [n>>16&255,n>>8&255,n&255]};
+const rgb2hex=(r,g,b)=>'#'+[r,g,b].map(v=>pad(Math.max(0,Math.min(255,Math.round(v))).toString(16))).join('');
+const shade=(h,a)=>{const[r,g,b]=hex2rgb(h);return rgb2hex(r+a,g+a,b+a)};
+const lum=h=>{const[r,g,b]=hex2rgb(h);return (r*299+g*587+b*114)/1000};
+
+/* ============ 기준 데이터 ============ */
+// [이름, hex, 온도(w웜 c쿨 n중립), 베이직?, 계열]
+const COL={black:['블랙','#1f1f1f','n',1,'mono'],charcoal:['차콜','#45484e','n',1,'mono'],gray:['그레이','#9a9ea4','c',1,'mono'],white:['화이트','#f8f8f6','c',1,'mono'],ivory:['아이보리','#f1e9d6','w',1,'mono'],
+  beige:['베이지','#d8c29e','w',1,'earth'],camel:['카멜','#b5864f','w',1,'earth'],brown:['브라운','#6a4a33','w',1,'earth'],khaki:['카키','#77744e','w',1,'earth'],
+  navy:['네이비','#22375b','c',1,'blue'],denim:['데님','#5272a0','c',1,'blue'],sky:['하늘','#a9c8e8','c',0,'blue'],blue:['블루','#2f5fb3','c',0,'blue'],
+  mint:['민트','#a6dac5','c',0,'green'],green:['그린','#2f7d4a','n',0,'green'],yellow:['옐로','#f1d25e','w',0,'yellow'],mustard:['머스타드','#c69e2a','w',0,'yellow'],
+  orange:['오렌지','#e8823a','w',0,'orange'],coral:['코랄','#ef8a76','w',0,'red'],red:['레드','#c8323a','n',0,'red'],burgundy:['버건디','#6c2433','c',0,'red'],
+  pink:['핑크','#f3b5c7','c',0,'pink'],lavender:['라벤더','#c2b5e2','c',0,'purple'],purple:['퍼플','#694c92','c',0,'purple'],pattern:['패턴·멀티','#b9b2a8','n',0,'pattern']};
+const NEAR={red:['pink','orange'],pink:['red','purple'],orange:['red','yellow'],yellow:['orange','green'],green:['yellow','blue'],blue:['green','purple'],purple:['blue','pink'],earth:['orange','yellow','green'],mono:[]};
+const CATS={top:'상의',bottom:'하의',outer:'아우터',one:'원피스',shoes:'신발',bag:'가방',acc:'소품'};
+const SUBS={top:['반팔 티','민소매','긴팔 티','셔츠','블라우스','맨투맨','후드','니트','조끼'],bottom:['청바지','슬랙스','면바지','트레이닝','반바지','스커트','레깅스'],
+  outer:['가디건','바람막이','후드집업','자켓','블레이저','트렌치코트','야상','코트','패딩'],one:['원피스','점프수트'],shoes:['운동화','로퍼','구두','부츠','샌들·슬리퍼'],bag:['백팩','숄더백','크로스백','토트백'],acc:['모자','목도리','기타']};
+const WARM0={'반팔 티':1,'민소매':1,'긴팔 티':1,'셔츠':1,'블라우스':1,'맨투맨':2,'후드':2,'니트':2,'조끼':1,'반바지':1,'레깅스':1,'가디건':1,'바람막이':1,'후드집업':1,'자켓':2,'블레이저':2,'트렌치코트':2,'야상':2,'코트':3,'패딩':3};
+const FIT={slim:'슬림',reg:'정핏',over:'오버핏'},LEN={crop:'크롭',waist:'허리',hip:'엉덩이 덮음',long:'롱'},BFIT={skinny:'스키니·슬림',straight:'스트레이트',wide:'와이드',boot:'부츠컷',aline:'A라인 스커트',hline:'H라인 스커트',pleats:'플리츠 스커트'};
+const WASH={machine:'세탁기',hand:'손세탁',dry:'드라이클리닝'};
+const SEASON=['봄','여름','가을','겨울'];
+const GUIDE=[[28,'민소매, 반팔, 반바지, 원피스'],[23,'반팔, 얇은 셔츠, 반바지, 면바지'],[20,'얇은 가디건, 긴팔 티, 면바지, 청바지'],[17,'얇은 니트, 맨투맨, 가디건, 청바지'],[12,'자켓, 가디건, 야상, 청바지, 면바지'],[9,'자켓, 트렌치코트, 야상, 니트'],[5,'코트, 가죽자켓, 히트텍, 니트'],[-99,'패딩, 두꺼운 코트, 목도리, 기모 제품']];
+const CITY={서울:[37.5665,126.978],부산:[35.1796,129.0756],대구:[35.8714,128.6014],인천:[37.4563,126.7052],광주:[35.1595,126.8526],대전:[36.3504,127.3845],울산:[35.5384,129.3114],세종:[36.48,127.289],수원:[37.2636,127.0286],춘천:[37.8813,127.7298],강릉:[37.7519,128.8761],청주:[36.6424,127.489],전주:[35.8242,127.148],포항:[36.019,129.3435],창원:[35.2281,128.6811],제주:[33.4996,126.5312]};
+
+/* ============ 저장 ============ */
+const KEY='closet-v1';
+const fresh=()=>({v:1,items:[],outfits:[],worn:{},body:{ans:{},done:false},pc:{ans:{},drape:{},done:false},style:[],sizes:{refs:[],brands:[],usual:'XS·가장 작은 사이즈'},loc:null,wx:null});
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.items)return Object.assign(fresh(),s)}catch(e){}return fresh()}
+let state=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('저장 공간이 부족해요')}}
+const itById=id=>state.items.find(i=>i.id===id);
+const closet=()=>state.items.filter(i=>!i.wish);
+const lastWorn=it=>(it.wears||[]).slice(-1)[0]||'';
+const since=it=>{const l=lastWorn(it);return l?diffDays(l,TK()):diffDays(it.created||TK(),TK())+30};
+
+const idb={p:null,open(){return this.p||(this.p=new Promise((res,rej)=>{const r=indexedDB.open('closet-img',1);r.onupgradeneeded=()=>r.result.createObjectStore('img');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
+  async tx(m,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('img',m);const r=fn(t.objectStore('img'));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})},
+  put(k,v){return this.tx('readwrite',s=>s.put(v,k))},get(k){return this.tx('readonly',s=>s.get(k))},del(k){return this.tx('readwrite',s=>s.delete(k))},keys(){return this.tx('readonly',s=>s.getAllKeys())}};
+const IC={};
+async function img(k){if(!k)return null;if(IC[k])return IC[k];try{const v=await idb.get(k);if(v)IC[k]=v;return v}catch(e){return null}}
+function loadImgs(root){(root||document).querySelectorAll('img[data-img]').forEach(async el=>{const u=await img(el.dataset.img);if(u&&el.isConnected)el.src=u})}
+function loadImage(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src})}
+function scaleTo(im,max,q){const s=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*s);c.height=Math.round(im.naturalHeight*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)}
+async function prepPhoto(file){const u=URL.createObjectURL(file);try{const im=await loadImage(u);return [scaleTo(im,1000,.82),scaleTo(im,360,.75)]}finally{URL.revokeObjectURL(u)}}
+
+/* ============ 옷 그림 ============ */
+function shapeSvg(it){
+  const c=COL[it.color]||COL.gray,f=it.hex||c[1],st=lum(f)>200?'#b9b2a8':shade(f,-45),s=it.sub,cat=it.cat,pat=it.color==='pattern';
+  const fill=pat?'url(#stp)':f;let p='',x='';
+  const L=b=>({crop:58,waist:70,hip:82,long:96}[it.len]||b);
+  if(cat==='top'||cat==='outer'){const B=L(cat==='outer'?84:76);
+    if(s==='민소매')p=`M38 16 L44 14 Q50 22 56 14 L62 16 Q60 28 66 34 L66 ${B} L34 ${B} L34 34 Q40 28 38 16 Z`;
+    else if(s==='반팔 티'||s==='조끼'&&0)p=`M36 18 L44 14 Q50 19 56 14 L64 18 L80 30 L73 40 L66 35 L66 ${B} L34 ${B} L34 35 L27 40 L20 30 Z`;
+    else if(s==='조끼')p=`M37 16 L44 14 L50 30 L56 14 L63 16 Q61 28 66 34 L66 ${B} L34 ${B} L34 34 Q39 28 37 16 Z`;
+    else{const w=it.fit==='over'?4:0;p=`M${35-w} 18 L44 14 Q50 19 56 14 L${65+w} 18 L${77+w} 30 L${85+w} 64 L${76+w} 66 L${68+w} 40 L${67+w} ${B} L${33-w} ${B} L${32-w} 40 L${24-w} 66 L${15-w} 64 L${23-w} 30 Z`}
+    if(s==='후드'||s==='후드집업')x+=`<path d="M41 16 Q50 1 59 16 Q50 22 41 16Z" fill="${fill}" stroke="${st}" stroke-width="1.5"/>`;
+    if(['셔츠','블라우스','트렌치코트','블레이저','자켓','코트'].includes(s))x+=`<path d="M44 14 L50 26 L56 14" fill="none" stroke="${st}" stroke-width="1.5"/>`;
+    if(cat==='outer')x+=`<line x1="50" y1="${s==='후드집업'?18:26}" x2="50" y2="${B}" stroke="${st}" stroke-width="1.5"/>`;
+    if(s==='패딩')for(let y=30;y<B;y+=11)x+=`<line x1="34" y1="${y}" x2="66" y2="${y}" stroke="${st}" stroke-width="1" opacity=".6"/>`;
+    if(s==='가디건'||s==='셔츠')for(let y=32;y<B-4;y+=10)x+=`<circle cx="${s==='셔츠'?50:53}" cy="${y}" r="1.4" fill="${st}"/>`;
+    if(s==='니트')x+=`<line x1="34" y1="${B-5}" x2="66" y2="${B-5}" stroke="${st}" stroke-width="1" opacity=".6"/>`;
+  }else if(cat==='bottom'){
+    if(s==='스커트'||['aline','hline','pleats'].includes(it.bfit)){const b=it.len==='long'?92:it.len==='crop'?58:74;
+      p=it.bfit==='hline'?`M34 16 L66 16 L68 ${b} L32 ${b} Z`:`M36 16 L64 16 L${it.bfit==='pleats'?78:76} ${b} L${it.bfit==='pleats'?22:24} ${b} Z`;
+      if(it.bfit==='pleats')for(let i=1;i<6;i++)x+=`<line x1="${36+i*4.7}" y1="20" x2="${22+i*9.3}" y2="${b}" stroke="${st}" stroke-width="1" opacity=".6"/>`}
+    else{const b=s==='반바지'?50:92,o=it.bfit==='wide'?8:it.bfit==='boot'?5:it.bfit==='skinny'?-4:0,k=it.bfit==='boot'?-2:0;
+      p=`M33 10 L67 10 L${70+(s==='반바지'?4:0)+o} ${b} L${55-(o>0?0:-o/2)} ${b} L${51+k} ${s==='반바지'?30:34} L50 32 L${49-k} ${s==='반바지'?30:34} L${45+(o>0?0:-o/2)} ${b} L${30-(s==='반바지'?4:0)-o} ${b} Z`;
+      x+=`<line x1="33" y1="16" x2="67" y2="16" stroke="${st}" stroke-width="1"/>`}
+  }else if(cat==='one'){p=s==='점프수트'?`M40 8 L60 8 L64 28 L66 50 L70 94 L54 94 L50 56 L46 94 L30 94 L34 50 L36 28 Z`:`M40 8 L60 8 L64 28 L58 36 L78 92 L22 92 L42 36 L36 28 Z`}
+  else if(cat==='shoes'){p=s==='부츠'?`M30 20 L50 20 L52 60 Q70 62 82 68 Q88 72 86 80 L28 80 Z`:s==='샌들·슬리퍼'?`M14 70 Q14 62 24 62 L80 64 Q88 66 86 74 L14 74 Z`:`M14 62 Q16 46 30 46 L46 50 Q60 58 82 60 Q90 62 88 72 L14 72 Z`;
+    x+=s==='샌들·슬리퍼'?`<path d="M34 64 Q44 46 56 64" fill="none" stroke="${st}" stroke-width="3"/>`:`<line x1="14" y1="${s==='부츠'?76:68}" x2="88" y2="${s==='부츠'?76:68}" stroke="${st}" stroke-width="1.5"/>`}
+  else if(cat==='bag'){p=s==='백팩'?`M28 26 Q28 16 50 16 Q72 16 72 26 L74 88 L26 88 Z`:`M26 42 L74 42 L78 86 L22 86 Z`;x+=s==='백팩'?`<rect x="36" y="56" width="28" height="18" rx="3" fill="none" stroke="${st}" stroke-width="1.5"/>`:`<path d="M36 42 Q50 ${s==='크로스백'?6:20} 64 42" fill="none" stroke="${st}" stroke-width="3"/>`}
+  else{p=s==='모자'?`M22 62 Q24 30 50 30 Q76 30 78 62 Z`:s==='목도리'?`M20 30 L80 30 L80 46 L62 46 L66 86 L52 86 L48 46 L20 46 Z`:`M50 20 L80 50 L50 80 L20 50 Z`;if(s==='모자')x+=`<path d="M22 62 L90 64" stroke="${st}" stroke-width="4" stroke-linecap="round"/>`}
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><pattern id="stp" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#f1ece4"/><rect width="8" height="3" fill="#5272a0"/></pattern></defs><path d="${p}" fill="${fill}" stroke="${st}" stroke-width="1.5" stroke-linejoin="round"/>${x}</svg>`;
+}
+const itView=(it,badge)=>`<div class="it">${it.img?`<img data-img="t${it.img}" alt="${esc(it.name)}">`:shapeSvg(it)}${badge?`<span class="badge">${badge}</span>`:''}</div>`;
+const itName=it=>it.name||`${COL[it.color]?COL[it.color][0]:''} ${it.sub}`;
+
+/* ============ 체형 ============ */
+const BQ=[
+  ['skel','몸 전체 느낌은?',[['S','탄탄하고 입체적이에요 (근육·살이 단단한 느낌)'],['W','부드럽고 가녀린 느낌이에요'],['N','뼈대와 관절이 느껴지는 편이에요']]],
+  ['skel','쇄골과 어깨는?',[['S','쇄골이 잘 안 보이고 어깨가 둥글고 두께감 있어요'],['W','쇄골이 가늘게 보이고 어깨가 좁고 얇아요'],['N','쇄골·어깨뼈가 크고 각져 보여요']]],
+  ['skel','살이 먼저 붙는 곳은?',[['S','상체 (배·팔 위쪽)'],['W','하체 (엉덩이·허벅지)'],['N','고르게 붙어서 차이가 별로 없어요']]],
+  ['skel','손은?',[['S','작고 도톰해요'],['W','얇고 부드러워요'],['N','마디가 크고 길쭉해요']]],
+  ['skel','무릎은?',[['S','작고 동그래요'],['W','살짝 둥글게 튀어나와 있어요'],['N','크고 뼈가 도드라져요']]],
+  ['skel','입었을 때 칭찬받는 옷은?',[['S','셔츠·심플한 정핏 옷'],['W','니트·딱 붙는 옷·허리 들어간 옷'],['N','오버핏·루즈한 옷·레이어드']]],
+  ['shoulder','어깨와 골반 중 넓어 보이는 쪽은?',[['wide','어깨가 더 넓어 보여요'],['even','비슷해요'],['hip','골반이 더 넓어 보여요']]],
+  ['upper','상체와 다리 길이는?',[['leg','다리가 긴 편이에요'],['even','보통이에요'],['upper','상체가 긴 편이에요']]],
+  ['neck','목은?',[['long','긴 편이에요'],['even','보통이에요'],['short','짧은 편이에요']]],
+  ['height','키는?',[['small','작은 편이에요'],['mid','보통이에요'],['tall','큰 편이에요']]]];
+function bodyProfile(){const a=state.body.ans,c={S:0,W:0,N:0},P={};BQ.forEach((q,i)=>{const v=a[i];if(v==null)return;const key=q[2][v][0];if(q[0]==='skel')c[key]++;else P[q[0]]=key});
+  const sk=Object.entries(c).sort((x,y)=>y[1]-x[1]);P.skel=sk[0][1]?sk[0][0]:'';P.mix=sk[0][1]&&sk[1][1]===sk[0][1]?sk[1][0]:'';return P}
+const SKEL={S:['스트레이트','몸에 두께감과 입체감이 있어서 단정하고 직선적인 옷이 잘 어울려요.'],W:['웨이브','부드럽고 가벼운 느낌이라 허리선을 살리고 상체를 짧게 보이게 하면 잘 어울려요.'],N:['내추럴','골격이 느껴지는 체형이라 여유 있는 핏과 자연스러운 소재가 잘 어울려요.']};
+function bodyTips(P){const T=[];
+  if(P.skel==='S')T.push(['상의','정핏 셔츠, 브이넥·셔츠 칼라, 적당한 두께의 탄탄한 소재','너무 얇고 하늘거리는 소재, 러플이 많은 옷은 부해 보일 수 있어요'],['하의','스트레이트 데님·슬랙스, H라인 스커트, 무릎 근처 기장','너무 와이드하거나 주름이 많은 하의'],['아우터','허리선이 맞는 자켓, 테일러드·트렌치','부피 큰 오버핏 패딩']);
+  if(P.skel==='W')T.push(['상의','짧은 기장 또는 넣어 입기, 라운드넥·보트넥, 니트·부드러운 소재','길고 루즈한 오버핏 단독 착용 — 입을 거면 앞만 넣어 입기'],['하의','하이웨스트, A라인·플리츠 스커트, 부츠컷','허리선이 낮은 바지'],['아우터','짧은 자켓·크롭 가디건, 허리끈 있는 코트','엉덩이를 덮는 박시한 아우터']);
+  if(P.skel==='N')T.push(['상의','오버핏 셔츠·니트, 레이어드, 린넨·데님 같은 자연스러운 소재','몸에 딱 붙는 얇은 상의'],['하의','와이드·스트레이트 팬츠, 롱스커트','스키니 + 딱 붙는 상의 조합'],['아우터','롱코트, 트렌치, 오버핏 자켓','너무 짧고 딱 맞는 아우터']);
+  if(P.shoulder==='wide')T.push(['어깨가 넓다면','하의에 볼륨(와이드·A라인)을 주고 상의는 브이넥으로','어깨 패드·퍼프 소매']);
+  if(P.shoulder==='hip')T.push(['골반이 넓다면','어깨·목 쪽에 포인트(칼라, 밝은 상의), 하의는 스트레이트·부츠컷·어두운 색','스키니 + 짧은 상의로 골반만 강조']);
+  if(P.upper==='upper')T.push(['상체가 길다면','하이웨스트 하의 + 상의 넣어 입기, 짧은 상의','골반에 걸치는 바지 + 긴 상의']);
+  if(P.neck==='short')T.push(['목이 짧다면','브이넥, 목이 트인 셔츠, 목걸이로 세로선','터틀넥·두꺼운 목도리 단독']);
+  if(P.neck==='long')T.push(['목이 길다면','터틀넥, 하이넥, 머플러가 잘 어울려요','']);
+  if(P.height==='small')T.push(['키가 작다면','위아래 비슷한 색(톤온톤), 크롭 아우터, 발목 살짝 드러내기','발목까지 덮는 롱코트 + 와이드 팬츠 조합']);
+  if(P.height==='tall')T.push(['키가 크다면','롱코트, 와이드 팬츠, 큰 패턴도 잘 소화해요','']);
+  return T}
+
+/* ============ 퍼스널 컬러 ============ */
+const PCQ=[['손목 안쪽 혈관 색은?',[['w','초록빛이 돌아요'],['c','파랗거나 보라빛이에요'],['n','둘 다 섞여 보여요']]],['더 잘 어울리는 액세서리는?',[['w','금색'],['c','은색'],['n','둘 다 비슷해요']]],
+  ['햇빛에 타면?',[['w','금방 갈색으로 타요'],['c','빨갛게 익고 잘 안 타요'],['n','잘 모르겠어요']]],['얼굴이 더 환해 보이는 흰색은?',[['w','아이보리·크림색'],['c','새하얀 흰색'],['n','비슷해요']]],
+  ['피부·머리·눈동자 색 대비는?',[['D','대비가 뚜렷해요 (머리·눈동자가 진하고 선명)'],['L','부드러워요 (전체적으로 연하고 차분)'],['n','중간이에요']]],['얼굴이 사는 색은?',[['D','진하고 선명한 색'],['L','연하고 부드러운 색'],['n','잘 모르겠어요']]]];
+const DRAPES=[[['코랄','#ef8a76','w'],['푸시아 핑크','#d6409a','c']],[['골드 베이지','#d8b46a','w'],['실버 그레이','#b8bec7','c']],[['아이보리','#f1e9d6','w'],['퓨어 화이트','#ffffff','c']],
+  [['카멜','#b5864f','w'],['차콜 그레이','#55595f','c']],[['올리브','#77743a','w'],['네이비','#22375b','c']],[['피치','#f6c1a1','w'],['라벤더','#c2b5e2','c']],
+  [['파스텔 핑크','#f7cfd8','L'],['버건디','#6c2433','D']],[['하늘색','#bcd8f0','L'],['로열 블루','#2a4ea0','D']]];
+const SEAS={spring:['봄 웜','밝고 따뜻한 색이 얼굴을 화사하게 해요.',['#f6c1a1','#ef8a76','#f1d25e','#a6dac5','#f8e3b5','#e8823a','#d8c29e','#8fc1e3'],['ivory','beige','camel','coral','yellow','orange','mint','sky'],['차콜·블랙 같은 무겁고 차가운 색은 얼굴에서 멀리']],
+  autumn:['가을 웜','깊고 차분한 따뜻한 색이 고급스러워 보여요.',['#b5864f','#6a4a33','#77743a','#c69e2a','#a9472c','#d8c29e','#4d5b3a','#8b3a2b'],['beige','camel','brown','khaki','mustard','burgundy','ivory','orange'],['형광·파스텔처럼 너무 밝고 차가운 색']],
+  summer:['여름 쿨','부드럽고 시원한 파스텔 계열이 맑아 보여요.',['#c2b5e2','#f3b5c7','#a9c8e8','#a6dac5','#9a9ea4','#f8f8f6','#6f87b8','#c9a7c7'],['white','gray','sky','pink','lavender','mint','navy','denim'],['머스타드·오렌지처럼 노란기 많은 색']],
+  winter:['겨울 쿨','선명하고 대비가 강한 색이 또렷해 보여요.',['#1f1f1f','#f8f8f6','#22375b','#c8323a','#694c92','#2f5fb3','#d6409a','#6c2433'],['black','white','navy','red','burgundy','blue','purple','charcoal'],['베이지·카멜처럼 흐릿하고 따뜻한 색은 얼굴에서 멀리']]};
+function pcResult(){const a=state.pc.ans,d=state.pc.drape;let w=0,c=0,L=0,D=0;
+  PCQ.forEach((q,i)=>{const v=a[i];if(v==null)return;const k=q[1][v][0];if(k==='w')w++;if(k==='c')c++;if(k==='L')L++;if(k==='D')D++});
+  DRAPES.forEach((p,i)=>{const v=d[i];if(v==null||v===2)return;const k=p[v][2];if(k==='w')w+=1.2;if(k==='c')c+=1.2;if(k==='L')L+=1.2;if(k==='D')D+=1.2});
+  const temp=w>=c?'w':'c',deep=D>L;return {temp,season:temp==='w'?(deep?'autumn':'spring'):(deep?'winter':'summer'),w,c,L,D,sure:Math.abs(w-c)>=2}}
+
+/* ============ 코디 검사 ============ */
+function checkOutfit(items){
+  const out=[],add=(lv,t)=>out.push({lv,t}),cs=items.map(i=>COL[i.color]||COL.gray);
+  const pats=items.filter(i=>i.color==='pattern').length,acc=[...new Set(items.filter(i=>{const c=COL[i.color];return c&&!c[3]&&i.color!=='pattern'}).map(i=>COL[i.color][4]))];
+  const groups=[...new Set(cs.map(c=>c[4]))];
+  if(pats>=2)add('w','패턴 옷이 2개 이상이에요. 하나만 패턴, 나머지는 무지가 깔끔해요.');
+  if(!acc.length&&!pats){if(groups.length===1&&groups[0]==='earth')add('g','베이지·브라운 톤온톤이라 차분하고 세련돼 보여요.');else add('g','베이직 컬러 조합이라 실패 없이 깔끔해요.')}
+  else if(acc.length===1)add('g',`베이직 + 포인트 한 색(${COL[items.find(i=>COL[i.color][4]===acc[0]&&!COL[i.color][3]).color][0]})이라 가장 쉬운 조합이에요.`);
+  else if(acc.length===2){if((NEAR[acc[0]]||[]).includes(acc[1]))add('t','비슷한 계열 색 두 개라 자연스럽게 어울려요. 한쪽을 작은 소품으로 두면 더 정돈돼요.');else add('t','포인트 색이 두 개예요. 하나는 가방·신발 같은 작은 아이템으로 줄이면 더 깔끔해요.')}
+  else if(acc.length>=3)add('w',`포인트 색이 ${acc.length}개라 복잡해 보일 수 있어요. 베이직 컬러로 하나둘 바꿔 보세요.`);
+  const top=items.find(i=>i.cat==='top'),bot=items.find(i=>i.cat==='bottom'),outer=items.find(i=>i.cat==='outer'),one=items.find(i=>i.cat==='one');
+  if(top&&bot&&top.color===bot.color&&COL[top.color][3]&&!['black','white','denim'].includes(top.color))add('g','위아래 같은 색이라 길고 깔끔해 보여요.');
+  if(top&&bot&&COL[top.color]&&COL[bot.color]&&Math.abs(lum(COL[top.color][1])-lum(COL[bot.color][1]))<25&&top.color!==bot.color&&!acc.length)add('t','상의와 하의 밝기가 비슷해요. 한쪽을 더 밝거나 어둡게 하면 경계가 살아나요.');
+  // 퍼스널 컬러
+  if(state.pc.done){const R=pcResult(),face=[top,outer,one].filter(Boolean);
+    const off=face.filter(i=>{const c=COL[i.color];return c&&!c[3]&&c[2]!=='n'&&c[2]!==R.temp});const on=face.filter(i=>SEAS[R.season][3].includes(i.color));
+    if(off.length)add('t',`얼굴 가까이 있는 ${CATS[off[0].cat]}(${COL[off[0].color][0]})는 ${SEAS[R.season][0]}와 반대 톤이에요. 상의 대신 하의·소품으로 쓰면 좋아요.`);
+    else if(on.length)add('g',`얼굴 가까이에 ${SEAS[R.season][0]} 컬러(${COL[on[0].color][0]})가 있어서 얼굴이 환해 보여요.`)}
+  // 체형 핏
+  const P=bodyProfile(),vol=b=>b&&['wide','aline','pleats','boot'].includes(b.bfit),slimB=b=>b&&['skinny','hline'].includes(b.bfit);
+  if(top&&bot){
+    if(top.fit==='over'&&vol(bot)&&top.len!=='crop'){if(P.skel==='N')add('g','내추럴 골격은 위아래 넉넉한 조합도 잘 어울려요.');else add('t','위아래 다 넉넉해요. 상의 앞만 살짝 넣어 입거나 짧은 상의로 바꾸면 비율이 좋아져요.')}
+    if(P.skel==='W'&&top.fit==='over'&&top.len!=='crop')add('t','웨이브 골격은 허리선이 보일 때 예뻐요. 상의를 넣어 입어 보세요.');
+    if(P.skel==='W'&&(top.len==='crop'||top.len==='waist')&&(vol(bot)||bot.bfit==='straight'))add('g','짧은 상의 + 하이웨스트 느낌이라 웨이브 골격에 잘 맞아요.');
+    if(P.skel==='N'&&top.fit==='slim'&&slimB(bot))add('t','내추럴 골격은 위아래 다 붙는 옷보다 한쪽에 여유가 있는 게 잘 어울려요.');
+    if(P.skel==='N'&&(top.fit==='over'||vol(bot))&&!(top.fit==='slim'&&slimB(bot)))add('g','여유 있는 핏이라 내추럴 골격에 잘 맞아요.');
+    if(P.skel==='S'&&top.fit==='reg'&&['straight','hline'].includes(bot.bfit))add('g','정핏 상의 + 직선 하의라 스트레이트 골격에 딱 맞아요.');
+    if(P.skel==='S'&&top.fit==='over'&&vol(bot))add('t','스트레이트 골격은 위아래 다 넉넉하면 부해 보일 수 있어요. 한쪽은 정핏으로.');
+    if(P.upper==='upper'&&top.len==='hip')add('t','상체가 긴 편이라 엉덩이 덮는 상의는 넣어 입으면 다리가 길어 보여요.');
+    if(P.shoulder==='wide'&&slimB(bot))add('t','어깨가 넓은 편이라 하의에 볼륨이 있으면 균형이 맞아요.');
+    if(P.shoulder==='hip'&&bot.bfit==='skinny'&&(top.len==='crop'||top.len==='waist'))add('t','골반이 넓은 편이라 스키니 + 짧은 상의보다 스트레이트·부츠컷이 균형 있어 보여요.');
+  }
+  if(P.height==='small'&&outer&&outer.len==='long'&&bot&&vol(bot))add('t','키가 작은 편이면 롱 아우터 + 와이드 하의는 몸이 묻혀 보일 수 있어요. 둘 중 하나를 짧게.');
+  if(P.height==='small'&&top&&bot&&COL[top.color][4]===COL[bot.color][4])add('g','위아래 비슷한 톤이라 키가 커 보이는 효과가 있어요.');
+  return out;
+}
+const scoreOf=r=>r.reduce((s,x)=>s+(x.lv==='g'?2:x.lv==='t'?-.6:-3),0);
+const resHtml=r=>r.map(x=>`<div class="res ${x.lv}"><i>${x.lv==='g'?'✓':x.lv==='t'?'i':'!'}</i><span>${esc(x.t)}</span></div>`).join('');
+
+/* ============ 날씨·추천 ============ */
+function suit(it,t,tmin){const w=it.warm||WARM0[it.sub]||2,s=it.sub;
+  if(it.cat==='top'||it.cat==='one'){if(['반팔 티','민소매'].includes(s))return t>=21;if(w===1)return t>=15&&t<=27;if(w===2)return t>=-15&&t<=21;return t<=13}
+  if(it.cat==='bottom'){if(s==='반바지')return t>=22;if(it.len==='crop'&&['aline','hline','pleats'].includes(it.bfit))return t>=14;if(w===1)return t>=13;if(w===2)return t<=26;return t<=10}
+  if(it.cat==='outer'){if(w===1)return t>=10&&t<=22;if(w===2)return t>=4&&t<=17;return t<=8}
+  if(it.cat==='shoes'){if(s==='샌들·슬리퍼')return t>=22;if(s==='부츠')return t<=12;return true}
+  return true}
+const needOuter=(t,tmin)=>t<24&&(t<=19||tmin<=12);
+function recommend(t,tmin,seed){
+  const C=closet(),ok=c=>C.filter(i=>i.cat===c&&suit(i,t,tmin));
+  const tops=ok('top'),bots=ok('bottom'),ones=ok('one'),outs=needOuter(t,tmin)?ok('outer'):[],shoes=ok('shoes');
+  let base=[];tops.forEach(a=>bots.forEach(b=>base.push([a,b])));ones.forEach(o=>base.push([o]));
+  if(base.length>500)base=base.sort((a,b)=>hash(seed+a.map(i=>i.id).join())-hash(seed+b.map(i=>i.id).join())).slice(0,500);
+  const fresh=its=>mean(its.map(i=>Math.min(since(i),14)/7));
+  const scored=base.map(b=>{let items=b.slice();
+    const best=(list)=>{let bi=null,bs=-1e9;list.forEach(o=>{const s=scoreOf(checkOutfit(items.concat(o)))+Math.min(since(o),14)/14;if(s>bs){bs=s;bi=o}});return bi};
+    if(outs.length){const o=best(outs);if(o)items.push(o)}if(shoes.length){const s=best(shoes);if(s)items.push(s)}
+    const r=checkOutfit(items);return {items,r,s:scoreOf(r)+fresh(items)*1.2+hash(seed+items.map(i=>i.id).join())*1.6}}).sort((a,b)=>b.s-a.s);
+  const pick=[],used=new Set();for(const x of scored){if(used.has(x.items[0].id))continue;pick.push(x);used.add(x.items[0].id);if(pick.length===3)break}
+  return {pick,missing:[!tops.length&&!ones.length?'이 날씨에 맞는 상의':'',!bots.length&&!ones.length?'하의':'',needOuter(t,tmin)&&!outs.length?'아우터':''].filter(Boolean)};
+}
+async function fetchWx(){const c=state.loc;if(!c)return null;const k=TK()+c.lat+c.lng;if(state.wx&&state.wx.k===k&&Date.now()-state.wx.at<3*36e5)return state.wx;
+  const u=`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lng}&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,weather_code&timezone=Asia%2FSeoul&forecast_days=2`;
+  const r=await fetch(u);if(!r.ok)throw new Error(r.status);const j=await r.json(),d=j.daily;
+  state.wx={k,at:Date.now(),days:[0,1].map(i=>({date:d.time[i],max:d.temperature_2m_max[i],min:d.temperature_2m_min[i],fmax:d.apparent_temperature_max[i],fmin:d.apparent_temperature_min[i],rain:d.precipitation_probability_max[i],code:d.weather_code[i]}))};save();return state.wx}
+const wxIcon=c=>c==null?'🌡️':c===0?'☀️':c<=2?'🌤️':c===3?'☁️':c<=48?'🌫️':c<=67?'🌧️':c<=77?'❄️':c<=82?'🌦️':c<=86?'🌨️':'⛈️';
+
+/* ============ 화면 ============ */
+const main=document.getElementById('main');
+let R={v:'today'};
+function go(v,o){R=Object.assign({v},o||{});render();window.scrollTo(0,0)}
+function render(){const nav={today:'today',closet:'closet',item:'closet',iform:'closet',coord:'coord',build:'coord',me:'me',bodytest:'me',pctest:'me',set:'set'}[R.v];
+  document.querySelectorAll('.nav [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===nav));
+  ({today:vToday,closet:vCloset,item:vItem,iform:vIForm,coord:vCoord,build:vBuild,me:vMe,bodytest:vBodyTest,pctest:vPcTest,set:vSet})[R.v]();loadImgs(main)}
+const outfitHtml=(items,cls)=>`<div class="fit ${items.length<=2?'n2':items.length===3?'n3':''} ${cls||''}">${items.map(i=>`<button class="cell" data-item="${i.id}">${itView(i)}<small>${esc(itName(i))}</small></button>`).join('')}</div>`;
+
+/* ----- 오늘 ----- */
+function vToday(){
+  R.day=R.day||0;R.seed=R.seed||0;const C=closet(),T=TK();
+  const wx=state.wx&&state.wx.days&&state.wx.k&&state.wx.k.startsWith(T)?state.wx.days[R.day]:null;
+  const man=R.manual!=null?R.manual:null;
+  const t=man!=null?man:wx?Math.round((wx.fmax+wx.fmin)/2):null,tmin=man!=null?man-4:wx?Math.round(wx.fmin):null;
+  const worn=state.worn[keyOf(addDays(today(),R.day))];
+  const unworn=C.filter(i=>since(i)>=30).length;
+  let h=`<h2>${R.day?'내일':'오늘'} 뭐 입지?</h2>
+  <div class="subtabs"><button class="${!R.day?'on':''}" data-day="0">오늘 ${md(T)}</button><button class="${R.day?'on':''}" data-day="1">내일 ${md(keyOf(addDays(today(),1)))}</button></div>
+  <section class="card">${state.loc?(wx?`<div class="wx"><span style="font-size:40px">${wxIcon(wx.code)}</span><div><div class="t">${Math.round(wx.min)}° / ${Math.round(wx.max)}°</div><small>${esc(state.loc.name)} · 체감 ${Math.round(wx.fmin)}~${Math.round(wx.fmax)}° · 비 올 확률 ${wx.rain??'–'}%</small></div></div>`
+      :`<p class="hint" id="wxmsg">날씨 불러오는 중…</p>`):`<p class="hint" style="margin:0">날씨에 맞춰 추천하려면 지역을 골라 주세요.</p><button class="btn full" data-go="set">지역 고르기</button>`}
+    ${t!=null?`<div class="guide">🌡️ ${t}° 정도: <b>${GUIDE.find(g=>t>=g[0])[1]}</b>${wx&&wx.max-wx.min>=10?'<br>☝️ 일교차가 커요. 아침저녁엔 걸칠 겉옷을 챙기세요.':''}${wx&&wx.rain>=60?'<br>☔ 비 소식이 있어요. 우산, 젖어도 되는 신발.':''}</div>`:''}
+    <div class="row" style="margin-top:10px"><input class="in" id="manT" type="number" inputmode="numeric" placeholder="기온 직접 입력 (°C)" value="${man??''}"><button class="btn sm" data-act="setManual">적용</button>${man!=null?'<button class="lnk" data-act="clearManual">날씨로</button>':''}</div></section>`;
+  if(worn&&worn.length){const its=worn.map(itById).filter(Boolean);h+=`<section class="card"><h3>✅ ${R.day?'내일':'오늘'} 입기로 한 옷</h3>${outfitHtml(its)}<button class="lnk" data-act="unwear">취소</button></section>`}
+  if(!C.length)h+=`<div class="banner">옷장이 비어 있어요. 옷을 등록하거나, 설정에서 샘플 옷장을 넣어 둘러보세요.<div class="row" style="margin-top:8px"><button class="btn sm" data-go="iform">옷 등록</button><button class="btn sm" data-go="set">샘플 넣기</button></div></div>`;
+  else if(t!=null){const rec=recommend(t,tmin,T+R.day+'-'+R.seed);
+    if(rec.missing.length)h+=`<div class="banner w">옷장에 ${rec.missing.join(', ')}이(가) 부족해서 추천이 적을 수 있어요.</div>`;
+    h+=rec.pick.map((x,i)=>`<div class="oc"><div class="hd"><b>추천 ${i+1}</b><button class="btn sm" data-wear="${x.items.map(i=>i.id).join(',')}">이걸로 입을래요</button></div>${outfitHtml(x.items)}${resHtml(x.r.slice(0,3))}</div>`).join('')||'<p class="hint">이 기온에 맞는 조합을 못 찾았어요.</p>';
+    if(rec.pick.length)h+=`<button class="btn ghost full" data-act="reroll">🔀 다른 추천 보기</button>`}
+  if(unworn)h+=`<div class="banner w" style="margin-top:14px">👀 한 달 넘게 안 입은 옷이 ${unworn}벌 있어요. <button class="lnk" data-go="closet" data-sub="unworn">보기</button></div>`;
+  main.innerHTML=h;
+  if(state.loc&&!wx&&man==null)fetchWx().then(w=>{if(w&&R.v==='today')render()}).catch(()=>{const m=document.getElementById('wxmsg');if(m)m.textContent='날씨를 불러오지 못했어요. 인터넷을 확인하거나 아래에 기온을 직접 넣어 주세요.'});
+}
+
+/* ----- 옷장 ----- */
+function vCloset(){
+  R.sub=R.sub||'all';R.cat=R.cat||'all';const C=closet(),W=state.items.filter(i=>i.wish);
+  let list=R.sub==='wish'?W:R.sub==='unworn'?C.filter(i=>since(i)>=30).sort((a,b)=>since(b)-since(a)):C;
+  if(R.sub==='all'&&R.cat!=='all')list=list.filter(i=>i.cat===R.cat);
+  if(R.sub==='all')list=list.slice().sort((a,b)=>Object.keys(CATS).indexOf(a.cat)-Object.keys(CATS).indexOf(b.cat));
+  const top=C.slice().sort((a,b)=>(b.wears||[]).length-(a.wears||[]).length).filter(i=>(i.wears||[]).length).slice(0,3);
+  main.innerHTML=`<h2>옷장</h2><div class="subtabs">${[['all',`전체 ${C.length}`],['unworn','안 입는 옷'],['wish',`위시리스트 ${W.length}`]].map(([k,l])=>`<button class="${R.sub===k?'on':''}" data-sub="${k}">${l}</button>`).join('')}</div>
+  ${R.sub==='all'?`<div class="hs" style="margin-top:6px"><button class="chip ${R.cat==='all'?'on':''}" data-cat="all">전체</button>${Object.entries(CATS).map(([k,l])=>`<button class="chip ${R.cat===k?'on':''}" data-cat="${k}">${l} ${C.filter(i=>i.cat===k).length}</button>`).join('')}</div>`:''}
+  <button class="btn pri full" data-act="newItem" style="margin-top:8px">+ ${R.sub==='wish'?'사고 싶은 옷 추가':'옷 등록'}</button>
+  ${R.sub==='unworn'?'<p class="hint" style="margin-top:10px">30일 넘게 안 입은 옷이에요. 이번 주에 한 번 입어 보거나, 계속 손이 안 가면 정리를 고민해 보세요.</p>':''}
+  ${R.sub==='wish'?'<p class="hint" style="margin-top:10px">사기 전에 옷장과 비교해 봐요. 눌러서 비슷한 옷, 만들 수 있는 코디 수를 확인하세요.</p>':''}
+  ${list.length?`<div class="grid" style="margin-top:12px">${list.map(i=>`<button class="cell" data-item="${i.id}">${itView(i,R.sub==='unworn'?(lastWorn(i)?since(i)+'일 전':'안 입음'):'')}<small>${esc(itName(i))}</small></button>`).join('')}</div>`:'<p class="hint" style="text-align:center;margin-top:20px">없어요.</p>'}
+  ${R.sub==='all'&&top.length?`<section class="card"><h3>가장 많이 입은 옷</h3>${top.map(i=>`<div class="row sb small"><span>${esc(itName(i))}</span><span class="muted">${i.wears.length}번</span></div>`).join('')}</section>`:''}`;
+}
+function vItem(){
+  const it=itById(R.id);if(!it)return go('closet');const C=closet();
+  let extra='';
+  if(it.wish){const sim=C.filter(i=>i.cat===it.cat&&(i.sub===it.sub||COL[i.color][4]===COL[it.color][4]&&i.cat===it.cat)&&(i.sub===it.sub||i.color===it.color));
+    const pair={top:['bottom'],bottom:['top'],outer:['top','bottom'],one:['outer','shoes'],shoes:['top','bottom','one'],bag:['top','one'],acc:['top','one']}[it.cat]||[];
+    let combos=0,ex=null;if(it.cat==='top'||it.cat==='bottom'){const other=C.filter(i=>i.cat===(it.cat==='top'?'bottom':'top'));other.forEach(o=>{const r=checkOutfit([it,o]);if(scoreOf(r)>=0){combos++;if(!ex)ex=o}})}
+    else{const other=C.filter(i=>pair.includes(i.cat));other.forEach(o=>{if(scoreOf(checkOutfit([it,o]))>=0){combos++;if(!ex)ex=o}})}
+    const pc=state.pc.done?pcResult():null,pcOk=pc&&SEAS[pc.season][3].includes(it.color);
+    extra=`<section class="card"><h3>사기 전 체크</h3>
+    <div class="res ${sim.length?'w':'g'}"><i>${sim.length?'!':'✓'}</i><span>${sim.length?`비슷한 옷이 이미 ${sim.length}벌 있어요: ${sim.slice(0,3).map(i=>esc(itName(i))).join(', ')}`:'옷장에 비슷한 옷이 없어요.'}</span></div>
+    <div class="res ${combos>=3?'g':combos?'t':'w'}"><i>${combos>=3?'✓':combos?'i':'!'}</i><span>지금 옷장과 어울리는 조합 ${combos}가지${combos<3?' — 3가지 이상이면 자주 입게 될 확률이 높아요':''}</span></div>
+    ${pc?`<div class="res ${pcOk?'g':'t'}"><i>${pcOk?'✓':'i'}</i><span>${pcOk?`${SEAS[pc.season][0]}에 잘 맞는 색이에요`:`${SEAS[pc.season][0]} 추천 색은 아니에요${['top','outer','one'].includes(it.cat)?' (얼굴 가까이 입는 옷이라 고려해 보세요)':''}`}</span></div>`:''}
+    ${it.price?`<div class="res t"><i>₩</i><span>${(+it.price).toLocaleString()}원 · 30번 입으면 한 번에 ${Math.round(it.price/30).toLocaleString()}원</span></div>`:''}
+    ${ex?`<h4>이런 조합이 가능해요</h4>${outfitHtml([it,ex])}`:''}
+    <button class="btn pri full" data-act="bought">샀어요 → 옷장으로 옮기기</button></section>`}
+  else{const n=(it.wears||[]).length;extra=`<section class="card"><div class="row sb"><span>입은 횟수 <b>${n}번</b>${lastWorn(it)?` · 마지막 ${md(lastWorn(it))}`:''}</span><button class="btn sm" data-act="wornToday">오늘 입었어요</button></div>
+    ${it.price&&n?`<p class="hint" style="margin:6px 0 0">한 번 입을 때마다 약 ${Math.round(it.price/n).toLocaleString()}원</p>`:''}</section>
+    <button class="btn full" data-act="buildWith">🧩 이 옷으로 코디 만들기</button>`}
+  main.innerHTML=`<div><button class="lnk" data-go="closet">‹ 옷장</button></div>
+  <div style="max-width:280px;margin:8px auto">${itView(it)}</div><h2 style="text-align:center">${esc(itName(it))}</h2>
+  <section class="card"><div class="chips"><span class="chip">${CATS[it.cat]} · ${esc(it.sub)}</span><span class="chip"><span class="sw" style="background:${it.hex||COL[it.color][1]}"></span> ${COL[it.color][0]}</span>
+  ${it.fit?`<span class="chip">${FIT[it.fit]}</span>`:''}${it.len?`<span class="chip">${LEN[it.len]}</span>`:''}${it.bfit?`<span class="chip">${BFIT[it.bfit]}</span>`:''}<span class="chip">${['','얇음','보통','두꺼움'][it.warm||2]}</span>${(it.seasons||[]).map(s=>`<span class="chip">${s}</span>`).join('')}</div>
+  ${it.wash?`<p style="margin:10px 0 0;font-size:14px">🧺 ${WASH[it.wash]}${it.wash==='dry'?' · 집에서 빨면 줄어들거나 변형될 수 있어요':it.wash==='hand'?' · 미지근한 물, 비비지 말고 눌러 빨기':' · 뒤집어서 세탁망에 넣으면 오래 입어요'}</p>`:''}
+  ${it.memo?`<p style="margin:6px 0 0;font-size:14px">📝 ${esc(it.memo)}</p>`:''}</section>
+  ${extra}<div class="row" style="margin-top:8px"><button class="btn" data-act="editItem">고치기</button><button class="btn danger" data-act="delItem">삭제</button></div>`;
+}
+function vIForm(){
+  const it=R.d,subs=SUBS[it.cat];
+  main.innerHTML=`<div><button class="lnk" data-act="iformBack">‹ 돌아가기</button></div><h2>${it.wish?'사고 싶은 옷':itById(it.id)?'옷 고치기':'옷 등록'}</h2>
+  <section class="card"><label style="margin-top:0">사진 <small>(없어도 돼요 — 색에 맞춰 그림으로 보여줘요)</small></label>
+  ${it.imgData||it.img?`<canvas id="pv"></canvas><p class="hint" style="margin-top:6px">👆 사진에서 옷 부분을 누르면 색을 찍어 와요.${it.hex?` 찍은 색: <span class="sw" style="background:${it.hex}"></span> → ${COL[it.color][0]}`:''}</p><button class="lnk" data-act="noPhoto">사진 빼기</button>`:''}
+  <input type="file" accept="image/*" id="photoIn" class="in" style="margin-top:6px">
+  <label>종류</label><div class="chips">${Object.entries(CATS).map(([k,l])=>`<button class="chip ${it.cat===k?'on':''}" data-fcat="${k}">${l}</button>`).join('')}</div>
+  <div class="chips" style="margin-top:6px">${subs.map(s=>`<button class="chip ${it.sub===s?'on':''}" data-fsub="${s}">${s}</button>`).join('')}</div>
+  <label>색</label><div class="cols colwrap">${Object.entries(COL).map(([k,c])=>`<button class="${it.color===k?'on':''}" data-fcol="${k}" style="background:${k==='pattern'?'repeating-linear-gradient(0deg,#5272a0 0 4px,#f1ece4 4px 9px)':c[1]}" aria-label="${c[0]}"><span>${c[0]}</span></button>`).join('')}</div>
+  ${['top','outer','one'].includes(it.cat)?`<label>핏</label><div class="chips">${Object.entries(FIT).map(([k,l])=>`<button class="chip ${it.fit===k?'on':''}" data-ff="fit" data-v="${k}">${l}</button>`).join('')}</div>`:''}
+  ${['top','outer'].includes(it.cat)||it.cat==='bottom'&&it.sub==='스커트'?`<label>기장</label><div class="chips">${Object.entries(LEN).filter(([k])=>it.cat==='outer'||it.cat==='bottom'||k!=='long').map(([k,l])=>`<button class="chip ${it.len===k?'on':''}" data-ff="len" data-v="${k}">${it.cat==='bottom'?{crop:'미니',waist:'무릎',hip:'미디',long:'롱'}[k]:l}</button>`).join('')}</div>`:''}
+  ${it.cat==='bottom'&&!['반바지','레깅스'].includes(it.sub)?`<label>하의 핏</label><div class="chips">${Object.entries(BFIT).filter(([k])=>it.sub==='스커트'?['aline','hline','pleats'].includes(k):!['aline','hline','pleats'].includes(k)).map(([k,l])=>`<button class="chip ${it.bfit===k?'on':''}" data-ff="bfit" data-v="${k}">${l}</button>`).join('')}</div>`:''}
+  ${['top','bottom','outer','one'].includes(it.cat)?`<label>두께</label><div class="chips">${[[1,'얇음'],[2,'보통'],[3,'두꺼움·기모']].map(([v,l])=>`<button class="chip ${(it.warm||WARM0[it.sub]||2)===v?'on':''}" data-ff="warm" data-v="${v}">${l}</button>`).join('')}</div>`:''}
+  <label>계절</label><div class="chips">${SEASON.map(s=>`<button class="chip ${(it.seasons||[]).includes(s)?'on':''}" data-fsea="${s}">${s}</button>`).join('')}</div>
+  <label>세탁</label><div class="chips">${Object.entries(WASH).map(([k,l])=>`<button class="chip ${it.wash===k?'on':''}" data-ff="wash" data-v="${k}">${l}</button>`).join('')}</div>
+  <label>이름 <small>(비워 두면 색+종류로)</small></label><input class="in" data-fi="name" value="${esc(it.name)}" placeholder="예: 줄무늬 셔츠">
+  ${it.wish?`<label>가격</label><input class="in" data-fi="price" inputmode="numeric" value="${it.price||''}" placeholder="원">`:`<label>산 가격 <small>(선택)</small></label><input class="in" data-fi="price" inputmode="numeric" value="${it.price||''}" placeholder="원">`}
+  <label>메모</label><input class="in" data-fi="memo" value="${esc(it.memo)}" placeholder="예: 보풀 잘 생김"></section>
+  <button class="btn pri full" data-act="saveItem">저장</button>`;
+  if(it.imgData||it.img)drawPv(it);
+}
+async function drawPv(it){const cv=document.getElementById('pv');if(!cv)return;const src=it.imgData||await img('f'+it.img);if(!src)return;const im=await loadImage(src);
+  const W=Math.min(im.naturalWidth,900),H=Math.round(im.naturalHeight*W/im.naturalWidth);cv.width=W;cv.height=H;const c=cv.getContext('2d');c.drawImage(im,0,0,W,H);
+  cv.onclick=e=>{const r=cv.getBoundingClientRect(),x=Math.round((e.clientX-r.left)*W/r.width),y=Math.round((e.clientY-r.top)*H/r.height),d=c.getImageData(Math.max(0,x-3),Math.max(0,y-3),7,7).data;
+    let s=[0,0,0],n=0;for(let i=0;i<d.length;i+=4){s[0]+=d[i];s[1]+=d[i+1];s[2]+=d[i+2];n++}const hx=rgb2hex(s[0]/n,s[1]/n,s[2]/n),rgb=hex2rgb(hx);
+    let best='gray',bd=1e9;Object.entries(COL).forEach(([k,v])=>{if(k==='pattern')return;const q=hex2rgb(v[1]),dd=(q[0]-rgb[0])**2*.3+(q[1]-rgb[1])**2*.59+(q[2]-rgb[2])**2*.11;if(dd<bd){bd=dd;best=k}});
+    R.d.hex=hx;R.d.color=best;keepForm();render();toast(`찍은 색 → ${COL[best][0]}`)}}
+
+/* ----- 코디 ----- */
+function vCoord(){
+  const O=state.outfits.slice().reverse();
+  main.innerHTML=`<h2>코디</h2><button class="btn pri full" data-act="newBuild">+ 코디 만들기</button>
+  <p class="hint" style="margin-top:10px">옷을 골라 조합하면 색과 핏을 검사해요. 마음에 드는 코디는 룩북에 저장돼요.</p>
+  ${O.length?O.map(o=>{const its=o.items.map(itById).filter(Boolean);return `<div class="oc"><div class="hd"><b>${esc(o.name||'코디')}</b><span class="small muted">${md(o.created)}</span></div>${outfitHtml(its)}
+    <div class="row" style="margin-top:6px"><button class="btn sm" data-wear="${its.map(i=>i.id).join(',')}">오늘 입기</button><button class="btn sm" data-card="${o.id}">카드 저장</button><button class="btn sm" data-editfit="${o.id}">고치기</button></div></div>`}).join(''):'<p class="hint" style="text-align:center;margin-top:20px">아직 저장한 코디가 없어요.</p>'}<div id="cardOut"></div>`;
+}
+function vBuild(){
+  const B=R.b,its=Object.values(B.slots).flat().map(itById).filter(Boolean),C=closet();
+  const SL=[['top','상의'],['bottom','하의'],['one','원피스'],['outer','아우터'],['shoes','신발'],['bag','가방'],['acc','소품']];
+  main.innerHTML=`<div><button class="lnk" data-go="coord">‹ 코디</button></div><h2>코디 만들기</h2>
+  <section class="card">${SL.map(([k,l])=>{const id=B.slots[k];const it=id&&itById(id);return `<div class="slot">${it?`<button class="cell" data-slot="${k}">${itView(it)}</button>`:`<button class="pick" data-slot="${k}">+</button>`}<div><b>${l}</b><small class="muted" style="display:block">${it?esc(itName(it)):'눌러서 고르기'}</small>${it?`<button class="lnk" data-clr="${k}">빼기</button>`:''}</div></div>`}).join('')}</section>
+  ${R.pick?`<section class="card"><div class="row sb"><h3 style="margin:0">${CATS[R.pick]} 고르기</h3><button class="lnk" data-act="closePick">닫기</button></div><div class="grid" style="margin-top:8px">${C.filter(i=>i.cat===R.pick).map(i=>`<button class="cell${B.slots[R.pick]===i.id?' sel':''}" data-pickit="${i.id}">${itView(i)}<small>${esc(itName(i))}</small></button>`).join('')||'<p class="hint">이 종류 옷이 없어요.</p>'}</div></section>`:''}
+  ${its.length>=2?`<section class="card"><h3>검사</h3>${resHtml(checkOutfit(its))||'<p class="hint">특별히 걸리는 점이 없어요.</p>'}</section>`:'<p class="hint">옷을 두 개 이상 고르면 색과 핏을 검사해요.</p>'}
+  <section class="card"><label style="margin-top:0">코디 이름</label><input class="in" id="bName" value="${esc(B.name||'')}" placeholder="예: 월요일 무난룩"><button class="btn pri full" data-act="saveBuild">룩북에 저장</button>${B.id?'<button class="btn danger full" data-act="delBuild">이 코디 삭제</button>':''}</section>`;
+}
+async function makeCard(o){
+  const out=document.getElementById('cardOut');const its=o.items.map(itById).filter(Boolean);
+  const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
+  try{await Promise.race([document.fonts.load('60px "Black Han Sans"'),new Promise(r=>setTimeout(r,2000))])}catch(e){}
+  c.fillStyle='#f6f3ef';c.fillRect(0,0,W,H);c.fillStyle='#22201d';c.font='84px "Black Han Sans", sans-serif';c.textAlign='center';c.fillText(o.name||'오늘의 코디',W/2,150);
+  const n=its.length,cols=n<=2?2:n<=4?2:3,rows=Math.ceil(n/cols),cw=cols===2?420:300,gap=(W-cols*cw)/(cols+1),top=230;
+  for(let i=0;i<n;i++){const it=its[i],r=Math.floor(i/cols),cl=i%cols,x=gap+cl*(cw+gap),y=top+r*(cw+90);
+    c.fillStyle='#fff';c.beginPath();c.roundRect?c.roundRect(x,y,cw,cw,30):c.rect(x,y,cw,cw);c.fill();
+    let src=it.img?await img('f'+it.img):null;if(!src){const svg=shapeSvg(it).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" ');src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
+    try{const im=await loadImage(src);const s=it.img?Math.max(cw/im.naturalWidth,cw/im.naturalHeight):cw*.84/400,dw=im.naturalWidth*s,dh=im.naturalHeight*s;c.save();c.beginPath();c.roundRect?c.roundRect(x,y,cw,cw,30):c.rect(x,y,cw,cw);c.clip();c.drawImage(im,x+(cw-dw)/2,y+(cw-dh)/2,dw,dh);c.restore()}catch(e){}
+    c.fillStyle='#7b746c';c.font='34px "Gowun Dodum", sans-serif';c.fillText(itName(it).slice(0,14),x+cw/2,y+cw+52)}
+  c.fillStyle='#3b4a8c';c.font='36px "Black Han Sans", sans-serif';c.textAlign='right';c.fillText('옷장 노트',W-60,H-50);
+  const url=cv.toDataURL('image/jpeg',.9);if(out)out.innerHTML=`<img src="${url}" style="width:100%;border-radius:14px;margin-top:10px" alt="코디 카드"><p class="hint" style="text-align:center">저장이 안 되면 이미지를 길게 눌러 저장하세요.</p>`;
+  cv.toBlob(b=>b&&download(b,`${(o.name||'코디').replace(/[\\/:*?"<>|]/g,'')}.jpg`),'image/jpeg',.9);
+}
+
+/* ----- 나 ----- */
+function vMe(){
+  R.sub=R.sub||'body';const P=bodyProfile();
+  let h=`<h2>나</h2><div class="subtabs">${[['body','체형'],['pc','퍼스널 컬러'],['size','사이즈'],['style','스타일']].map(([k,l])=>`<button class="${R.sub===k?'on':''}" data-sub="${k}">${l}</button>`).join('')}</div>`;
+  if(R.sub==='body'){h+=state.body.done&&P.skel?`<section class="card"><div class="small muted" style="text-align:center">골격 유형</div><div class="big">${SKEL[P.skel][0]}${P.mix?` <small style="font-size:18px">(${SKEL[P.mix][0]} 섞임)</small>`:''}</div><p class="hint" style="text-align:center;margin-top:6px">${SKEL[P.skel][1]}</p></section>
+    <section class="card"><h3>나에게 잘 어울리는 핏</h3>${bodyTips(P).map(([a,b,c])=>`<div class="tip"><b>${a}</b><small>👍 ${b}${c?`<br>🤔 ${c}`:''}</small></div>`).join('')}</section>
+    <p class="hint">일반적인 원칙이에요. 좋아하는 옷이 제일 잘 어울리는 옷이에요. 코디 검사에도 이 결과가 쓰여요.</p><button class="btn full" data-go="bodytest">다시 테스트</button>`
+    :`<section class="card"><h3>체형 테스트</h3><p class="hint">치수 없이 10개 질문으로 골격 유형과 비율을 알아보고, 잘 어울리는 핏을 알려 드려요.</p><button class="btn pri full" data-go="bodytest">시작하기</button></section>`}
+  if(R.sub==='pc'){if(state.pc.done){const r=pcResult(),S=SEAS[r.season];
+    h+=`<section class="card"><div class="small muted" style="text-align:center">퍼스널 컬러 (간이 진단)</div><div class="big">${S[0]}</div><p class="hint" style="text-align:center;margin-top:6px">${S[1]}${r.sure?'':'<br>웜·쿨 차이가 크지 않아서 뉴트럴에 가까워요. 양쪽 다 무난하게 소화해요.'}</p>
+    <h4>잘 어울리는 색</h4><div class="pal">${S[2].map(c=>`<span style="background:${c}"></span>`).join('')}</div>
+    <h4>옷장 색 중에서</h4><div class="chips">${S[3].map(k=>`<span class="chip"><span class="sw" style="background:${COL[k][1]}"></span> ${COL[k][0]}</span>`).join('')}</div>
+    <h4>조심할 색</h4><p style="margin:0;font-size:14px">${S[4][0]}</p></section>
+    <p class="hint">조명과 화면에 따라 달라지는 간이 진단이에요. 정확히 알고 싶으면 자연광에서 다시 해 보세요.</p><button class="btn full" data-go="pctest">다시 진단</button>`}
+    else h+=`<section class="card"><h3>퍼스널 컬러 자가진단</h3><p class="hint">질문 6개 + 내 얼굴 사진에 색을 대 보는 비교 8번이에요. 사진은 이 폰 밖으로 나가지 않아요. 사진 없이도 할 수 있어요.</p><button class="btn pri full" data-go="pctest">시작하기</button></section>`}
+  if(R.sub==='size'){const S=state.sizes;R.ref=R.ref||(S.refs[0]&&S.refs[0].id);const ref=S.refs.find(r=>r.id===R.ref);
+    const M={top:[['sh','어깨'],['ch','가슴 단면'],['len','총장'],['sl','소매']],bottom:[['wa','허리 단면'],['hip','엉덩이 단면'],['th','허벅지 단면'],['rise','밑위'],['len','총장']]};
+    h+=`<section class="card"><h3>내 사이즈</h3><label style="margin-top:0">보통 입는 사이즈</label><input class="in" id="usual" value="${esc(S.usual)}">
+    <p class="hint" style="margin-top:8px">가장 작은 사이즈도 클 때가 많다면, 잘 맞는 옷의 <b>실측</b>을 저장해 두고 사고 싶은 옷 실측표와 비교하는 게 가장 정확해요.</p></section>
+    <section class="card"><h3>잘 맞는 옷 실측</h3>${S.refs.length?`<div class="hs">${S.refs.map(r=>`<button class="chip ${R.ref===r.id?'on':''}" data-ref="${r.id}">${esc(r.name)}</button>`).join('')}</div>`:''}
+    ${ref?`<p class="hint">줄자로 옷을 바닥에 펴고 잰 값(cm)이에요. '단면'은 한쪽 끝에서 끝까지.</p><table class="mt"><tr><th>부위</th><th>내 옷</th><th>살 옷</th><th>차이</th></tr>
+      ${M[ref.cat].map(([k,l])=>{const a=+ref.m[k],b=+(R.cmp&&R.cmp[k]),d=a&&b?b-a:null;return `<tr><td>${l}</td><td><input type="number" inputmode="decimal" data-rm="${k}" value="${ref.m[k]||''}"></td><td><input type="number" inputmode="decimal" data-cm="${k}" value="${R.cmp&&R.cmp[k]||''}"></td><td class="${d==null?'':Math.abs(d)<=1.5?'ok':'ng'}">${d==null?'':Math.abs(d)<=1.5?'딱 맞음':(d>0?'+':'')+d.toFixed(1)+'cm'}</td></tr>`}).join('')}</table>
+      <div id="sizeAdv">${sizeAdvice(ref)}</div><button class="lnk" data-act="delRef">이 실측 삭제</button>`:'<p class="hint">아직 없어요.</p>'}
+    <div class="row" style="margin-top:10px"><input class="in" id="refName" placeholder="예: 제일 잘 맞는 청바지"><select class="in" id="refCat" style="width:96px;flex:none"><option value="top">상의</option><option value="bottom">하의</option></select><button class="btn sm" data-act="addRef">추가</button></div></section>
+    <section class="card"><h3>브랜드별 메모</h3>${S.brands.map((b,i)=>`<div class="row sb small" style="padding:4px 0"><span><b>${esc(b.brand)}</b> ${esc(b.size)} · ${esc(b.memo)}</span><button class="lnk" data-delbrand="${i}">삭제</button></div>`).join('')||'<p class="hint">예: OO브랜드 XS — 총장 길어서 수선함</p>'}
+    <div class="row" style="margin-top:8px"><input class="in" id="bB" placeholder="브랜드"><input class="in" id="bS" placeholder="사이즈" style="width:90px;flex:none"></div><div class="row" style="margin-top:6px"><input class="in" id="bM" placeholder="메모 (핏, 수선 여부)"><button class="btn sm" data-act="addBrand">추가</button></div></section>`}
+  if(R.sub==='style'){const ST=['캐주얼','미니멀','스트릿','러블리','아메카지','클래식','스포티','빈티지'];
+    h+=`<section class="card"><h3>좋아하는 스타일</h3><p class="hint">여러 개 골라도 돼요.</p><div class="chips">${ST.map(s=>`<button class="chip ${state.style.includes(s)?'on':''}" data-style="${s}">${s}</button>`).join('')}</div></section>
+    ${state.style.length?`<section class="card"><h3>내 스타일의 기본템</h3>${state.style.map(s=>`<div class="tip"><b>${s}</b><small>${{캐주얼:'맨투맨, 청바지, 운동화, 후드집업',미니멀:'무지 셔츠, 슬랙스, 블레이저, 로퍼 — 무채색 위주',스트릿:'오버핏 후드, 와이드 카고, 볼캡, 하이탑 운동화',러블리:'블라우스, 플리츠 스커트, 가디건, 파스텔 컬러',아메카지:'옥스퍼드 셔츠, 치노, 데님 자켓, 워크 부츠 — 카키·브라운',클래식:'트렌치코트, 니트, 슬랙스, 로퍼',스포티:'트랙 자켓, 조거 팬츠, 운동화, 바람막이',빈티지:'체크 셔츠, 코듀로이, 니트 조끼, 브라운 톤'}[s]}</small></div>`).join('')}</section>`:''}`}
+  main.innerHTML=h;
+}
+function sizeAdvice(ref){const c=R.cmp||{},m=ref.m,d=k=>c[k]&&m[k]?(+c[k])-(+m[k]):null,out=[];
+  if(ref.cat==='top'){if(d('sh')!=null&&d('sh')>3)out.push('어깨가 3cm 넘게 커요. 어깨는 수선이 어려워서 오버핏 의도가 아니면 피하는 게 좋아요.');if(d('len')!=null&&d('len')>3)out.push('총장이 길어요. 넣어 입거나 수선(쉬운 편)으로 줄일 수 있어요.');if(d('sl')!=null&&d('sl')>3)out.push('소매가 길어요. 소매는 수선이 쉬운 편이에요.')}
+  else{if(d('wa')!=null&&d('wa')>2)out.push('허리가 커요. 벨트로 조이거나 허리 수선이 가능한지 확인하세요.');if(d('wa')!=null&&d('wa')<-1)out.push('허리가 작아요. 신축성이 없으면 안 잠길 수 있어요.');if(d('len')!=null&&d('len')>3)out.push('기장이 길어요. 기장 수선은 쉽고 싸요.');if(d('rise')!=null&&Math.abs(d('rise'))>2)out.push(d('rise')>0?'밑위가 길어서 허리가 더 위로 올라와요.':'밑위가 짧아서 골반에 걸쳐 입게 돼요.')}
+  return out.length?`<div class="banner w">${out.join('<br>')}</div>`:''}
+function vBodyTest(){const a=state.body.ans;
+  main.innerHTML=`<div><button class="lnk" data-go="me">‹ 나</button></div><h2>체형 테스트</h2><p class="hint">거울 앞에서, 평소 느낌대로 골라 주세요.</p>
+  ${BQ.map(([,q,opts],i)=>`<div class="card q"><b>${i+1}. ${q}</b><div class="opts">${opts.map(([,t],j)=>`<button class="${a[i]===j?'on':''}" data-bq="${i}" data-j="${j}">${t}</button>`).join('')}</div></div>`).join('')}
+  <button class="btn pri full" data-act="bodySave">결과 보기</button>`}
+async function vPcTest(){const a=state.pc.ans,d=state.pc.drape;R.di=R.di||0;const pair=DRAPES[R.di],sel=R.side||0;const face=await img('pcface');
+  main.innerHTML=`<div><button class="lnk" data-go="me" data-sub="pc">‹ 나</button></div><h2>퍼스널 컬러 자가진단</h2>
+  <h3 style="margin-top:12px">1. 질문</h3>${PCQ.map(([q,opts],i)=>`<div class="card q"><b>${q}</b><div class="opts">${opts.map(([,t],j)=>`<button class="${a[i]===j?'on':''}" data-pq="${i}" data-j="${j}">${t}</button>`).join('')}</div></div>`).join('')}
+  <h3 style="margin-top:18px">2. 색 대 보기 (${R.di+1} / ${DRAPES.length})</h3><p class="hint">자연광에서 맨얼굴 정면 사진이 가장 좋아요. 두 색을 번갈아 보며 얼굴이 더 환하고 매끈해 보이는 쪽을 고르세요.</p>
+  <label style="margin-top:0">얼굴 사진 ${face?'바꾸기':'올리기'} <small>(선택 · 이 폰에만 저장)</small></label><input type="file" accept="image/*" id="faceIn" class="in">
+  <div class="drape" style="background:${pair[sel][1]}">${face?`<img class="face" src="${face}" alt="내 얼굴">`:'<div class="face">🙂</div>'}</div>
+  <div class="row" style="margin-top:8px"><button class="btn ${sel===0?'pri':''}" data-side="0">${pair[0][0]}</button><button class="btn ${sel===1?'pri':''}" data-side="1">${pair[1][0]}</button></div>
+  <p class="hint" style="margin-top:10px;text-align:center">어느 쪽이 더 나아요?</p>
+  <div class="row"><button class="btn sm ${d[R.di]===0?'pri':''}" data-dv="0">${pair[0][0]}</button><button class="btn sm ${d[R.di]===2?'pri':''}" data-dv="2">비슷해요</button><button class="btn sm ${d[R.di]===1?'pri':''}" data-dv="1">${pair[1][0]}</button></div>
+  <button class="btn pri full" data-act="pcSave">결과 보기</button>`}
+
+/* ----- 설정 ----- */
+function vSet(){
+  main.innerHTML=`<h2>설정</h2>
+  <section class="card"><h3>날씨 지역</h3><p class="hint">지금: ${state.loc?esc(state.loc.name):'없음'}</p><div class="chips">${Object.keys(CITY).map(c=>`<button class="chip ${state.loc&&state.loc.name===c?'on':''}" data-city="${c}">${c}</button>`).join('')}</div>
+  <button class="btn full" data-act="geo">📍 현재 위치 쓰기</button><p class="hint" style="margin-top:6px">날씨는 Open-Meteo 무료 날씨 서비스에서 가져와요.</p></section>
+  <section class="card"><h3>백업</h3><p class="hint">옷 사진까지 파일 하나로 내보내요.</p><div class="row"><button class="btn" data-act="export">내보내기</button><button class="btn" data-act="import">불러오기</button></div><input type="file" id="impF" accept=".json,application/json" hidden></section>
+  <section class="card"><h3>둘러보기</h3><p class="hint">옷 22벌짜리 샘플 옷장을 넣어요. 지금 옷장은 지워져요.</p><button class="btn full" data-act="sample">샘플 옷장 넣기</button></section>
+  <section class="card"><h3>초기화</h3><button class="btn danger full" data-act="wipe">모두 지우기</button></section>`;
+}
+
+/* ============ 샘플 ============ */
+function makeSample(){const T=today(),I=(cat,sub,color,o)=>Object.assign({id:uid(),cat,sub,color,name:'',fit:'reg',len:'',bfit:'',warm:WARM0[sub]||2,seasons:[],wash:'machine',memo:'',img:'',wish:false,created:keyOf(addDays(T,-90)),wears:[]},o||{});
+  const items=[I('top','긴팔 티','white',{len:'hip'}),I('top','셔츠','sky',{len:'hip'}),I('top','셔츠','pattern',{name:'줄무늬 셔츠',len:'hip',fit:'over'}),I('top','맨투맨','gray',{fit:'over',len:'hip'}),I('top','니트','ivory',{len:'waist'}),I('top','니트','navy',{len:'waist',warm:3}),
+    I('top','후드','charcoal',{fit:'over',len:'hip'}),I('top','반팔 티','black',{len:'hip'}),I('top','블라우스','pink',{len:'waist'}),I('bottom','청바지','denim',{bfit:'straight'}),I('bottom','슬랙스','beige',{bfit:'wide'}),I('bottom','슬랙스','black',{bfit:'straight'}),
+    I('bottom','스커트','charcoal',{bfit:'pleats',len:'waist'}),I('bottom','면바지','khaki',{bfit:'wide'}),I('bottom','반바지','denim',{}),I('outer','가디건','beige',{len:'waist'}),I('outer','자켓','navy',{len:'hip',name:'네이비 블레이저'}),
+    I('outer','트렌치코트','camel',{len:'long'}),I('outer','패딩','black',{len:'hip'}),I('shoes','운동화','white',{}),I('shoes','로퍼','brown',{}),I('bag','백팩','black',{}),
+    I('top','니트','coral',{wish:true,price:39000,len:'waist',name:'코랄 니트'})];
+  items.forEach((it,i)=>{if(it.wish)return;const n=[0,3,9,1,0,6,2,0,1,5,3,2,1,0,0,4,2,1,0,8,2,6][i]||0;for(let k=0;k<n;k++)it.wears.push(keyOf(addDays(T,-(k*6+(i%5)+1))));it.wears.sort()});
+  state=Object.assign(fresh(),{items,body:{ans:{0:1,1:1,2:1,3:0,4:1,5:1,6:1,7:2,8:1,9:0},done:true},pc:{ans:{0:1,1:1,2:1,3:1,4:1,5:1},drape:{0:1,1:1,2:1,3:1,4:1,5:1,6:0,7:0},done:true},style:['캐주얼','미니멀'],loc:state.loc,wx:state.wx});
+  state.outfits.push({id:uid(),name:'무난한 등교룩',items:[items[0].id,items[9].id,items[15].id,items[19].id],created:keyOf(addDays(T,-3))});save()}
+
+/* ============ 이벤트 ============ */
+document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.nav)));
+function keepForm(){main.querySelectorAll('[data-fi]').forEach(el=>R.d[el.dataset.fi]=el.value)}
+const newItem=wish=>({id:uid(),cat:'top',sub:'긴팔 티',color:'white',hex:'',name:'',fit:'reg',len:'hip',bfit:'',warm:0,seasons:[],wash:'machine',memo:'',img:'',imgData:null,wish:!!wish,price:'',created:TK(),wears:[]});
+main.addEventListener('click',async e=>{
+  const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.go){return go(d.go,d.sub?{sub:d.sub}:{})}
+  if(d.sub){R.sub=d.sub;return render()}
+  if(d.day!==undefined){R.day=+d.day;R.seed=0;return render()}
+  if(d.cat){R.cat=d.cat;return render()}
+  if(d.item&&R.v!=='build'){return go('item',{id:d.item})}
+  if(d.wear){const k=keyOf(addDays(today(),R.day||0));const ids=d.wear.split(',');(state.worn[k]||[]).forEach(id=>{const it=itById(id);if(it)it.wears=(it.wears||[]).filter(x=>x!==k)});
+    state.worn[k]=ids;ids.forEach(id=>{const it=itById(id);if(it){it.wears=(it.wears||[]).filter(x=>x!==k).concat(k).sort()}});save();toast(`${R.day?'내일':'오늘'} 입을 옷으로 기록했어요`);if(R.v==='coord')return go('today');return render()}
+  if(d.fcat){keepForm();R.d.cat=d.fcat;R.d.sub=SUBS[d.fcat][0];R.d.fit='reg';R.d.len=d.fcat==='top'?'hip':d.fcat==='outer'?'hip':'';R.d.bfit=d.fcat==='bottom'?'straight':'';R.d.warm=0;return render()}
+  if(d.fsub){keepForm();R.d.sub=d.fsub;R.d.warm=0;if(d.fsub==='스커트'){R.d.bfit='aline';R.d.len='waist'}else if(R.d.cat==='bottom'){R.d.len='';if(['aline','hline','pleats'].includes(R.d.bfit))R.d.bfit='straight'}return render()}
+  if(d.fcol){keepForm();R.d.color=d.fcol;R.d.hex='';return render()}
+  if(d.ff){keepForm();R.d[d.ff]=d.ff==='warm'?+d.v:d.v;return render()}
+  if(d.fsea){keepForm();const a=R.d.seasons,i=a.indexOf(d.fsea);i>=0?a.splice(i,1):a.push(d.fsea);return render()}
+  if(d.slot){R.pick=d.slot;render();setTimeout(()=>{const g=main.querySelectorAll('.card')[1];g&&g.scrollIntoView({behavior:'smooth'})},30);return}
+  if(d.pickit){R.b.name=(document.getElementById('bName')||{}).value||R.b.name;const s=R.pick;R.b.slots[s]=d.pickit;if(s==='one'){delete R.b.slots.top;delete R.b.slots.bottom}if(s==='top'||s==='bottom')delete R.b.slots.one;R.pick=null;return render()}
+  if(d.clr){R.b.name=(document.getElementById('bName')||{}).value||R.b.name;delete R.b.slots[d.clr];return render()}
+  if(d.card){const o=state.outfits.find(x=>x.id===d.card);if(o)makeCard(o);return}
+  if(d.editfit){const o=state.outfits.find(x=>x.id===d.editfit);const slots={};o.items.forEach(id=>{const it=itById(id);if(it)slots[it.cat]=id});return go('build',{b:{id:o.id,name:o.name,slots}})}
+  if(d.bq!==undefined){state.body.ans[d.bq]=+d.j;save();t.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t));return}
+  if(d.pq!==undefined){state.pc.ans[d.pq]=+d.j;save();t.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t));return}
+  if(d.side!==undefined){R.side=+d.side;const y=scrollY;await render();scrollTo(0,y);return}
+  if(d.dv!==undefined){state.pc.drape[R.di]=+d.dv;save();if(R.di<DRAPES.length-1){R.di++;R.side=0}const y=scrollY;await render();scrollTo(0,y);return}
+  if(d.ref){R.ref=d.ref;R.cmp={};return render()}
+  if(d.delbrand!==undefined){state.sizes.brands.splice(+d.delbrand,1);save();return render()}
+  if(d.style){const a=state.style,i=a.indexOf(d.style);i>=0?a.splice(i,1):a.push(d.style);save();return render()}
+  if(d.city){state.loc={name:d.city,lat:CITY[d.city][0],lng:CITY[d.city][1]};state.wx=null;save();toast(`${d.city} 날씨로 추천할게요`);return go('today')}
+  const A=ACT[d.act];if(A)A(t);
+});
+const ACT={
+  setManual(){const v=parseFloat(document.getElementById('manT').value);if(isNaN(v)){toast('숫자를 넣어 주세요');return}R.manual=v;R.seed=0;render()},
+  clearManual(){R.manual=null;render()},reroll(){R.seed=(R.seed||0)+1;render()},
+  unwear(){const k=keyOf(addDays(today(),R.day||0));(state.worn[k]||[]).forEach(id=>{const it=itById(id);if(it)it.wears=(it.wears||[]).filter(x=>x!==k)});delete state.worn[k];save();render()},
+  newItem(){go('iform',{d:newItem(R.sub==='wish'),back:'closet',sub0:R.sub})},
+  iformBack(){const id=R.d.id;itById(id)?go('item',{id}):go('closet',{sub:R.sub0})},
+  noPhoto(){keepForm();R.d.imgData=null;R.d.dropImg=true;R.d.img='';R.d.hex='';render()},
+  async saveItem(){keepForm();const it=R.d;const isNew=!itById(it.id);if(!it.warm)it.warm=WARM0[it.sub]||2;
+    if(it.imgData){const id=it.img||uid();const [full,th]=it._pair||[it.imgData,it.imgData];await idb.put('f'+id,full);await idb.put('t'+id,th);IC['f'+id]=full;IC['t'+id]=th;it.img=id}
+    const rec=Object.assign({},it);delete rec.imgData;delete rec._pair;delete rec.dropImg;rec.price=rec.price?+String(rec.price).replace(/[^\d]/g,''):'';
+    if(isNew)state.items.push(rec);else Object.assign(itById(it.id),rec);save();toast('저장했어요');go('item',{id:it.id})},
+  editItem(){const it=JSON.parse(JSON.stringify(itById(R.id)));go('iform',{d:it})},
+  async delItem(){if(!confirm('이 옷을 삭제할까요?'))return;const it=itById(R.id);if(it.img){try{await idb.del('f'+it.img);await idb.del('t'+it.img)}catch(e){}}
+    state.items=state.items.filter(i=>i.id!==R.id);state.outfits.forEach(o=>o.items=o.items.filter(x=>x!==R.id));save();go('closet')},
+  wornToday(){const it=itById(R.id),k=TK();if(!(it.wears||[]).includes(k)){it.wears=(it.wears||[]).concat(k).sort();save();toast('기록했어요')}render()},
+  bought(){const it=itById(R.id);it.wish=false;it.created=TK();save();toast('옷장으로 옮겼어요');render()},
+  buildWith(){const it=itById(R.id);go('build',{b:{slots:{[it.cat]:it.id},name:''}})},
+  newBuild(){go('build',{b:{slots:{},name:''}})},
+  closePick(){R.pick=null;render()},
+  saveBuild(){const ids=Object.values(R.b.slots);if(ids.length<2){toast('옷을 두 개 이상 골라 주세요');return}const name=document.getElementById('bName').value.trim();
+    if(R.b.id){Object.assign(state.outfits.find(o=>o.id===R.b.id),{name,items:ids})}else state.outfits.push({id:uid(),name,items:ids,created:TK()});save();toast('룩북에 저장했어요');go('coord')},
+  delBuild(){if(!confirm('이 코디를 삭제할까요?'))return;state.outfits=state.outfits.filter(o=>o.id!==R.b.id);save();go('coord')},
+  bodySave(){if(Object.keys(state.body.ans).length<BQ.length){toast(`${BQ.length-Object.keys(state.body.ans).length}개 질문이 남았어요`);return}state.body.done=true;save();go('me',{sub:'body'})},
+  pcSave(){if(Object.keys(state.pc.ans).length<4&&Object.keys(state.pc.drape).length<4){toast('질문이나 색 비교를 조금 더 해 주세요');return}state.pc.done=true;save();go('me',{sub:'pc'})},
+  addRef(){const n=document.getElementById('refName').value.trim();if(!n){toast('이름을 넣어 주세요');return}const r={id:uid(),name:n,cat:document.getElementById('refCat').value,m:{}};state.sizes.refs.push(r);save();R.ref=r.id;R.cmp={};render()},
+  delRef(){state.sizes.refs=state.sizes.refs.filter(r=>r.id!==R.ref);R.ref=null;save();render()},
+  addBrand(){const b=document.getElementById('bB').value.trim();if(!b)return;state.sizes.brands.push({brand:b,size:document.getElementById('bS').value.trim(),memo:document.getElementById('bM').value.trim()});save();render()},
+  geo(){if(!navigator.geolocation){toast('이 브라우저는 위치를 못 써요');return}navigator.geolocation.getCurrentPosition(p=>{state.loc={name:'현재 위치',lat:+p.coords.latitude.toFixed(3),lng:+p.coords.longitude.toFixed(3)};state.wx=null;save();toast('현재 위치 날씨로 추천할게요');go('today')},()=>toast('위치를 가져오지 못했어요. 지역을 골라 주세요'))},
+  async export(){const imgs={};try{for(const k of await idb.keys())imgs[k]=await idb.get(k)}catch(e){}download(new Blob([JSON.stringify({app:'closet',state,imgs})],{type:'application/json'}),`closet-backup-${TK()}.json`);toast('백업 파일을 내보냈어요')},
+  import(){document.getElementById('impF').click()},
+  sample(){if(!confirm('지금 옷장을 지우고 샘플 옷장으로 바꿀까요?'))return;makeSample();toast('샘플 옷장을 넣었어요');go('today')},
+  async wipe(){if(!confirm('모든 옷과 기록을 지울까요?'))return;try{for(const k of await idb.keys())await idb.del(k)}catch(e){}for(const k in IC)delete IC[k];state=fresh();save();go('today')}
+};
+main.addEventListener('change',async e=>{const t=e.target,d=t.dataset;
+  if(t.id==='photoIn'&&t.files[0]){keepForm();try{const pair=await prepPhoto(t.files[0]);R.d.imgData=pair[0];R.d._pair=pair;R.d.hex='';render()}catch(err){toast('사진을 읽지 못했어요')}return}
+  if(t.id==='faceIn'&&t.files[0]){try{const [f]=await prepPhoto(t.files[0]);await idb.put('pcface',f);IC.pcface=f;render()}catch(err){toast('사진을 읽지 못했어요')}return}
+  if(t.id==='usual'){state.sizes.usual=t.value;save();return}
+  if(d.rm){const r=state.sizes.refs.find(x=>x.id===R.ref);r.m[d.rm]=t.value;save();const y=scrollY;render();scrollTo(0,y);return}
+  if(d.cm){R.cmp=R.cmp||{};R.cmp[d.cm]=t.value;const y=scrollY;render();scrollTo(0,y);return}
+  if(t.id==='impF'&&t.files[0]){try{const j=JSON.parse(await t.files[0].text());if(j.app!=='closet')throw 0;if(!confirm('지금 기록을 백업 내용으로 바꿀까요?'))return;
+    try{for(const k of await idb.keys())await idb.del(k)}catch(_){}for(const [k,v] of Object.entries(j.imgs||{}))await idb.put(k,v);for(const k in IC)delete IC[k];state=Object.assign(fresh(),j.state);save();toast('불러왔어요');go('today')}catch(err){toast('올바른 백업 파일이 아니에요')}t.value=''}
+});
+render();
+</script>
+</body>
+</html>
