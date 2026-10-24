@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="별잠">
+<title>별잠</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0f24;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.11);--ink:#e8ebff;--ink2:#97a0c6;--moon:#ffd98a;--accent:#8fb4ff;--good:#7fe0b0;--warn:#ffbd85;--bad:#ff8f8f;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{background:#0a0f24}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,#060a1c 0%,#0f1636 60%,#1b1f4a 100%)}
+body{background:transparent;color:var(--ink);font-family:'Gowun Dodum',system-ui,sans-serif;font-size:15px;line-height:1.55;min-height:100vh;-webkit-tap-highlight-color:transparent}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+#stars i{position:absolute;border-radius:50%;background:#fff;animation:tw 4s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){#stars i{animation:none}}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:10px;padding:6px 0}
+.moon{width:30px;height:30px;border-radius:50%;box-shadow:inset -9px -3px 0 0 var(--moon);transform:rotate(-20deg)}
+.logo{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+h2{font-size:26px;margin:8px 0 2px;font-weight:700}
+h3{font-size:17px;margin:0 0 10px}
+.muted{color:var(--ink2)} .small{font-size:13px} .hint{font-size:13px;color:var(--ink2);margin:0 0 8px}
+.seg{display:flex;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin-top:6px}
+.seg button{flex:1;border:0;background:none;border-radius:10px;padding:9px 4px;color:var(--ink2);font-size:14px}
+.seg button.on{background:var(--accent);color:#0a0f24;font-weight:700}
+.row{display:flex;gap:8px;align-items:center}
+.sb{justify-content:space-between}
+.icon{border:0;background:none;width:40px;height:40px;border-radius:50%;font-size:22px;color:var(--ink2)}
+.in{font:inherit;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0;width:100%}
+.in[type=time],.in[type=date]{color-scheme:dark}
+.big{font-size:44px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.bigin{font:inherit;font-size:44px;font-weight:700;background:none;border:0;border-bottom:2px dashed var(--line);color:var(--ink);width:auto;padding:0;color-scheme:dark;letter-spacing:-1px}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.opt .t{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.opt small{display:block;color:var(--ink2);font-size:12px}
+.opt.sel{border-color:var(--accent);background:rgba(143,180,255,.12)}
+.opt.no{opacity:.45}
+.opt.rec{border-color:var(--moon)}
+.tag{font-size:11px;border-radius:999px;padding:2px 8px;white-space:nowrap;border:1px solid currentColor}
+.tag.rec{color:var(--moon)} .tag.ok{color:var(--good)} .tag.short{color:var(--warn)} .tag.no{color:var(--bad)} .tag.long{color:var(--accent)}
+.wave{width:100%;height:auto;display:block;margin-top:6px}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:12px;padding:11px 16px;font-size:15px}
+.btn.pri{background:var(--moon);color:#1a1530;border-color:var(--moon);font-weight:700}
+.btn.full{width:100%;margin-top:10px}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn.danger{color:var(--bad);border-color:rgba(255,143,143,.4)}
+.lnk{border:0;background:none;color:var(--accent);font-size:13px;text-decoration:underline;padding:2px 4px}
+.note{font-size:13px;color:var(--ink2);border-left:3px solid var(--accent);padding:4px 0 4px 10px;margin:10px 0 0}
+.warnbox{background:rgba(255,189,133,.1);border:1px solid rgba(255,189,133,.35);border-radius:12px;padding:10px 12px;font-size:14px;margin-top:10px}
+.feel{display:flex;gap:8px}
+.feel button{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:14px;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;color:var(--ink2)}
+.feel button b{font-size:26px;font-weight:400}
+.feel button.on{border-color:var(--moon);background:rgba(255,217,138,.12);color:var(--ink)}
+label{display:block;font-size:13px;color:var(--ink2);margin:10px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stats div{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:10px}
+.stats b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.stats small{font-size:12px;color:var(--ink2)}
+.chart{width:100%;height:auto;display:block}
+.log{display:grid;grid-template-columns:62px 1fr auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.log:last-child{border:0}
+.log .d{color:var(--ink2);font-size:13px}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.wk div{text-align:center}
+.wk span{display:block;font-size:12px;color:var(--ink2);margin-bottom:3px}
+.wk input{font:inherit;font-size:12px;width:100%;padding:6px 0;text-align:center;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;color:var(--ink);color-scheme:dark}
+.sp{display:grid;grid-template-columns:1fr 92px auto;gap:6px;align-items:center;margin-bottom:6px}
+.sp .lab{font-size:14px}
+.sp .lab small{display:block;color:var(--ink2);font-size:12px}
+.rng{width:100%;accent-color:var(--moon)}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(8,12,30,.92);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.nav .in2{max-width:520px;margin:0 auto;display:flex}
+.nav button{flex:1;border:0;background:none;padding:12px 0 14px;color:var(--ink2);font-size:15px}
+.nav button.on{color:var(--moon);font-weight:700}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#0a0f24;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="app">
+  <header><div class="moon"></div><div class="logo">별잠</div></header>
+  <main id="main"></main>
+</div>
+<nav class="nav"><div class="in2"><button data-v="calc">계산</button><button data-v="log">기록</button><button data-v="set">설정</button></div></nav>
+<div id="toast"></div>
+<script>
+/* ---------- 별 ---------- */
+(()=>{const s=document.getElementById('stars');let h='';for(let i=0;i<70;i++){const z=Math.random()<.15?2:1;h+=`<i style="left:${Math.random()*100}%;top:${Math.random()*70}%;width:${z}px;height:${z}px;opacity:${.3+Math.random()*.6};animation-delay:${Math.random()*4}s"></i>`}s.innerHTML=h})();
+
+/* ---------- 유틸 ---------- */
+const pad=n=>String(n).padStart(2,'0');
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dateOf=k=>{const[a,b,c]=k.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
+const DOW=['일','월','화','수','목','금','토'];
+const md=k=>{const d=dateOf(k);return `${d.getMonth()+1}월 ${d.getDate()}일 (${DOW[d.getDay()]})`};
+const toMin=s=>{if(!s)return null;const[h,m]=s.split(':').map(Number);return h*60+m};
+const norm=m=>((Math.round(m)%1440)+1440)%1440;
+const hm=m=>{m=norm(m);return pad(Math.floor(m/60))+':'+pad(m%60)};
+const dur=m=>{m=Math.round(m);const h=Math.floor(m/60),r=m%60;return h?(r?`${h}시간 ${r}분`:`${h}시간`):`${r}분`};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+const sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))};
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+
+/* ---------- 저장 ---------- */
+const KEY='byeoljam-v1';
+function fresh(){return {v:1,cycle:90,auto:true,latency:15,goal:480,wake:{0:'09:00',1:'06:30',2:'06:30',3:'06:30',4:'06:30',5:'06:30',6:'09:00'},special:[],earliest:'',latest:'',logs:[],plan:null}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.wake)return Object.assign(fresh(),s)}catch(e){}return fresh()}
+let state=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('이 브라우저에서는 저장이 안 돼요')}}
+
+/* ---------- 계산 ---------- */
+const targetKey=()=>keyOf(new Date().getHours()<5?today():addDays(today(),1));
+function wakeFor(k){const s=state.special.find(x=>x.date===k);return s?{t:s.wake,label:s.label||'특별한 날'}:{t:state.wake[dateOf(k).getDay()],label:''}}
+const inBed=l=>norm(toMin(l.wake)-toMin(l.bed));
+const sleepMin=l=>Math.max(0,inBed(l)-state.latency);
+function estimate(){
+  const L=state.logs.slice(-40).filter(l=>l.feel).map(l=>({S:sleepMin(l),f:l.feel}));
+  const g=L.filter(x=>x.f===3),b=L.filter(x=>x.f===1);
+  if(L.length<6||g.length<2||b.length<1)return {ok:false,n:L.length,g:g.length,b:b.length};
+  const d=(S,c)=>{const r=S%c;return Math.min(r,c-r)};
+  let best=null,base=null;
+  for(let c=75;c<=115;c+=5){const o=mean(g.map(x=>d(x.S,c)))-mean(b.map(x=>d(x.S,c)))+.15*Math.abs(c-90);if(c===90)base=o;if(!best||o<best.o)best={c,o}}
+  if(base-best.o<4)best.c=90;
+  return {ok:true,c:best.c,n:L.length};
+}
+const cycleNow=()=>{const e=estimate();return state.auto&&e.ok?e.c:state.cycle};
+function bedOpts(wakeM){
+  const c=cycleNow(),lat=state.latency,E=toMin(state.earliest),Lt=toMin(state.latest),rel=t=>norm(wakeM-t);
+  const ops=[7,6,5,4].map(n=>{const sl=n*c,before=lat+sl,o={n,sl,lie:norm(wakeM-before),before,why:''};
+    if(E!==null&&before>rel(E))o.why=`${state.earliest} 전이라 못 누워요`;
+    else if(Lt!==null&&before<rel(Lt))o.why=`소등(${state.latest})보다 늦어요`;
+    o.ok=!o.why;return o});
+  const f=ops.filter(o=>o.ok);
+  const rec=f.filter(o=>o.sl>=state.goal&&o.sl<=600).sort((a,b)=>a.sl-b.sl)[0]||f.slice().sort((a,b)=>b.sl-a.sl)[0];
+  if(rec)rec.rec=true;
+  return ops;
+}
+function tagOf(o){
+  if(!o.ok)return `<span class="tag no">불가</span>`;
+  if(o.rec)return `<span class="tag rec">추천</span>`;
+  if(o.sl>600)return `<span class="tag long">많이 길어요</span>`;
+  if(o.sl>=state.goal)return `<span class="tag ok">충분</span>`;
+  return `<span class="tag short">${dur(state.goal-o.sl)} 부족</span>`;
+}
+function wave(lie,lat,n,c,showEnds){
+  const W=340,H=150,total=lat+n*c,L=34,R=W-14,x=m=>L+(R-L)*m/total,top=30,deep=82;
+  let p=`M${L},${top} L${x(lat).toFixed(1)},${top}`;
+  for(let i=0;i<n;i++){const s=lat+i*c,dp=deep*Math.max(.38,1-.14*i);for(let k=1;k<=24;k++){const t=k/24;p+=` L${x(s+c*t).toFixed(1)},${(top+dp*(1-Math.cos(2*Math.PI*t))/2).toFixed(1)}`}}
+  let ends='';
+  for(let i=1;i<=n;i++){const m=lat+i*c,X=x(m).toFixed(1),last=i===n;
+    ends+=`<circle cx="${X}" cy="${top}" r="${last?5:3}" fill="${last?'#ffd98a':'#8fb4ff'}"/>`;
+    if(showEnds||last)ends+=`<text x="${X}" y="${top-10}" text-anchor="${last?'end':'middle'}" font-size="${last?12:10}" fill="${last?'#ffd98a':'#97a0c6'}">${hm(lie+m)}</text>`}
+  return `<svg class="wave" viewBox="0 0 ${W} ${H}" role="img" aria-label="수면 주기 그래프">
+  <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb4ff" stop-opacity=".35"/><stop offset="1" stop-color="#8fb4ff" stop-opacity="0"/></linearGradient></defs>
+  <text x="2" y="${top+4}" font-size="10" fill="#97a0c6">얕음</text><text x="2" y="${top+deep}" font-size="10" fill="#97a0c6">깊음</text>
+  <path d="${p} L${R},${top+deep+8} L${L},${top+deep+8} Z" fill="url(#wg)"/>
+  <path d="${p}" fill="none" stroke="#8fb4ff" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="${L}" cy="${top}" r="3" fill="#e8ebff"/><text x="${L}" y="${H-10}" font-size="11" fill="#e8ebff" text-anchor="start">${hm(lie)} 눕기</text>
+  <text x="${R}" y="${H-10}" font-size="11" fill="#ffd98a" text-anchor="end">${hm(lie+total)} 기상</text>${ends}</svg>`;
+}
+
+/* ---------- 화면 ---------- */
+const main=document.getElementById('main');
+let view='calc',mode='wake',calcDate=null,calcWake=null,sel=null,logDate=null,logFeel=null;
+function go(v){view=v;render();window.scrollTo(0,0)}
+function render(){document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));({calc:vCalc,log:vLog,set:vSet})[view]()}
+
+function vCalc(){
+  const c=cycleNow(),e=estimate();
+  let h=`<h2>${new Date().getHours()<5||new Date().getHours()>=18?'오늘 밤은 언제 잘까요?':'잠 계획 세우기'}</h2>
+  <div class="seg">${[['wake','일어날 시간으로'],['now','지금 자면'],['nap','낮잠']].map(([k,l])=>`<button class="${mode===k?'on':''}" data-mode="${k}">${l}</button>`).join('')}</div>`;
+  if(mode==='wake'){
+    calcDate=calcDate||targetKey();const w=wakeFor(calcDate),wt=calcWake||w.t,wm=toMin(wt),ops=bedOpts(wm);
+    if(sel===null||!ops[sel]||!ops[sel].ok)sel=Math.max(0,ops.findIndex(o=>o.rec));
+    const o=ops[sel];
+    h+=`<section class="card"><div class="row sb"><button class="icon" data-act="dprev">‹</button><div style="text-align:center"><div class="small muted">${md(calcDate)}${w.label?' · '+esc(w.label):''} 기상</div><input type="time" class="bigin" id="wakeIn" value="${wt}"></div><button class="icon" data-act="dnext">›</button></div>
+    ${calcWake&&calcWake!==w.t?`<div style="text-align:center"><button class="lnk" data-act="resetWake">설정한 시간(${w.t})으로</button></div>`:''}</section>
+    <section class="card"><h3>이 시간에 누우세요</h3>
+    ${ops.map((x,i)=>`<button class="opt${i===sel?' sel':''}${x.ok?'':' no'}${x.rec?' rec':''}" data-opt="${i}"><span class="t">${hm(x.lie)}</span><span>${x.n}주기 · ${dur(x.sl)} 잠<small>${x.why||`잠드는 ${state.latency}분 포함`}</small></span>${tagOf(x)}</button>`).join('')}
+    ${o?wave(o.lie,state.latency,o.n,c,true):''}
+    ${o&&o.ok?`<button class="btn pri full" data-act="plan">${hm(o.lie)}에 자고 ${wt}에 일어날게요</button>`:''}
+    <p class="note">주기 ${c}분 기준${state.auto&&e.ok?` (내 기록 ${e.n}개로 추정)`:state.auto?' · 기록이 쌓이면 내 주기로 바꿔 줘요':' (직접 설정)'}. 실제 주기는 사람마다, 밤마다 달라서 대략적인 시간이에요.</p></section>`;
+  }else if(mode==='now'){
+    const n0=nowMin(),tk=targetKey(),w=wakeFor(tk),allow=norm(toMin(w.t)-n0);
+    const ops=[3,4,5,6].map(n=>{const sl=n*c,before=state.latency+sl;return {n,sl,wake:norm(n0+before),late:before>allow}});
+    const best=ops.filter(o=>!o.late).pop();
+    h+=`<section class="card"><div class="small muted" style="text-align:center">지금 ${hm(n0)}에 누우면</div><h3 style="text-align:center;margin-top:4px">이때 알람을 맞추세요</h3>
+    ${ops.map(o=>`<div class="opt${o===best?' rec':''}${o.late?' no':''}"><span class="t">${hm(o.wake)}</span><span>${o.n}주기 · ${dur(o.sl)} 잠<small>${o.late?`정해 둔 기상 ${w.t}보다 늦어요`:''}</small></span>${o===best?'<span class="tag rec">추천</span>':o.sl>=state.goal?'<span class="tag ok">충분</span>':'<span class="tag short">짧아요</span>'}</div>`).join('')}
+    ${best?wave(n0,state.latency,best.n,c,true):`<div class="warnbox">한 주기도 다 못 자고 ${w.t}에 일어나야 해요. 그래도 지금 바로 자는 게 가장 좋아요.</div>`}
+    <p class="note">${md(tk)} 기상 ${w.t} 기준 · 주기 ${c}분</p></section>`;
+  }else{
+    const n0=nowMin(),lat=Math.min(state.latency,10),late=n0>=15*60||n0<5*60;
+    h+=`<section class="card"><div class="small muted" style="text-align:center">지금 ${hm(n0)}에 낮잠을 잔다면</div>
+    <div class="opt rec" style="margin-top:10px"><span class="t">${hm(n0+lat+20)}</span><span>짧은 낮잠 · 20분<small>깊은 잠에 빠지기 전에 깨서 덜 멍해요</small></span><span class="tag rec">추천</span></div>
+    <div class="opt"><span class="t">${hm(n0+lat+c)}</span><span>한 주기 낮잠 · ${c}분<small>시간이 넉넉하고 많이 피곤할 때</small></span><span class="tag long">길게</span></div>
+    <p class="hint" style="margin-top:6px">잠드는 시간 ${lat}분을 더해서 알람 시간을 계산했어요. 30~60분쯤에 깨면 깊은 잠 중이라 오히려 더 멍할 수 있어요.</p>
+    ${late?'<div class="warnbox">오후 3시 이후 낮잠은 밤에 잠드는 걸 방해할 수 있어요. 꼭 자야 한다면 20분만 자요.</div>':''}</section>`;
+  }
+  if(state.plan&&state.plan.date>=keyOf(today()))h+=`<p class="muted small" style="text-align:center">오늘 계획: ${hm(toMin(state.plan.bed))} 취침 → ${state.plan.wake} 기상 (${md(state.plan.date)})</p>`;
+  main.innerHTML=h;
+}
+
+function chart7(){
+  const W=340,H=170,L=30,R=W-8,T=10,B=H-24,days=[...Array(7)].map((_,i)=>keyOf(addDays(today(),i-6)));
+  const y=h=>B-(B-T)*Math.min(h,12)/12,bw=(R-L)/7*.55;
+  let g=`<rect x="${L}" y="${y(10)}" width="${R-L}" height="${y(8)-y(10)}" fill="#7fe0b0" opacity=".1"/>`;
+  [0,4,8,12].forEach(v=>g+=`<line x1="${L}" x2="${R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,.08)"/><text x="${L-6}" y="${y(v)+4}" font-size="10" fill="#97a0c6" text-anchor="end">${v}h</text>`);
+  g+=`<line x1="${L}" x2="${R}" y1="${y(state.goal/60)}" y2="${y(state.goal/60)}" stroke="#7fe0b0" stroke-dasharray="4 3" opacity=".7"/>`;
+  days.forEach((k,i)=>{const cx=L+(R-L)/7*(i+.5),l=state.logs.find(x=>x.date===k);
+    if(l){const h=sleepMin(l)/60,col=h>=state.goal/60?'#7fe0b0':h>=state.goal/60-1?'#ffbd85':'#ff8f8f';g+=`<rect x="${cx-bw/2}" y="${y(h)}" width="${bw}" height="${B-y(h)}" rx="4" fill="${col}"/><text x="${cx}" y="${y(h)-4}" font-size="10" fill="#e8ebff" text-anchor="middle">${h.toFixed(1)}</text>`}
+    g+=`<text x="${cx}" y="${H-8}" font-size="11" fill="${k===keyOf(today())?'#ffd98a':'#97a0c6'}" text-anchor="middle">${DOW[dateOf(k).getDay()]}</text>`});
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 7일 수면 시간">${g}</svg>`;
+}
+function chartBed(){
+  const L0=state.logs.slice(-14);if(L0.length<3)return '';
+  const W=340,H=90,L=34,R=W-8,rel=b=>norm(toMin(b)-18*60),x=v=>L+(R-L)*(v-180)/(600-180);
+  let g='';[[180,'21시'],[300,'23시'],[420,'01시'],[540,'03시']].forEach(([v,t])=>g+=`<line x1="${x(v)}" x2="${x(v)}" y1="8" y2="${H-22}" stroke="rgba(255,255,255,.08)"/><text x="${x(v)}" y="${H-6}" font-size="10" fill="#97a0c6" text-anchor="middle">${t}</text>`);
+  L0.forEach((l,i)=>{const v=Math.max(180,Math.min(600,rel(l.bed))),wd=dateOf(l.date).getDay(),free=wd===0||wd===6;g+=`<circle cx="${x(v)}" cy="${14+((i*7)%40)}" r="5" fill="${free?'#ffd98a':'#8fb4ff'}" opacity=".85"/>`});
+  return `<h3 style="margin-top:14px">잠든 시각 (최근 14개)</h3><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="잠든 시각 분포">${g}</svg><div class="small muted"><span style="color:#8fb4ff">●</span> 평일 아침에 일어난 날 <span style="color:#ffd98a">●</span> 주말</div>`;
+}
+function vLog(){
+  const tk=keyOf(today());logDate=logDate||tk;
+  const ex=state.logs.find(l=>l.date===logDate),pl=state.plan&&state.plan.date===logDate?state.plan:null;
+  const bed=ex?ex.bed:pl?hm(toMin(pl.bed)):(state.logs.length?state.logs[state.logs.length-1].bed:'23:30'),wk=ex?ex.wake:pl?pl.wake:wakeFor(logDate).t;
+  if(logFeel===null)logFeel=ex?ex.feel:0;
+  const L7=state.logs.filter(l=>l.date>keyOf(addDays(today(),-7))),S7=L7.map(sleepMin);
+  const debt=L7.reduce((s,l)=>s+Math.max(0,state.goal-sleepMin(l)),0);
+  const L14=state.logs.slice(-14),bsd=L14.length>=4?sd(L14.map(l=>norm(toMin(l.bed)-18*60))):null;
+  const L28=state.logs.filter(l=>l.date>keyOf(addDays(today(),-28))),mid=l=>norm(toMin(l.bed)-18*60)+inBed(l)/2;
+  const wd=L28.filter(l=>{const d=dateOf(l.date).getDay();return d>=1&&d<=5}),fr=L28.filter(l=>{const d=dateOf(l.date).getDay();return d===0||d===6});
+  const sj=wd.length>=2&&fr.length>=2?mean(fr.map(mid))-mean(wd.map(mid)):null,e=estimate();
+  main.innerHTML=`<h2>잠 기록</h2>
+  <section class="card"><div class="row sb"><h3 style="margin:0">${logDate===tk?'어젯밤 잠':md(logDate)+' 아침'}</h3><input type="date" class="in" style="width:auto" id="logDate" value="${logDate}" max="${tk}"></div>
+  <div class="grid2"><div><label>누운 시각</label><input type="time" class="in" id="lBed" value="${bed}"></div><div><label>일어난 시각</label><input type="time" class="in" id="lWake" value="${wk}"></div></div>
+  <label>일어났을 때 느낌</label><div class="feel">${[[1,'😫','피곤함'],[2,'😐','보통'],[3,'😊','개운함']].map(([v,em,t])=>`<button class="${logFeel===v?'on':''}" data-feel="${v}"><b>${em}</b>${t}</button>`).join('')}</div>
+  <button class="btn pri full" data-act="saveLog">${ex?'기록 고치기':'기록하기'}</button>
+  <p class="hint" style="margin-top:8px">아침마다 느낌을 남기면, 언제 깼을 때 개운했는지 보고 내 수면 주기를 추정해요.</p></section>
+  ${state.logs.length?`<section class="card"><h3>최근 7일 수면 시간</h3>${chart7()}<div class="small muted">초록 띠 = 청소년 권장 8~10시간 · 점선 = 내 목표</div>${chartBed()}</section>
+  <section class="card"><h3>요약</h3><div class="stats">
+    <div><small>최근 7일 평균</small><b>${S7.length?dur(mean(S7)):'–'}</b></div>
+    <div><small>이번 주 부족한 잠</small><b style="color:${debt>=180?'var(--bad)':debt>=60?'var(--warn)':'var(--good)'}">${dur(debt)}</b></div>
+    <div><small>잠드는 시각 들쭉날쭉</small><b>${bsd===null?'–':'±'+dur(bsd)}</b></div>
+    <div><small>내 수면 주기</small><b>${e.ok?e.c+'분':'–'}</b></div></div>
+    ${!e.ok?`<p class="note">주기 추정까지: 느낌 기록 ${Math.max(0,6-e.n)}개 더${e.g<2?', 개운한 날 '+(2-e.g)+'개 더':''}${e.b<1?', 피곤한 날 1개 더':''} 필요해요.</p>`:`<p class="note">개운했던 아침은 주기가 끝날 때쯤, 피곤했던 아침은 주기 중간에 깼다고 보고 가장 잘 맞는 길이를 골랐어요. 기록 ${e.n}개 기준 추정이에요.</p>`}
+    ${debt>=180?`<div class="warnbox">이번 주에 목표보다 ${dur(debt)} 덜 잤어요. 주말에 몰아 자기보다 며칠 동안 30분씩 일찍 눕는 게 회복에 더 좋아요.</div>`:''}
+    ${bsd!==null&&bsd>=60?`<div class="warnbox">잠드는 시각이 날마다 ±${dur(bsd)}씩 달라요. 시간이 일정할수록 잠드는 것도, 일어나는 것도 쉬워져요.</div>`:''}
+    ${sj!==null&&sj>=60?`<div class="warnbox"><b>사회적 시차 ${dur(sj)}</b><br>주말에 잠의 한가운데가 평일보다 ${dur(sj)} 늦어요. 주말마다 ${(sj/60).toFixed(1)}시간 시차가 나는 나라에 다녀오는 셈이라 월요일 아침이 힘들어요. 주말 기상을 평일과 1시간 안쪽으로 맞춰 보세요.</div>`:sj!==null?`<p class="note">사회적 시차 ${dur(Math.max(0,sj))} · 평일과 주말 리듬이 비슷하게 유지되고 있어요.</p>`:''}
+  </section>
+  <section class="card"><h3>기록 목록</h3>${state.logs.slice().reverse().slice(0,21).map(l=>`<div class="log"><span class="d">${dateOf(l.date).getMonth()+1}/${dateOf(l.date).getDate()} (${DOW[dateOf(l.date).getDay()]})</span><span>${l.bed} → ${l.wake} · ${dur(sleepMin(l))}</span><span>${['','😫','😐','😊'][l.feel]||''}</span><button class="lnk" data-del="${l.date}">삭제</button></div>`).join('')}</section>`:''}`;
+}
+
+function vSet(){
+  const e=estimate(),order=[1,2,3,4,5,6,0];
+  main.innerHTML=`<h2>설정</h2>
+  <section class="card"><h3>요일별 기상 시간</h3><div class="wk">${order.map(d=>`<div><span>${DOW[d]}</span><input type="time" data-wake="${d}" value="${state.wake[d]}"></div>`).join('')}</div>
+  <button class="lnk" data-act="copyMon" style="margin-top:6px">월요일 시간을 화~금에 똑같이</button></section>
+  <section class="card"><h3>특별한 날</h3><p class="hint">시험 날처럼 평소와 다르게 일어나야 하는 날이에요.</p>
+  ${state.special.slice().sort((a,b)=>a.date<b.date?-1:1).map(s=>`<div class="sp"><div class="lab">${esc(s.label||'특별한 날')}<small>${md(s.date)}</small></div><input type="time" class="in" data-spw="${s.date}" value="${s.wake}"><button class="lnk" data-spdel="${s.date}">삭제</button></div>`).join('')||'<p class="muted small">없음</p>'}
+  <div class="grid2" style="margin-top:8px"><input type="date" class="in" id="spD"><input type="time" class="in" id="spT" value="06:00"></div>
+  <div class="row" style="margin-top:6px"><input class="in" id="spL" placeholder="이름 (예: 기말 1일차)"><button class="btn sm" data-act="addSp">추가</button></div></section>
+  <section class="card"><h3>기숙사·생활 시간</h3><p class="hint">비워 두면 제한 없이 계산해요. 이 범위를 벗어나는 취침 시간은 '불가'로 표시돼요.</p>
+  <div class="grid2"><div><label>이때부터 누울 수 있어요 <small>(점호 후)</small></label><input type="time" class="in" data-set="earliest" value="${state.earliest}"></div>
+  <div><label>이때까지는 누워야 해요 <small>(소등)</small></label><input type="time" class="in" data-set="latest" value="${state.latest}"></div></div>
+  ${state.earliest||state.latest?'<button class="lnk" data-act="clearDorm">비우기</button>':''}</section>
+  <section class="card"><h3>잠 설정</h3>
+  <label>목표 수면 시간 <small>· 청소년 권장 8~10시간</small></label>
+  <select class="in" data-set="goal">${[420,450,480,510,540,570,600].map(v=>`<option value="${v}"${state.goal===v?' selected':''}>${dur(v)}</option>`).join('')}</select>
+  <label>잠드는 데 걸리는 시간: <b>${state.latency}분</b></label><input type="range" class="rng" min="5" max="45" step="5" value="${state.latency}" data-set="latency">
+  <label><input type="checkbox" data-set="auto" ${state.auto?'checked':''}> 내 기록으로 주기 길이 자동 추정 ${e.ok?`(지금 ${e.c}분)`:'(기록이 더 필요해요)'}</label>
+  <label>직접 정한 주기 길이: <b>${state.cycle}분</b> <small>${state.auto&&e.ok?'· 자동 추정 중이라 지금은 안 쓰여요':''}</small></label><input type="range" class="rng" min="70" max="120" step="5" value="${state.cycle}" data-set="cycle">
+  <p class="note">수면 주기는 평균 90분 정도지만 사람마다 70~120분까지 달라요.</p></section>
+  <section class="card"><h3>백업</h3><p class="hint">기록은 이 기기의 브라우저에만 저장돼요.</p>
+  <div class="row"><button class="btn" style="flex:1" data-act="export">내보내기</button><button class="btn" style="flex:1" data-act="import">불러오기</button></div><input type="file" id="impF" accept=".json,application/json" hidden></section>
+  <section class="card"><h3>둘러보기</h3><p class="hint">3주치 예시 기록을 넣어서 그래프와 주기 추정을 미리 볼 수 있어요. 지금 기록은 지워져요.</p><button class="btn full" data-act="sample">샘플 데이터로 바꾸기</button>
+  <button class="btn danger full" data-act="wipe">모든 기록 지우기</button></section>`;
+}
+
+function makeSample(){
+  const s=fresh();state=s;const rnd=(a,b)=>a+Math.random()*(b-a);
+  for(let i=21;i>=1;i--){const d=addDays(today(),-i+1),k=keyOf(d),w=d.getDay(),free=w===0||w===6;
+    const bedM=free?norm(rnd(60,140)):norm(rnd(-50,40)),wakeM=free?rnd(560,640):390;
+    const l={date:k,bed:hm(Math.round(bedM/5)*5),wake:hm(Math.round(wakeM/5)*5)};
+    const S=sleepMin(l),r=S%95,dd=Math.min(r,95-r)+rnd(-8,8);l.feel=dd<16?3:dd>32?1:2;s.logs.push(l)}
+}
+function saveLog(){
+  const bed=document.getElementById('lBed').value,wk=document.getElementById('lWake').value;
+  if(!bed||!wk){toast('시간을 넣어 주세요');return}
+  const l={date:logDate,bed,wake:wk,feel:logFeel||0},i=state.logs.findIndex(x=>x.date===logDate);
+  if(i>=0)state.logs[i]=l;else state.logs.push(l);state.logs.sort((a,b)=>a.date<b.date?-1:1);save();
+  toast(`${dur(sleepMin(l))} 잤어요${l.feel?'':' · 느낌도 남기면 주기 추정에 쓰여요'}`);render();
+}
+
+/* ---------- 이벤트 ---------- */
+document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(b.dataset.v)});
+main.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.mode){mode=d.mode;return render()}
+  if(d.opt!==undefined){sel=+d.opt;return render()}
+  if(d.feel){logFeel=+d.feel;main.querySelectorAll('[data-feel]').forEach(b=>b.classList.toggle('on',b===t));return}
+  if(d.del){if(!confirm('이 기록을 지울까요?'))return;state.logs=state.logs.filter(l=>l.date!==d.del);save();return render()}
+  if(d.spdel){state.special=state.special.filter(s=>s.date!==d.spdel);save();return render()}
+  const A={
+    dprev(){const p=addDays(dateOf(calcDate),-1);if(keyOf(p)<keyOf(today()))return;calcDate=keyOf(p);calcWake=null;sel=null;render()},
+    dnext(){calcDate=keyOf(addDays(dateOf(calcDate),1));calcWake=null;sel=null;render()},
+    resetWake(){calcWake=null;sel=null;render()},
+    plan(){const w=calcWake||wakeFor(calcDate).t,o=bedOpts(toMin(w))[sel];state.plan={date:calcDate,bed:hm(o.lie),wake:w};save();toast(`휴대폰 알람을 ${w}에 맞추고, ${hm(o.lie)}에 누우세요`);render()},
+    saveLog, copyMon(){[2,3,4,5].forEach(i=>state.wake[i]=state.wake[1]);save();render();toast('화~금을 월요일과 같게 맞췄어요')},
+    addSp(){const dd=document.getElementById('spD').value,tt=document.getElementById('spT').value,ll=document.getElementById('spL').value.trim();if(!dd||!tt){toast('날짜와 시간을 넣어 주세요');return}
+      state.special=state.special.filter(s=>s.date!==dd).concat([{date:dd,wake:tt,label:ll}]);save();render()},
+    clearDorm(){state.earliest='';state.latest='';save();render()},
+    export(){download(new Blob([JSON.stringify(state)],{type:'application/json'}),`byeoljam-backup-${keyOf(today())}.json`);toast('백업 파일을 내보냈어요')},
+    import(){document.getElementById('impF').click()},
+    sample(){if(!confirm('지금 기록을 지우고 샘플 데이터로 바꿀까요?'))return;makeSample();save();toast('샘플 데이터를 넣었어요');go('log')},
+    wipe(){if(!confirm('모든 기록과 설정을 지울까요?'))return;state=fresh();save();toast('모두 지웠어요');go('calc')}
+  };
+  if(A[d.act])A[d.act]();
+});
+main.addEventListener('change',e=>{
+  const t=e.target,d=t.dataset;
+  if(t.id==='wakeIn'){calcWake=t.value||null;sel=null;return render()}
+  if(t.id==='logDate'){logDate=t.value||keyOf(today());logFeel=null;return render()}
+  if(d.wake!==undefined){if(t.value){state.wake[d.wake]=t.value;save()}return}
+  if(d.spw){const s=state.special.find(x=>x.date===d.spw);if(s&&t.value){s.wake=t.value;save()}return}
+  if(d.set){const k=d.set;state[k]=k==='auto'?t.checked:(k==='earliest'||k==='latest')?t.value:+t.value;save();return render()}
+  if(t.id==='impF'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const s=JSON.parse(r.result);if(!s.wake)throw 0;if(!confirm('지금 기록을 백업 내용으로 바꿀까요?'))return;state=Object.assign(fresh(),s);save();toast('불러왔어요');render()}catch(err){toast('올바른 백업 파일이 아니에요')}};r.readAsText(t.files[0]);t.value=''}
+});
+main.addEventListener('input',e=>{const t=e.target;if(t.type==='range'){const b=t.previousElementSibling&&t.previousElementSibling.querySelector('b');if(b)b.textContent=t.value+'분'}});
+render();
+</script>
+</body>
+</html>
