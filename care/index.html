@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6f5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="결 노트">
+<title>결 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f5;--card:#fff;--ink:#28343a;--ink2:#728087;--line:#dfe7e5;--accent:#2f8c8f;--accS:#e2f1f0;--coral:#e0765f;--warn:#d9822b;--warnS:#fdf0e1;--bad:#cc5644;--badS:#fbe7e3;--good:#3f8f5e;--goodS:#e5f3ea;
+  --title:'Jua',sans-serif;--body:'Gowun Dodum',system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);background-image:linear-gradient(rgba(47,140,143,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(47,140,143,.06) 1px,transparent 1px);background-size:28px 28px;
+  color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:540px;margin:0 auto;padding:calc(8px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.logo{font-family:var(--title);font-size:26px}
+.logo i{font-style:normal;color:var(--accent)}
+.icon{border:0;background:none;width:44px;height:44px;border-radius:50%;font-size:22px}
+h2{font-family:var(--title);font-weight:400;font-size:28px;margin:6px 0 2px}
+h3{font-family:var(--title);font-weight:400;font-size:20px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+h4{font-size:13px;color:var(--ink2);margin:14px 0 6px;font-weight:400}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+.muted{color:var(--ink2)} .small{font-size:13px} .hint{font-size:13px;color:var(--ink2);margin:0 0 8px}
+label{display:block;font-size:13px;color:var(--ink2);margin:12px 0 4px}
+.in{font:inherit;width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink)}
+input[type=date]{-webkit-appearance:none;appearance:none;min-height:42px;display:block}
+.btn{border:0;background:var(--accS);color:var(--accent);border-radius:12px;padding:11px 16px;font-size:15px;font-weight:700}
+.btn.pri{background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;border:1.5px dashed var(--line);color:var(--ink2);font-weight:400}
+.btn.danger{background:var(--badS);color:var(--bad)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:9px}
+.btn.full{width:100%;margin-top:10px}
+.lnk{border:0;background:none;color:var(--accent);text-decoration:underline;font-size:13px;padding:2px 4px}
+.row{display:flex;gap:8px;align-items:center} .row>.btn{flex:1} .sb{justify-content:space-between}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px}
+.seg button{flex:1;border-radius:10px;padding:8px 6px}
+.seg button.on,.chip.on{border-color:var(--accent);background:var(--accS);color:var(--accent);font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:11px;border-radius:999px;padding:1px 8px;background:var(--accS);color:var(--accent);margin-right:4px}
+.tag.w{background:var(--warnS);color:var(--warn)} .tag.b{background:var(--badS);color:var(--bad)} .tag.g{background:var(--goodS);color:var(--good)}
+.subtabs{display:flex;gap:6px;margin:10px 0 2px;overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:14px}
+.subtabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* 체크 */
+.ck{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;padding:9px 2px;border-bottom:1px dashed var(--line)}
+.ck:last-child{border:0}
+.ck .bx{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:15px;color:#fff}
+.ck.on .bx{background:var(--accent);border-color:var(--accent)}
+.ck.on .tx b{text-decoration:line-through;color:var(--ink2)}
+.ck .tx b{font-weight:400;display:block}
+.ck .tx small{display:block;font-size:12px;color:var(--ink2)}
+.ck.virt .bx{border-color:var(--coral)}
+.prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:4px 0 6px}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.rt{display:flex;gap:6px}
+.rt button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 0;display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--ink2)}
+.rt button b{font-size:22px;font-weight:400}
+.rt button.on{border-color:var(--accent);background:var(--accS);color:var(--ink)}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:11px 14px;text-align:left}
+.tog i{width:44px;height:26px;border-radius:13px;background:var(--line);position:relative;flex:none;transition:.2s}
+.tog i:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.tog.on i{background:var(--accent)} .tog.on i:after{left:21px}
+.banner{border-radius:14px;padding:11px 14px;margin:10px 0;font-size:14px}
+.banner.w{background:var(--warnS)} .banner.b{background:var(--badS)} .banner.a{background:var(--accS)}
+/* 검사 */
+.res{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.res:last-child{border:0}
+.res .ic{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;color:#fff;margin-top:1px}
+.res.w .ic{background:var(--warn)} .res.b .ic{background:var(--bad)} .res.g .ic{background:var(--good)} .res.t .ic{background:var(--accent)}
+.res b{display:block}
+.res small{display:block;color:var(--ink2);font-size:13px;margin-top:2px}
+.score{display:flex;gap:8px;margin:8px 0}
+.score div{flex:1;border-radius:12px;padding:8px;text-align:center}
+.score b{display:block;font-family:var(--title);font-size:26px;font-weight:400;line-height:1.1}
+.score small{font-size:12px}
+/* 루틴 편집 */
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.step .mv{display:flex;flex-direction:column;gap:2px}
+.step .mv button{border:1px solid var(--line);background:#fff;border-radius:6px;width:30px;height:24px;padding:0;font-size:12px;line-height:1}
+.step .num{font-family:var(--title);color:var(--accent);font-size:18px}
+.dw{display:flex;gap:3px;margin-top:6px}
+.dw button{flex:1;border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 0;font-size:11px;color:var(--ink2)}
+.dw button.on{background:var(--accS);border-color:var(--accent);color:var(--accent)}
+.flow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:14px}
+.flow span{background:var(--accS);color:var(--ink);border-radius:8px;padding:3px 9px}
+.flow em{font-style:normal;color:var(--ink2)}
+.flow span.add{background:var(--goodS);color:var(--good);border:1px dashed var(--good)}
+/* 제품 */
+.prod{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px dashed var(--line);background:none;padding:10px 0}
+.prod .em{width:40px;height:40px;border-radius:12px;background:var(--accS);display:grid;place-items:center;font-size:20px}
+.prod b{font-weight:400;display:block}
+.prod small{display:block;font-size:12px;color:var(--ink2)}
+.hist{border-left:2px solid var(--line);margin:6px 0 0 8px;padding-left:14px}
+.hist div{position:relative;padding:4px 0;font-size:14px}
+.hist div:before{content:"";position:absolute;left:-20px;top:11px;width:10px;height:10px;border-radius:50%;background:var(--line)}
+.hist div.cur:before{background:var(--accent)}
+.hist small{color:var(--ink2);font-size:12px}
+/* 테스트 */
+.q{margin:14px 0}
+.q b{display:block;margin-bottom:6px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-size:14px}
+.opts button.on{border-color:var(--accent);background:var(--accS)}
+.typebig{font-family:var(--title);font-size:34px;text-align:center;color:var(--accent);line-height:1.2}
+/* 가이드 */
+.gs{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.gs:last-child{border:0}
+.gs .n{width:34px;height:34px;border-radius:50%;background:var(--accS);color:var(--accent);display:grid;place-items:center;font-family:var(--title);font-size:17px}
+.gs b{display:block}
+.gs small{display:block;font-size:13px;color:var(--ink2)}
+.gs .me{display:inline-block;margin-top:4px;font-size:12px;border-radius:8px;padding:2px 8px;background:var(--warnS);color:var(--warn)}
+.gs .me.ok{background:var(--goodS);color:var(--good)}
+.rec{padding:10px 0;border-bottom:1px dashed var(--line)}
+.rec:last-child{border:0}
+.rec b{display:block}
+.rec small{display:block;font-size:13px;color:var(--ink2)}
+.rec .how{font-size:13px;background:var(--bg);border-radius:8px;padding:6px 9px;margin-top:5px}
+.chart{width:100%;height:auto;display:block}
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.nav .in2{max-width:540px;margin:0 auto;display:flex}
+.nav button{flex:1;border:0;background:none;padding:9px 0 12px;font-size:13px;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:1px}
+.nav button span{font-size:20px;filter:grayscale(1);opacity:.6}
+.nav button.on{color:var(--accent);font-weight:700}
+.nav button.on span{filter:none;opacity:1}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="logo">결 <i>노트</i></div><button class="icon" data-nav="set" aria-label="설정">⚙︎</button></header>
+  <main id="main"></main>
+</div>
+<nav class="nav"><div class="in2">
+  <button data-nav="today"><span>✅</span>오늘</button><button data-nav="skin"><span>🧴</span>피부</button><button data-nav="hair"><span>💇</span>머리</button><button data-nav="prod"><span>🧺</span>제품</button>
+</div></nav>
+<div id="toast"></div>
+<script>
+/* ============ 유틸 ============ */
+const pad=n=>String(n).padStart(2,'0');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dateOf=k=>{const[a,b,c]=k.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
+const TK=()=>keyOf(today());
+const diffDays=(a,b)=>Math.round((dateOf(b)-dateOf(a))/864e5);
+const DOW=['일','월','화','수','목','금','토'];
+const md=k=>{const d=dateOf(k);return `${d.getMonth()+1}/${d.getDate()}`};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+function toast(m,ms){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms||2600)}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+const addMonths=(k,m)=>{const d=dateOf(k);d.setMonth(d.getMonth()+m);return keyOf(d)};
+
+/* ============ 기준 데이터 ============ */
+// key: [이름, 분야, 바르는 순서, 시간대, 개봉 후 사용기한(개월), 아이콘]
+const CAT={
+  water:['물세안','skin',2,'any',0,'💧'],oilcl:['클렌징 오일·밤','skin',1,'pm',12,'🫧'],foam:['폼·젤 클렌저','skin',2,'any',12,'🫧'],exfol:['각질 제거(스크럽·필링)','skin',2.5,'pm',12,'✨'],
+  toner:['토너·스킨','skin',3,'any',12,'💦'],pad:['토너 패드','skin',3,'any',6,'🧻'],essence:['에센스','skin',4,'any',12,'💧'],serum:['세럼·앰플','skin',5,'any',12,'💉'],
+  spot:['스팟 케어','skin',6,'any',12,'🎯'],eye:['아이크림','skin',6,'any',12,'👁️'],lotion:['로션·에멀전','skin',7,'any',12,'🧴'],mask:['팩·마스크','skin',7.5,'pm',12,'🎭'],
+  cream:['크림','skin',8,'any',12,'🫙'],oil:['페이스 오일','skin',9,'any',12,'🫒'],sun:['선크림','skin',10,'am',12,'☀️'],sleep:['슬리핑팩','skin',11,'pm',12,'🌙'],
+  mkbase:['베이스(쿠션·파데)','mk',12,'am',12,'🪞'],mkeye:['아이섀도·라이너','mk',13,'am',12,'👁️'],mascara:['마스카라','mk',13.5,'am',3,'🖌️'],mklip:['립','mk',14,'am',12,'💄'],mketc:['기타 메이크업','mk',13,'am',12,'✨'],
+  scalp:['두피 스케일러','hair',0,'any',12,'🧽'],shampoo:['샴푸','hair',1,'any',12,'🧴'],treat:['트리트먼트·헤어팩','hair',2,'any',12,'🫙'],cond:['린스·컨디셔너','hair',3,'any',12,'🧴'],
+  leavein:['노워시 트리트먼트·에센스','hair',4,'any',12,'💧'],heat:['열 보호제','hair',5,'any',12,'🛡️'],hoil:['헤어 오일','hair',6,'any',12,'🫒'],style:['스타일링','hair',7,'any',12,'💨']};
+const cn=k=>CAT[k]?CAT[k][0]:k, cdom=k=>CAT[k][1], crank=k=>CAT[k][2], cicon=k=>CAT[k]?CAT[k][5]:'•';
+const ING={retinol:'레티놀·레티노이드',aha:'AHA(글리콜산·젖산)',bha:'BHA(살리실산)',pha:'PHA',vitc:'비타민C',bpo:'벤조일퍼옥사이드',niac:'나이아신아마이드',cera:'세라마이드',ha:'히알루론산',cica:'시카·판테놀',alc:'알코올 많음',frag:'향료',water_proof:'워터프루프'};
+const ACTIVES=['retinol','aha','bha','vitc','bpo'];
+const COND=[[1,'😣','트러블·안 좋음'],[2,'😐','보통'],[3,'😊','좋음']];
+
+/* ============ 저장 ============ */
+const KEY='gyeol-v1';
+function fresh(){
+  const P=(cat,name)=>({id:uid(),cat,name,ings:[],opened:'',pao:CAT[cat][4],memo:'',start:TK(),end:'',reason:'',prev:'',next:'',patch:null});
+  const toner=P('toner','내 토너'),amp=P('serum','내 앰플'),cream=P('cream','내 크림'),sun=P('sun','내 선크림'),foam=P('foam','내 폼클렌저'),sh=P('shampoo','내 샴푸'),tr=P('treat','내 트리트먼트');
+  const S=(p)=>({id:uid(),cat:p.cat,pid:p.id,days:null});
+  return {v:1,products:[toner,amp,cream,sun,foam,sh,tr],
+    routines:{am:[S(toner),S(amp),S(cream),S(sun)],pm:[S(foam),S(cream)],hair:[S(sh),S(tr)],mk:[]},
+    skin:{type:'',sens:false,concerns:[],answers:{}},hair:{answers:{},scalp:'',damage:[],treat:[],habits:{}},
+    makeup:false,brush:'',days:{},v1:true};
+}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.products)return Object.assign(fresh(),s)}catch(e){}return fresh()}
+let state=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('저장 공간이 부족해요')}}
+const pById=id=>state.products.find(p=>p.id===id);
+const active=p=>p&&!p.end;
+const dayRec=k=>state.days[k]=state.days[k]||{};
+const stepName=s=>{const p=pById(s.pid);return p?p.name:cn(s.cat)};
+const stepOn=(s,dow)=>!s.days||s.days.includes(dow);
+const perWeek=s=>s.days?s.days.length:7;
+const ingsOf=s=>{const p=pById(s.pid);return p?p.ings:[]};
+const expireOf=p=>p.opened&&p.pao?addMonths(p.opened,p.pao):'';
+
+/* ============ 피부 타입 테스트 ============ */
+const SKQ=[
+  ['세안하고 아무것도 안 바른 채 30분이 지나면?',[['많이 당겨요',{d:2}],['조금 당겨요',{d:1}],['편안해요',{}],['코·이마만 번들거려요',{o:1,c:1}],['얼굴 전체가 번들거려요',{o:2}]]],
+  ['오후가 되면 얼굴이?',[['건조하고 각질이 보여요',{d:2}],['아침이랑 비슷해요',{}],['T존만 번들거려요',{o:1,c:2}],['전체가 번들거려요',{o:2}]]],
+  ['모공은?',[['거의 안 보여요',{d:1}],['코 주변만 보여요',{c:1}],['볼까지 넓게 보여요',{o:2}]]],
+  ['새 화장품을 쓰면?',[['자주 따갑거나 붉어져요',{s:2}],['가끔 그래요',{s:1}],['거의 괜찮아요',{}]]],
+  ['더위·추위·햇빛에 얼굴이 쉽게 붉어져요?',[['자주 그래요',{s:1}],['별로 안 그래요',{}]]],
+  ['여드름·뾰루지는?',[['자주 나요',{o:1,a:2}],['가끔 나요',{a:1}],['거의 안 나요',{}]]],
+  ['각질이 일어나요?',[['자주요',{d:1}],['가끔요',{}],['거의 안 그래요',{}]]]];
+function skinResult(ans){const s={o:0,d:0,c:0,s:0,a:0};Object.entries(ans).forEach(([q,i])=>{const sc=SKQ[q][1][i][1];for(const k in sc)s[k]+=sc[k]});
+  let type=s.c>=2&&s.o<4?'combo':s.o>=3?'oily':s.d>=3?'dry':s.c>=1?'combo':'normal';return {type,sens:s.s>=2,acne:s.a>=2,s}}
+const TYPE={oily:'지성',dry:'건성',combo:'복합성',normal:'중성'};
+const CONC=[['acne','여드름·뾰루지'],['dry','건조함'],['flake','각질'],['red','붉은기'],['pore','모공·피지'],['tone','잡티·색소'],['scar','여드름 자국']];
+
+/* ============ 머리 테스트 ============ */
+const HQ={
+  scalp:['두피는 어떤 편이에요?',[['oily','하루만 지나도 떡져요'],['normal','이틀은 괜찮아요'],['dry','건조하고 각질·가려움이 있어요'],['sens','쉽게 붉어지고 예민해요']]],
+  water:['머리 감는 물 온도는?',[['hot','뜨거운 물'],['warm','미지근한 물'],['cold','찬물']]],
+  where:['트리트먼트는 어디에 발라요?',[['scalp','두피까지 다'],['mid','머리 중간부터 끝까지'],['none','안 써요']]],
+  wait:['트리트먼트 바르고 헹구기까지?',[['0','바로 헹궈요'],['2','1~3분 기다려요'],['5','5분 이상 기다려요']]],
+  towel:['수건으로 말릴 때?',[['rub','박박 비벼요'],['press','꾹꾹 눌러 물기만 빼요'],['wrap','수건으로 감싸 두기만 해요']]],
+  dryer:['드라이기는?',[['none','자연 건조해요'],['hot','뜨거운 바람으로만 말려요'],['mix','온풍으로 말리고 찬바람으로 마무리해요']]],
+  protect:['드라이 전에 에센스나 열 보호제를 발라요?',[['no','안 발라요'],['yes','발라요']]],
+  wetbed:['젖은 머리로 잠든 적은?',[['often','자주 있어요'],['some','가끔 있어요'],['rare','거의 없어요']]],
+  iron:['고데기·매직기는?',[['none','안 써요'],['some','주 1~2회'],['daily','거의 매일']]],
+  when:['머리는 주로 언제 감아요?',[['am','아침'],['pm','저녁']]],
+  brush:['빗질은?',[['wethard','젖었을 때 위에서부터 세게'],['gentle','끝부터 살살 풀어요'],['none','거의 안 해요']]]};
+const HDMG=[['split','끝이 갈라져요'],['frizz','푸석하고 부스스해요'],['tangle','잘 엉켜요'],['break','잘 끊겨요'],['static','정전기가 잘 나요'],['flat','힘이 없고 처져요']];
+const HTRT=[['dye','염색'],['bleach','탈색'],['perm','펌'],['straight','매직·스트레이트']];
+const hairDone=()=>Object.keys(HQ).every(k=>state.hair.habits[k]);
+
+/* ============ 피부 검사 ============ */
+function skinCheck(){
+  const out=[],add=(lv,t,d)=>out.push({lv,t,d}),R=state.routines,am=R.am,pm=R.pm,sk=state.skin,all=am.concat(pm);
+  const has=(rt,c)=>rt.some(s=>s.cat===c),hasIng=(rt,i)=>rt.some(s=>ingsOf(s).includes(i)),withIng=(rt,i)=>rt.filter(s=>ingsOf(s).includes(i));
+  const overlap=(a,b)=>!a.days||!b.days||a.days.some(d=>b.days.includes(d));
+  if(!am.length&&!pm.length){add('w','루틴이 비어 있어요','피부 탭에서 아침·저녁 루틴을 만들어 주세요.');return out}
+  // 선크림
+  if(!has(am,'sun'))add('b','아침 루틴에 선크림이 없어요','자외선은 흐린 날·실내에서도 피부에 닿아요. 아침 마지막 단계에 선크림을 넣어 주세요.');
+  else{const last=am.filter(s=>cdom(s.cat)==='skin').slice(-1)[0];if(last&&last.cat!=='sun')add('w','선크림이 아침 마지막이 아니에요',`선크림 뒤에 ${cn(last.cat)}가 있어요. 스킨케어 맨 마지막(화장 전)에 바르는 게 좋아요.`);
+    else add('g','아침에 선크림까지 잘 바르고 있어요','밖에 오래 있는 날은 2~3시간마다 덧바르면 더 좋아요.')}
+  if(has(pm,'sun'))add('w','저녁 루틴에 선크림이 있어요','밤에는 필요 없어요. 빼도 돼요.');
+  // 순서
+  for(const [nm,rt] of [['아침',am],['저녁',pm]]){const sk2=rt.filter(s=>cdom(s.cat)==='skin');let bad=null;
+    for(let i=1;i<sk2.length;i++)if(crank(sk2[i].cat)<crank(sk2[i-1].cat)){bad=[sk2[i-1],sk2[i]];break}
+    if(bad)add('w',`${nm} 순서: ${cn(bad[0].cat)} → ${cn(bad[1].cat)}`,`보통은 ${cn(bad[1].cat)}를 먼저 발라요. 묽은 것 → 진한 것, 물 → 오일 순서가 흡수에 좋아요. 루틴 편집에서 '추천 순서로 정렬'을 눌러 보세요.`)
+    else if(sk2.length>1)add('g',`${nm} 바르는 순서가 맞아요`,sk2.map(s=>cn(s.cat)).join(' → '))}
+  // 세안
+  const pmCl=pm.filter(s=>['oilcl','foam'].includes(s.cat));
+  if(!pmCl.length)add('b','저녁에 세안 단계가 없어요','하루 동안 쌓인 피지·선크림·먼지를 지우려면 저녁 세안이 꼭 필요해요.');
+  else if(!has(pm,'oilcl')&&has(am,'sun')){const wp=am.some(s=>s.cat==='sun'&&ingsOf(s).includes('water_proof'));
+    add(wp?'w':'t',wp?'워터프루프 선크림인데 저녁 세안이 한 번이에요':'선크림 바른 날 저녁 세안, 이대로 괜찮아요',wp?'워터프루프는 폼클렌저만으로 잘 안 지워져요. 클렌징 오일·밤 → 폼클렌저 이중 세안을 추천해요.':'일반 선크림은 폼클렌저로 꼼꼼히 씻으면 충분한 경우가 많아요. 다만 워터프루프나 톤업 선크림, 화장한 날은 클렌징 오일·밤으로 먼저 지우는 이중 세안이 좋아요.')}
+  if(!am.some(s=>['water','foam'].includes(s.cat)))add('t','아침 세안 단계가 없어요',sk.type==='oily'||sk.type==='combo'?'자고 일어나서 번들거린다면 미지근한 물세안이나 순한 클렌저로 가볍게 씻고 시작하는 걸 추천해요.':'건성이나 중성이면 아침엔 물세안만, 또는 바로 토너로 시작해도 괜찮아요. 미지근한 물세안 정도는 넣어 보세요.');
+  // 보습
+  const moist=rt=>rt.some(s=>['cream','lotion','sleep'].includes(s.cat));
+  if(!moist(pm))add(sk.type==='dry'?'b':'w','저녁에 보습 단계(크림·로션)가 없어요','세안 후 수분이 빠져나가기 쉬워서 마지막에 크림이나 로션으로 덮어 주는 게 좋아요.');
+  else if(pm.filter(s=>cdom(s.cat)==='skin').length<=2&&(sk.type==='dry'||sk.concerns.includes('dry')))add('t','저녁 루틴이 간단해요','건조함이 고민이면 세안 뒤 토너(또는 히알루론산 세럼)를 한 단계 넣어 수분을 채운 다음 크림으로 덮어 보세요.');
+  else if(moist(pm))add('g','저녁에 크림으로 마무리하고 있어요','세안 후 바로(3분 안쪽) 바르면 보습 효과가 더 좋아요.');
+  if(!moist(am)&&sk.type!=='oily')add('t','아침에 보습 단계가 없어요','선크림 전에 가벼운 로션이나 크림을 바르면 건조함을 막아 줘요.');
+  // 성분
+  if(withIng(am,'retinol').length)add('b','레티놀이 아침 루틴에 있어요','레티놀은 빛에 약하고 자극이 있어서 보통 밤에만 써요.');
+  const ret=withIng(pm,'retinol'),acid=pm.filter(s=>ingsOf(s).some(i=>['aha','bha'].includes(i))||s.cat==='exfol');
+  if(ret.length&&acid.some(a=>ret.some(r=>overlap(a,r))))add('b','레티놀과 각질 제거 성분을 같은 날 밤에 써요','둘 다 피부를 예민하게 만들 수 있어서 겹치면 따가움·붉어짐이 생기기 쉬워요. 요일을 나눠서 쓰세요. (예: 월·목 레티놀, 화·토 BHA)');
+  if(ret.length)add('t','레티놀을 쓰고 있어요','10대는 꼭 필요하지 않은 경우가 많고 자극도 있어요. 여드름 때문에 쓴다면 피부과에서 상담 받고 쓰는 걸 추천해요.');
+  if(hasIng(pm,'bpo')&&ret.length)add('w','벤조일퍼옥사이드와 레티놀을 같이 써요','함께 쓰면 자극이 커지고, 일부 레티놀은 효과가 떨어질 수 있어요. 아침·저녁으로 나누거나 날을 나눠 쓰세요.');
+  for(const [nm,rt] of [['아침',am],['저녁',pm]]){const acts=new Set();rt.forEach(s=>ingsOf(s).filter(i=>ACTIVES.includes(i)).forEach(i=>acts.add(i)));
+    if(acts.size>=3)add('w',`${nm}에 기능성 성분이 ${acts.size}개 겹쳐요`,[...acts].map(i=>ING[i]).join(', ')+' — 한 번에 하나씩 늘려 가야 어떤 게 맞는지 알 수 있고 자극도 줄어요.');
+    if(acts.has('vitc')&&(acts.has('aha')||acts.has('bha')))add('t',`${nm}에 비타민C와 각질 제거 성분이 같이 있어요`,'예민한 피부라면 따가울 수 있어요. 비타민C는 아침, 각질 제거는 밤으로 나눠 보세요.')}
+  const exW=all.filter(s=>s.cat==='exfol'||s.cat==='pad'&&ingsOf(s).some(i=>['aha','bha','pha'].includes(i))||ingsOf(s).some(i=>['aha','bha'].includes(i))).reduce((m,s)=>m+perWeek(s),0);
+  const lim=sk.sens?2:3;if(exW>lim)add('w',`각질 제거를 주 ${exW}회 하고 있어요`,`대부분 주 1~${lim}회면 충분해요. 너무 자주 하면 피부 장벽이 약해져 오히려 붉어지고 건조해져요.`);
+  if(all.some(s=>ingsOf(s).some(i=>['aha','bha','retinol'].includes(i)))&&!has(am,'sun'))add('b','각질 제거·레티놀을 쓰는데 선크림이 없어요','이 성분들은 피부를 햇빛에 예민하게 만들어요. 선크림은 꼭 발라 주세요.');
+  if(sk.sens&&all.some(s=>ingsOf(s).some(i=>['alc','frag'].includes(i))))add('w','민감한 피부인데 알코올·향료가 많은 제품이 있어요','따갑거나 붉어지면 무향·저자극 제품으로 바꿔 보세요.');
+  if((sk.type==='oily'||sk.concerns.includes('acne'))&&has(all,'oil'))add('t','지성·여드름 피부인데 페이스 오일을 써요','트러블이 늘어난다면 오일을 빼고 가벼운 젤 크림으로 바꿔 보세요.');
+  if(state.makeup&&!has(pm,'oilcl'))add('t','화장한 날은 이중 세안을 해 주세요',"오늘 탭에서 '오늘 화장했어요'를 켜면 저녁 체크리스트에 클렌징 오일·밤 단계가 자동으로 생겨요.");
+  // 제품 상태
+  const T=TK();state.products.filter(p=>active(p)&&expireOf(p)&&expireOf(p)<T).forEach(p=>add('w',`'${p.name}' 사용기한이 지났어요`,`개봉일 ${p.opened}부터 ${p.pao}개월이 지났어요. 냄새·색이 변했으면 바꾸는 게 좋아요.`));
+  return out;
+}
+
+/* ============ 머리 검사 ============ */
+function hairCheck(){
+  const out=[],add=(lv,t,d)=>out.push({lv,t,d}),H=state.hair,h=H.habits,rt=state.routines.hair,has=c=>rt.some(s=>s.cat===c);
+  const dmg=H.damage.length>0||H.treat.length>0;
+  if(!has('shampoo'))add('w','샴푸 단계가 없어요','머리 감는 날 루틴에 샴푸를 넣어 주세요.');
+  if(!has('treat')&&!has('cond'))add(dmg?'b':'w','트리트먼트·컨디셔너가 없어요','샴푸 뒤 머리끝은 쉽게 거칠어져요. 중간~끝에 트리트먼트나 컨디셔너를 꼭 발라 주세요.');
+  else add('g','샴푸 뒤에 트리트먼트까지 하고 있어요','');
+  if(h.water==='hot')add('w','뜨거운 물로 감고 있어요','두피 유분이 지나치게 빠지고 머릿결도 푸석해져요. 미지근한 물(체온 정도)로 감고, 마지막은 살짝 시원하게 헹궈 보세요.');
+  else if(h.water)add('g','물 온도가 적당해요','');
+  if(h.where==='scalp')add('w','트리트먼트를 두피까지 바르고 있어요','트리트먼트는 머리카락용이라 두피에 바르면 모공이 막히거나 떡지기 쉬워요. 귀 높이 아래 중간~끝에만 발라 주세요.');
+  if(h.where!=='none'&&h.wait==='0')add('t','트리트먼트를 바로 헹구고 있어요','제품 설명에 맞춰 1~3분(헤어팩은 5~10분) 기다렸다 헹구면 효과가 더 좋아요.');
+  if(h.towel==='rub')add('b','수건으로 박박 비비고 있어요','젖은 머리는 가장 약한 상태라 마찰로 큐티클이 쉽게 상해요. 수건으로 감싸서 꾹꾹 눌러 물기만 빼 주세요.');
+  else if(h.towel)add('g','수건 쓰는 방법이 좋아요','');
+  if(h.dryer==='none'&&(H.habits.wetbed==='often'||H.habits.wetbed==='some'))add('b','자연 건조 + 젖은 채로 잘 때가 있어요','두피가 오래 젖어 있으면 냄새·가려움이 생기기 쉽고, 젖은 머리는 베개 마찰에 쉽게 상해요. 두피만이라도 꼭 말리고 자요.');
+  else if(h.wetbed==='often')add('b','젖은 머리로 자주 자요','두피가 축축하면 세균이 자라기 쉽고 머릿결도 베개에 쓸려 상해요. 두피부터 완전히 말리고 자 주세요.');
+  if(h.dryer==='hot')add('w','뜨거운 바람으로만 말려요','뜨거운 바람을 가까이서 오래 쐬면 머릿결이 상해요. 20cm 이상 떨어뜨리고, 80~90% 마르면 찬바람으로 마무리해 주세요.');
+  if(h.dryer==='none')add('t','자연 건조를 하고 있어요','짧은 머리면 괜찮지만, 길면 두피가 오래 젖어 있어요. 두피 쪽만이라도 드라이기로 말려 주세요.');
+  if(h.dryer==='mix')add('g','온풍 → 찬바람 마무리, 잘하고 있어요','');
+  if((h.dryer&&h.dryer!=='none'||h.iron&&h.iron!=='none')&&h.protect==='no'&&!has('heat')&&!has('leavein'))add('w','열을 쓰는데 보호 제품이 없어요','드라이·고데기 전에 노워시 트리트먼트나 열 보호제를 머리 중간~끝에 발라 주세요. 열 손상을 줄여 줘요.');
+  if(h.iron==='daily')add('b','고데기·매직기를 거의 매일 써요','열 손상이 쌓이면 끊기고 갈라져요. 쓰는 날을 줄이고, 꼭 열 보호제를 바르고, 온도를 낮게 쓰세요.');
+  if(h.brush==='wethard')add('w','젖었을 때 위에서부터 세게 빗어요','젖은 머리는 잘 늘어나고 끊겨요. 굵은 빗으로 끝부터 조금씩 풀면서 올라가세요.');
+  if(h.when==='am'&&H.scalp==='oily')add('t','지성 두피인데 아침에 감아요','하루 동안 쌓인 피지와 먼지는 저녁에 감는 게 두피에 더 좋아요. 아침에 꼭 감고 싶으면 저녁 샴푸 + 아침엔 물로 정리해 보세요.');
+  if(H.scalp==='oily'&&!has('scalp'))add('t','지성 두피라면 두피 스케일링을 추가해 보세요','두피 스케일러는 주 1회 정도면 충분해요. 샴푸는 두피 위주로, 손끝(손톱 말고)으로 문질러 감아 주세요.');
+  if(dmg&&!rt.some(s=>s.cat==='treat'&&s.days))add('t','손상모라면 주 1~2회 헤어팩을 추가해 보세요','평소 트리트먼트에 더해, 주 1~2회는 헤어팩을 5~10분 두었다가 헹구는 집중 관리를 해 주세요.');
+  if(H.treat.includes('bleach'))add('t','탈색한 머리는 특히 조심해야 해요','단백질(케라틴) 트리트먼트와 보습 트리트먼트를 번갈아 쓰고, 열 기구는 최대한 줄이세요.');
+  const T=TK();state.products.filter(p=>active(p)&&cdom(p.cat)==='hair'&&expireOf(p)&&expireOf(p)<T).forEach(p=>add('w',`'${p.name}' 사용기한이 지났어요`,''));
+  return out;
+}
+function resHtml(list){
+  const n={b:0,w:0,t:0,g:0};list.forEach(r=>n[r.lv]++);const ord={b:0,w:1,t:2,g:3},ic={b:'!',w:'!',t:'i',g:'✓'};
+  return `<div class="score"><div style="background:var(--badS);color:var(--bad)"><b>${n.b}</b><small>꼭 고치기</small></div><div style="background:var(--warnS);color:var(--warn)"><b>${n.w}</b><small>고치면 좋음</small></div><div style="background:var(--accS);color:var(--accent)"><b>${n.t}</b><small>팁</small></div><div style="background:var(--goodS);color:var(--good)"><b>${n.g}</b><small>잘하는 점</small></div></div>
+  ${list.slice().sort((a,b)=>ord[a.lv]-ord[b.lv]).map(r=>`<div class="res ${r.lv}"><span class="ic">${ic[r.lv]}</span><div><b>${esc(r.t)}</b>${r.d?`<small>${esc(r.d)}</small>`:''}</div></div>`).join('')}`;
+}
+
+/* ============ 추천 ============ */
+function skinRec(){
+  const S=state.skin,t=S.type||'normal',c=S.concerns,am=[],pm=[],tips=[],ing=[];
+  am.push(t==='oily'||t==='combo'?['foam','순한 약산성 클렌저(번들거릴 때) 또는 물세안']:['water','미지근한 물세안']);
+  am.push(['toner',t==='dry'?'수분 토너':'가벼운 토너']);
+  if(c.includes('tone')||c.includes('scar'))am.push(['serum','비타민C 또는 나이아신아마이드 세럼']);
+  am.push(t==='oily'?['lotion','가벼운 젤·로션']:['cream',t==='dry'?'보습 크림':'가벼운 크림']);
+  am.push(['sun','선크림 (SPF30 이상)']);
+  pm.push(['foam','약산성 저자극 폼·젤 클렌저']);pm.push(['toner','토너']);
+  if(t==='dry'||c.includes('dry'))pm.push(['serum','히알루론산·세라마이드 세럼']);
+  if(c.includes('acne')||c.includes('pore'))pm.push(['serum','BHA(살리실산) 제품 — 주 2~3회만']);
+  if(c.includes('flake'))pm.push(['exfol','AHA·PHA 각질 케어 — 주 1~2회']);
+  if(c.includes('acne'))pm.push(['spot','스팟 케어 — 난 곳에만']);
+  pm.push(t==='oily'?['lotion','젤 크림·로션']:['cream',t==='dry'?'세라마이드 보습 크림':'크림']);
+  if(c.includes('acne'))ing.push(['BHA(살리실산)','모공 속 피지를 녹여서 여드름·블랙헤드에 좋아요. 처음엔 주 2회부터.']);
+  if(c.includes('pore')||c.includes('tone'))ing.push(['나이아신아마이드','피지 조절, 톤 개선에 도움. 자극이 적어 매일 써도 되는 편이에요.']);
+  if(c.includes('dry')||t==='dry')ing.push(['세라마이드·히알루론산','피부 장벽을 채우고 수분을 붙잡아 줘요.']);
+  if(c.includes('red')||S.sens)ing.push(['시카(병풀)·판테놀','진정에 좋아요. 무향 제품을 고르세요.']);
+  if(c.includes('tone')||c.includes('scar'))ing.push(['비타민C','자국·톤 개선. 아침에 쓰고 꼭 선크림과 같이.']);
+  if(c.includes('flake'))ing.push(['AHA·PHA','각질을 녹여요. PHA가 더 순해요. 주 1~2회.']);
+  if(S.sens)tips.push('새 제품은 귀 뒤나 턱선에 3일 정도 먼저 발라 보고 괜찮으면 얼굴 전체에 쓰세요.','단계를 줄이고, 무향·저자극 표시 제품을 고르세요.');
+  if(c.includes('acne'))tips.push('여드름은 짜지 마세요. 자국이 남기 쉬워요.','베갯잇과 휴대폰 화면을 자주 닦아 주세요.','심하거나 오래가면 피부과 진료가 가장 빨라요.');
+  tips.push('기능성 제품은 한 번에 하나씩 추가하고 2~4주 지켜보세요.');
+  return {am,pm,ing,tips};
+}
+function hairRec(){
+  const H=state.hair,d=H.damage,tr=H.treat,list=[];
+  const add=(cat,name,why,how)=>list.push({cat,name,why,how});
+  add('shampoo',H.scalp==='oily'?'지성 두피용·딥클렌징 샴푸':H.scalp==='dry'||H.scalp==='sens'?'약산성·저자극 샴푸':'약산성 샴푸','샴푸는 머리카락보다 두피에 맞춰 고르세요.',H.scalp==='oily'?'두피에 거품 내서 손끝으로 마사지. 떡지면 두 번 감기(첫 번은 가볍게).':'두피에 거품 내서 손끝으로 1~2분 마사지하고 충분히 헹구기.');
+  add('treat','트리트먼트','샴푸 후 거칠어진 머리카락 표면을 정리하고 영양을 줘요.','귀 높이 아래 중간~끝에만. 1~3분 두었다 헹구기.');
+  if(d.length||tr.length)add('treat','헤어팩(집중 트리트먼트) — 주 1~2회',tr.includes('bleach')||d.includes('break')?'끊기는 머리엔 단백질(케라틴) 성분이 들어간 제품이 좋아요.':'손상된 머릿결에 영양을 몰아서 채워 줘요.','물기를 꼭 짠 머리에 듬뿍, 5~10분(수건이나 헤어캡 씌우면 더 좋아요) 뒤 헹구기.');
+  if(d.length||tr.length||H.habits.dryer!=='none')add('leavein','노워시 트리트먼트·헤어 에센스','헹구지 않고 남아서 드라이 열과 마찰로부터 보호해 줘요.','수건 드라이 후 젖은 머리 중간~끝에 1~2펌프. 드라이 전에.');
+  if(H.habits.iron&&H.habits.iron!=='none'||H.habits.dryer==='hot')add('heat','열 보호제(스프레이)','고데기·드라이 열 손상을 줄여 줘요.','열 쓰기 직전, 머리 중간~끝에 고르게. 고데기는 다 마른 머리에만.');
+  if(d.includes('split')||d.includes('frizz')||d.includes('static'))add('hoil','헤어 오일','부스스함과 정전기를 잡고 윤기를 줘요.','다 말린 뒤 끝에만 아주 소량(1~2방울). 많이 바르면 떡져요.');
+  if(H.scalp==='oily')add('scalp','두피 스케일러 — 주 1회','두피 각질과 피지를 정리해 줘요.','샴푸 전 마른 두피에 바르고 마사지 후 샴푸.');
+  const tips=[];
+  if(d.includes('split'))tips.push('이미 갈라진 끝은 제품으로 붙지 않아요. 2~3달에 한 번 끝만 1~2cm 다듬으면 더 올라가지 않아요.');
+  if(d.includes('tangle'))tips.push('엉킨 머리는 굵은 빗으로 끝부터 조금씩. 샴푸 전 마른 상태에서 한 번 빗고 감으면 덜 엉켜요.');
+  if(d.includes('static'))tips.push('정전기가 심하면 드라이 마지막에 찬바람을 쐬고, 플라스틱 빗 대신 나무 빗을 써 보세요.');
+  if(d.includes('flat'))tips.push('힘이 없으면 트리트먼트를 두피 근처엔 피하고, 두피 쪽을 반대 방향으로 말려 볼륨을 살려 보세요.');
+  tips.push('베갯잇이 거칠면 자는 동안 마찰이 커요. 매끄러운 베갯잇이나 느슨하게 묶고 자는 것도 도움이 돼요.');
+  return {list,tips};
+}
+const DRY=[
+  ['towel','수건으로 꾹꾹 눌러 물기 빼기','비비지 말고 수건으로 감싸 눌러 주세요. 머리가 길면 수건으로 감싸 5분 정도 두면 드라이 시간이 확 줄어요.',h=>h.towel==='rub'?'지금: 박박 비빔 → 눌러 주기로':h.towel?'잘하고 있어요':''],
+  ['protect','중간~끝에 노워시 트리트먼트나 열 보호제','젖은 머리에 1~2펌프. 두피엔 바르지 마세요.',h=>h.protect==='no'?'지금: 안 바름 → 추가해 보기':h.protect?'잘하고 있어요':''],
+  ['scalp','두피부터 말리기','손가락으로 두피 쪽 머리를 털어 주며 뿌리부터 바람을 넣어요. 두피가 다 마르면 머리카락은 금방 말라요.',()=>''],
+  ['temp','온풍, 20cm 이상 떨어뜨려서','한곳에 오래 대지 말고 계속 움직여요. 위에서 아래로 바람을 주면 큐티클이 정리돼 윤기가 나요.',h=>h.dryer==='hot'?'지금: 뜨거운 바람만 → 거리 두고 중간 온도로':''],
+  ['cool','80~90% 마르면 찬바람으로 마무리','찬바람이 큐티클을 닫아 줘서 부스스함과 정전기가 줄어요.',h=>h.dryer==='mix'?'잘하고 있어요':h.dryer?'지금: 찬바람 마무리 없음 → 추가':''],
+  ['finish','다 마르고 끝이 거칠면 오일 1~2방울','끝에만 아주 소량. 그리고 젖은 채로 자지 않기.',h=>h.wetbed==='often'?'지금: 젖은 채로 자주 잠 → 꼭 말리고 자기':'']];
+
+/* ============ 화면 ============ */
+const main=document.getElementById('main');
+let R={v:'today'};
+function go(v,o){R=Object.assign({v},o||{});render();window.scrollTo(0,0)}
+function render(){const nav={today:'today',skin:'skin',skintest:'skin',hair:'hair',hairtest:'hair',prod:'prod',pform:'prod',pdetail:'prod',set:'set'}[R.v];
+  document.querySelectorAll('.nav [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===nav));
+  ({today:vToday,skin:vSkin,skintest:vSkinTest,hair:vHair,hairtest:vHairTest,prod:vProd,pform:vPForm,pdetail:vPDetail,set:vSet})[R.v]()}
+
+/* ----- 오늘 ----- */
+function todaySteps(rt,dow){return state.routines[rt].filter(s=>stepOn(s,dow))}
+function ckRow(group,s,on,virt){return `<button class="ck${on?' on':''}${virt?' virt':''}" data-ck="${group}" data-sid="${s.id}"><span class="bx">${on?'✓':''}</span><span class="tx"><b>${cicon(s.cat)} ${esc(virt?virt:stepName(s))}</b><small>${esc(cn(s.cat))}${s.days?` · ${s.days.map(d=>DOW[d]).join('')}만`:''}</small></span></button>`}
+function vToday(){
+  const T=TK(),dow=today().getDay(),D=dayRec(T),am=todaySteps('am',dow),pm=todaySteps('pm',dow),mk=state.makeup?todaySteps('mk',dow):[],hr=todaySteps('hair',dow);
+  D.am=D.am||{};D.pm=D.pm||{};D.hr=D.hr||{};D.mk=D.mk||{};
+  const pmList=pm.slice(),dbl=state.makeup&&D.makeup&&!pm.some(s=>s.cat==='oilcl');
+  const done=(g,list)=>list.filter(s=>D[g][s.id]).length;
+  const patches=state.products.filter(p=>active(p)&&p.patch&&p.patch.state==='on');
+  const brushDue=state.makeup&&state.brush&&diffDays(state.brush,T)>=7;
+  const expired=state.products.filter(p=>active(p)&&expireOf(p)&&expireOf(p)<T);
+  let week=0;for(let i=0;i<7;i++){const r=state.days[keyOf(addDays(today(),-i))];if(r&&r.pm&&Object.keys(r.pm).length)week++}
+  const card=(title,g,list,extra)=>{const n=done(g,list)+(g==='pm'&&dbl&&D.pm.dbl?1:0),tot=list.length+(g==='pm'&&dbl?1:0);
+    return `<section class="card"><div class="row sb"><h3 style="margin:0">${title}</h3><span class="small muted">${n} / ${tot}</span></div><div class="prog"><i style="width:${tot?n/tot*100:0}%"></i></div>${extra||''}${list.map(s=>ckRow(g,s,D[g][s.id])).join('')||'<p class="hint">오늘 할 단계가 없어요.</p>'}</section>`};
+  main.innerHTML=`<h2>${today().getMonth()+1}월 ${today().getDate()}일 ${DOW[dow]}요일</h2><p class="hint">최근 7일 중 저녁 루틴 한 날: ${week}일</p>
+  ${!state.skin.type?'<div class="banner a">🧪 아직 피부 타입을 몰라요. <button class="lnk" data-go="skintest">피부 타입 테스트 하기</button></div>':''}
+  ${!hairDone()?'<div class="banner a">💇 머리 관리 습관을 알려주면 맞는지 봐 드려요. <button class="lnk" data-go="hairtest">머리 테스트 하기</button></div>':''}
+  ${patches.map(p=>{const n=diffDays(p.patch.start,T)+1;return `<div class="banner w">🧪 <b>${esc(p.name)}</b> 패치 테스트 ${n}일째 · 귀 뒤나 턱선에 발라 보는 중${n>=3?'<div class="row" style="margin-top:8px"><button class="btn sm" data-patch="ok" data-pid="'+p.id+'">괜찮아요 → 얼굴에 쓰기</button><button class="btn sm danger" data-patch="bad" data-pid="'+p.id+'">반응 있어요</button></div>':`<div class="small muted">3일째에 괜찮은지 물어볼게요</div>`}</div>`}).join('')}
+  ${expired.length?`<div class="banner b">⏰ 사용기한 지난 제품: ${expired.map(p=>esc(p.name)).join(', ')}</div>`:''}
+  ${brushDue?`<div class="banner w">🖌️ 브러시·퍼프 씻은 지 ${diffDays(state.brush,T)}일 됐어요. <button class="lnk" data-act="brushDone">오늘 씻었어요</button></div>`:''}
+  ${card('☀️ 아침','am',am)}
+  ${state.makeup?`<button class="tog${D.makeup?' on':''}" data-act="mkToday"><span>💄 오늘 화장했어요<small class="muted" style="display:block;font-size:12px">켜면 저녁에 이중 세안이 추가돼요</small></span><i></i></button>${D.makeup&&mk.length?card('💄 화장','mk',mk):''}`:''}
+  ${card('🌙 저녁','pm',pmList,dbl?`<button class="ck virt${D.pm.dbl?' on':''}" data-ck="pm" data-sid="dbl"><span class="bx">${D.pm.dbl?'✓':''}</span><span class="tx"><b>🫧 이중 세안 먼저: 클렌징 오일·밤</b><small>화장한 날 추가 단계 · 마른 얼굴에 마사지 → 물로 유화 → 헹구기</small></span></button>`:'')}
+  <button class="tog${D.washed?' on':''}" data-act="washed"><span>🚿 오늘 머리 감았어요</span><i></i></button>
+  ${D.washed?card('💇 머리','hr',hr,'')+`<p class="hint" style="margin-top:-4px">말릴 때는 <button class="lnk" data-go="hair" data-sub="dry">말리는 순서</button> 참고</p>`:''}
+  <section class="card"><h3>오늘 상태</h3><label style="margin-top:0">피부</label><div class="rt">${COND.map(([v,e,t])=>`<button class="${D.sk===v?'on':''}" data-cond="sk" data-v="${v}"><b>${e}</b>${t}</button>`).join('')}</div>
+  <label>머릿결</label><div class="rt">${COND.map(([v,e,t])=>`<button class="${D.hc===v?'on':''}" data-cond="hc" data-v="${v}"><b>${e}</b>${t}</button>`).join('')}</div>
+  <p class="hint" style="margin:8px 0 0">상태를 남기면 제품을 바꾼 전후로 좋아졌는지 비교해 드려요.</p></section>`;
+  save();
+}
+
+/* ----- 피부 ----- */
+function routineEditor(rt,title,dom){
+  const list=state.routines[rt],cats=Object.keys(CAT).filter(k=>cdom(k)===dom&&(rt==='am'?CAT[k][3]!=='pm':rt==='pm'?CAT[k][3]!=='am':true));
+  return `<section class="card"><div class="row sb"><h3 style="margin:0">${title}</h3>${list.length>1&&dom!=='hair'?`<button class="lnk" data-sort="${rt}">추천 순서로 정렬</button>`:''}</div>
+  ${list.map((s,i)=>{const opts=state.products.filter(p=>active(p)&&p.cat===s.cat);return `<div class="step"><div class="mv"><button data-mv="${rt}" data-i="${i}" data-d="-1" aria-label="위로">▲</button><button data-mv="${rt}" data-i="${i}" data-d="1" aria-label="아래로">▼</button></div>
+    <div><div class="row"><span class="num">${i+1}</span><b style="font-weight:400">${cicon(s.cat)} ${esc(cn(s.cat))}</b></div>
+    ${s.cat!=='water'?`<select class="in" style="margin-top:6px;padding:6px 8px;font-size:14px" data-sp="${rt}" data-i="${i}"><option value="">(제품 없이)</option>${opts.map(p=>`<option value="${p.id}"${p.id===s.pid?' selected':''}>${esc(p.name)}</option>`).join('')}<option value="__new">+ 새 제품 등록</option></select>`:''}
+    <div class="dw">${[1,2,3,4,5,6,0].map(d=>`<button class="${!s.days||s.days.includes(d)?'on':''}" data-dw="${rt}" data-i="${i}" data-d="${d}">${DOW[d]}</button>`).join('')}</div></div>
+    <button class="lnk" data-rm="${rt}" data-i="${i}" aria-label="삭제">빼기</button></div>`}).join('')||'<p class="hint">아직 단계가 없어요.</p>'}
+  <div class="row" style="margin-top:10px"><select class="in" id="add-${rt}">${cats.map(k=>`<option value="${k}">${cicon(k)} ${cn(k)}</option>`).join('')}</select><button class="btn sm" data-addstep="${rt}">단계 추가</button></div>
+  <p class="hint" style="margin:6px 0 0">요일 버튼을 끄면 그 요일엔 체크리스트에 안 나와요. (예: 각질 제거는 주 2회만)</p></section>`;
+}
+function condChart(key,dom){
+  const N=42,T=today(),W=340,H=90,L=8,R2=W-8,x=i=>L+(R2-L)*i/(N-1),y=v=>H-20-(v-1)*25;
+  let g='';[1,2,3].forEach(v=>g+=`<line x1="${L}" x2="${R2}" y1="${y(v)}" y2="${y(v)}" stroke="#eef2f1"/>`);
+  const pts=[];for(let i=0;i<N;i++){const k=keyOf(addDays(T,i-N+1)),r=state.days[k];if(r&&r[key])pts.push([x(i),y(r[key]),r[key]])}
+  if(pts.length>1)g+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1]).join(' ')}" fill="none" stroke="#2f8c8f" stroke-width="1.5" opacity=".5"/>`;
+  pts.forEach(p=>g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1]}" r="3.5" fill="${p[2]===3?'#3f8f5e':p[2]===2?'#d9a03b':'#cc5644'}"/>`);
+  state.products.filter(p=>p.prev&&cdom(p.cat)===dom).forEach(p=>{const i=diffDays(keyOf(addDays(T,-N+1)),p.start);if(i>=0&&i<N)g+=`<line x1="${x(i)}" x2="${x(i)}" y1="4" y2="${H-14}" stroke="#e0765f" stroke-dasharray="3 3"/><text x="${x(i)+3}" y="12" font-size="9" fill="#e0765f">${esc(cn(p.cat))} 교체</text>`});
+  g+=`<text x="${L}" y="${H-2}" font-size="10" fill="#728087">${md(keyOf(addDays(T,-N+1)))}</text><text x="${R2}" y="${H-2}" font-size="10" fill="#728087" text-anchor="end">오늘</text>`;
+  return pts.length?`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 6주 상태">${g}</svg><div class="small muted">😊 위 · 😣 아래 · 점선 = 제품 바꾼 날</div>`:'<p class="hint">오늘 탭에서 상태를 남기면 여기 그래프가 생겨요.</p>';
+}
+function vSkin(){
+  R.sub=R.sub||'check';const S=state.skin;
+  const subs=[['check','검사'],['routine','루틴 편집'],['rec','추천'],['trend','변화']].concat(state.makeup?[['mk','화장']]:[]);
+  let h=`<h2>피부</h2><div class="card" style="padding:12px 16px"><div class="row sb"><div>${S.type?`<b>${TYPE[S.type]}</b>${S.sens?' · 민감':''}`:'<b>피부 타입 미확인</b>'}<div class="small muted">${S.concerns.length?S.concerns.map(c=>CONC.find(x=>x[0]===c)[1]).join(', '):'고민 없음'}</div></div><button class="btn sm" data-go="skintest">${S.type?'다시 테스트':'테스트 하기'}</button></div></div>
+  <div class="subtabs">${subs.map(([k,l])=>`<button class="${R.sub===k?'on':''}" data-sub="${k}">${l}</button>`).join('')}</div>`;
+  if(R.sub==='check'){const am=state.routines.am,pm=state.routines.pm;
+    h+=`<section class="card"><h3>지금 내 루틴</h3><h4 style="margin-top:0">☀️ 아침</h4><div class="flow">${am.map((s,i)=>`${i?'<em>→</em>':''}<span>${esc(cn(s.cat))}</span>`).join('')||'<em>없음</em>'}</div>
+    <h4>🌙 저녁</h4><div class="flow">${pm.map((s,i)=>`${i?'<em>→</em>':''}<span>${esc(cn(s.cat))}</span>`).join('')||'<em>없음</em>'}</div></section>
+    <section class="card"><h3>내 방법 맞아요?</h3>${resHtml(skinCheck())}<p class="hint" style="margin-top:10px">일반적으로 알려진 원칙으로 확인한 결과예요. 피부 질환이나 심한 트러블은 피부과 진료가 가장 정확해요.</p></section>`}
+  if(R.sub==='routine')h+=routineEditor('am','☀️ 아침 루틴','skin')+routineEditor('pm','🌙 저녁 루틴','skin');
+  if(R.sub==='mk')h+=`<section class="card"><h3>화장 관리</h3><p class="hint">화장한 날엔 저녁에 클렌징 오일·밤으로 먼저 지우는 이중 세안을 해 주세요.</p>
+    <div class="row sb"><span>🖌️ 브러시·퍼프 마지막으로 씻은 날: <b>${state.brush?md(state.brush):'기록 없음'}</b></span><button class="btn sm" data-act="brushDone">오늘 씻음</button></div>
+    <p class="hint" style="margin-top:6px">퍼프는 2~3일, 브러시는 1~2주에 한 번 씻는 걸 추천해요. 7일이 지나면 오늘 탭에서 알려 드려요.</p></section>`+routineEditor('mk','💄 화장 순서','mk');
+  if(R.sub==='rec'){const r=skinRec(),cur=new Set(state.routines.am.concat(state.routines.pm).map(s=>s.cat));
+    const flow=(list,rt)=>{const have=new Set(state.routines[rt].map(s=>s.cat));return list.map(([c,n],i)=>`${i?'<em>→</em>':''}<span class="${have.has(c)?'':'add'}" title="${esc(n)}">${esc(n)}</span>`).join('')};
+    h+=`${!S.type?'<div class="banner a">피부 타입 테스트를 하면 나에게 맞춘 추천으로 바뀌어요. 지금은 중성 기준이에요.</div>':''}
+    <section class="card"><h3>${TYPE[S.type||'normal']} 피부 추천 루틴</h3><h4 style="margin-top:0">☀️ 아침</h4><div class="flow">${flow(r.am,'am')}</div><h4>🌙 저녁</h4><div class="flow">${flow(r.pm,'pm')}</div>
+    <p class="hint" style="margin-top:10px"><span class="tag g">초록 테두리</span> = 지금 루틴에 없는 단계. 꼭 다 할 필요는 없고, 하나씩 추가해 보세요.</p></section>
+    ${r.ing.length?`<section class="card"><h3>찾아볼 성분</h3>${r.ing.map(([n,d])=>`<div class="rec"><b>${n}</b><small>${d}</small></div>`).join('')}</section>`:''}
+    <section class="card"><h3>팁</h3>${r.tips.map(t=>`<div class="rec"><small style="color:var(--ink)">${t}</small></div>`).join('')}</section>`}
+  if(R.sub==='trend')h+=`<section class="card"><h3>최근 6주 피부 상태</h3>${condChart('sk','skin')}</section>${switchList('skin')}`;
+  main.innerHTML=h;
+}
+function switchList(dom){const sw=state.products.filter(p=>p.prev&&(cdom(p.cat)===dom||dom==='skin'&&cdom(p.cat)==='mk'));
+  return sw.length?`<section class="card"><h3>바꾼 제품 효과</h3>${sw.map(p=>{const c=compare(p),o=pById(p.prev);return `<button class="prod" data-pd="${p.id}"><span class="em">${cicon(p.cat)}</span><div><b>${esc(o?o.name:'?')} → ${esc(p.name)}</b><small>${md(p.start)} 교체 · ${c?c.txt:'전후 기록이 아직 부족해요'}</small></div>${c?`<span class="tag ${c.cls}">${c.short}</span>`:''}</button>`}).join('')}</section>`:''}
+function compare(p){const key=cdom(p.cat)==='hair'?'hc':'sk',b=[],a=[];
+  for(let i=1;i<=14;i++){const r=state.days[keyOf(addDays(dateOf(p.start),-i))];if(r&&r[key])b.push(r[key])}
+  for(let i=0;i<14;i++){const k=keyOf(addDays(dateOf(p.start),i));if(k>TK())break;const r=state.days[k];if(r&&r[key])a.push(r[key])}
+  if(b.length<3||a.length<3)return null;const d=mean(a)-mean(b);
+  return {d,cls:d>=.3?'g':d<=-.3?'b':'',short:d>=.3?'좋아짐':d<=-.3?'나빠짐':'비슷',txt:`바꾸기 전 2주 평균 ${mean(b).toFixed(1)} → 후 ${mean(a).toFixed(1)}`}}
+function vSkinTest(){
+  const A=state.skin.answers||{},done=Object.keys(A).length===SKQ.length,res=done?skinResult(A):null;
+  main.innerHTML=`<div><button class="lnk" data-go="skin">‹ 피부</button></div><h2>피부 타입 테스트</h2><p class="hint">평소 상태를 떠올리며 골라 주세요. 7문항이에요.</p>
+  ${SKQ.map(([q,opts],i)=>`<div class="card q"><b>${i+1}. ${q}</b><div class="opts">${opts.map(([t],j)=>`<button class="${A[i]===j?'on':''}" data-sq="${i}" data-j="${j}">${t}</button>`).join('')}</div></div>`).join('')}
+  ${res?`<section class="card"><div class="small muted" style="text-align:center">나의 피부 타입</div><div class="typebig">${TYPE[res.type]}${res.sens?' · 민감':''}</div>
+    <p class="hint" style="text-align:center;margin-top:6px">${{oily:'피지가 많은 편이라 가볍게 보습하고 꼼꼼히 세안하는 게 중요해요.',dry:'수분과 유분이 모두 부족하기 쉬워요. 보습을 충분히 하고 자극을 줄여요.',combo:'T존은 번들, 볼은 건조한 편이에요. 부위별로 양을 조절해요.',normal:'균형이 좋은 편이에요. 기본 보습과 선크림만 잘 챙겨도 충분해요.'}[res.type]}</p>
+    <label>고민 (여러 개 골라도 돼요)</label><div class="chips">${CONC.map(([k,l])=>`<button class="chip ${(R.conc||state.skin.concerns).includes(k)||(!R.conc&&!state.skin.concerns.length&&k==='acne'&&res.acne)?'on':''}" data-conc="${k}">${l}</button>`).join('')}</div>
+    <button class="btn pri full" data-act="skinSave">저장하고 검사 보기</button></section>`:`<p class="hint" style="text-align:center">${Object.keys(A).length} / ${SKQ.length} 답함</p>`}`;
+  if(res&&!R.conc){R.conc=state.skin.concerns.length?state.skin.concerns.slice():res.acne?['acne']:[]}
+}
+
+/* ----- 머리 ----- */
+function vHair(){
+  R.sub=R.sub||'check';const H=state.hair;
+  const subs=[['check','검사'],['dry','말리는 법'],['rec','제품 추천'],['routine','루틴 편집'],['trend','변화']];
+  let h=`<h2>머리</h2><div class="card" style="padding:12px 16px"><div class="row sb"><div>${H.scalp?`<b>${{oily:'지성 두피',normal:'보통 두피',dry:'건성 두피',sens:'민감한 두피'}[H.scalp]}</b>`:'<b>머리 상태 미확인</b>'}<div class="small muted">${H.damage.length?H.damage.map(k=>HDMG.find(x=>x[0]===k)[1]).join(', '):''}${H.treat.length?' · 시술: '+H.treat.map(k=>HTRT.find(x=>x[0]===k)[1]).join(', '):''}</div></div><button class="btn sm" data-go="hairtest">${hairDone()?'다시 하기':'테스트 하기'}</button></div></div>
+  <div class="subtabs">${subs.map(([k,l])=>`<button class="${R.sub===k?'on':''}" data-sub="${k}">${l}</button>`).join('')}</div>`;
+  if(R.sub==='check'){const rt=state.routines.hair;
+    h+=`<section class="card"><h3>지금 내 루틴</h3><div class="flow">${rt.map((s,i)=>`${i?'<em>→</em>':''}<span>${esc(cn(s.cat))}</span>`).join('')||'<em>없음</em>'}</div></section>
+    ${hairDone()?'':'<div class="banner a">💇 머리 테스트를 하면 감는 법·말리는 법까지 확인해 드려요. <button class="lnk" data-go="hairtest">테스트 하기</button></div>'}
+    <section class="card"><h3>내 방법 맞아요?</h3>${resHtml(hairCheck())}</section>`}
+  if(R.sub==='dry')h+=`<section class="card"><h3>머리 말리는 순서</h3>${DRY.map(([k,t,d,f],i)=>{const me=f(H.habits);return `<div class="gs"><span class="n">${i+1}</span><div><b>${t}</b><small>${d}</small>${me?`<span class="me${me==='잘하고 있어요'?' ok':''}">${esc(me)}</span>`:''}</div></div>`}).join('')}</section>
+    <section class="card"><h3>하지 말아야 할 것</h3><div class="rec"><b>수건으로 비비기</b><small>젖은 머리는 마찰에 가장 약해요.</small></div><div class="rec"><b>젖은 채로 묶거나 자기</b><small>두피가 오래 축축하면 냄새·가려움이 생기고, 머리카락도 늘어나 끊기기 쉬워요.</small></div><div class="rec"><b>드라이기를 한곳에 오래</b><small>뜨거운 바람을 가까이서 오래 쐬면 열 손상이 생겨요.</small></div><div class="rec"><b>젖은 머리에 고데기</b><small>머리카락 속 물이 끓으면서 손상이 커져요. 다 말린 뒤에만.</small></div></section>`;
+  if(R.sub==='rec'){const r=hairRec(),have=new Set(state.routines.hair.map(s=>s.cat));
+    h+=`${!hairDone()?'<div class="banner a">머리 테스트를 하면 내 머리에 맞춰 추천해요.</div>':''}<section class="card"><h3>나에게 맞는 제품 종류</h3>${r.list.map(x=>`<div class="rec"><b>${cicon(x.cat)} ${esc(x.name)} ${have.has(x.cat)?'<span class="tag g">쓰는 중</span>':'<span class="tag w">추가 추천</span>'}</b><small>${esc(x.why)}</small><div class="how">사용법: ${esc(x.how)}</div></div>`).join('')}
+    <p class="hint" style="margin-top:8px">브랜드보다 종류와 사용법이 더 중요해요. 바꿀 땐 한 번에 하나씩 바꿔야 어떤 게 맞는지 알 수 있어요.</p></section>
+    <section class="card"><h3>팁</h3>${r.tips.map(t=>`<div class="rec"><small style="color:var(--ink)">${t}</small></div>`).join('')}</section>`}
+  if(R.sub==='routine')h+=routineEditor('hair','🚿 머리 감는 날 루틴','hair');
+  if(R.sub==='trend')h+=`<section class="card"><h3>최근 6주 머릿결 상태</h3>${condChart('hc','hair')}</section>${switchList('hair')}`;
+  main.innerHTML=h;
+}
+function vHairTest(){
+  const H=state.hair,hb=H.habits,sc=H.scalp;
+  main.innerHTML=`<div><button class="lnk" data-go="hair">‹ 머리</button></div><h2>머리 상태·습관 테스트</h2><p class="hint">지금 하는 그대로 골라 주세요. 맞는지는 다음 화면에서 알려 드려요.</p>
+  <div class="card q"><b>요즘 머릿결은? (여러 개)</b><div class="chips">${HDMG.map(([k,l])=>`<button class="chip ${H.damage.includes(k)?'on':''}" data-hdmg="${k}">${l}</button>`).join('')}</div></div>
+  <div class="card q"><b>최근 1년 안에 한 시술 (여러 개)</b><div class="chips">${HTRT.map(([k,l])=>`<button class="chip ${H.treat.includes(k)?'on':''}" data-htrt="${k}">${l}</button>`).join('')}</div></div>
+  ${Object.entries(HQ).map(([k,[q,opts]])=>`<div class="card q"><b>${q}</b><div class="opts">${opts.map(([v,t])=>`<button class="${(k==='scalp'?sc:hb[k])===v?'on':''}" data-hq="${k}" data-v="${v}">${t}</button>`).join('')}</div></div>`).join('')}
+  <button class="btn pri full" data-act="hairSave">저장하고 검사 보기</button>`;
+}
+
+/* ----- 제품 ----- */
+function vProd(){
+  R.dom=R.dom||'skin';const doms=[['skin','피부'],['hair','머리']].concat(state.makeup?[['mk','화장']]:[]);
+  const cur=state.products.filter(p=>active(p)&&cdom(p.cat)===R.dom).sort((a,b)=>crank(a.cat)-crank(b.cat)),old=state.products.filter(p=>!active(p)&&cdom(p.cat)===R.dom).sort((a,b)=>a.end<b.end?1:-1);
+  const used=new Set(Object.values(state.routines).flat().map(s=>s.pid)),T=TK();
+  main.innerHTML=`<h2>제품</h2><div class="subtabs">${doms.map(([k,l])=>`<button class="${R.dom===k?'on':''}" data-dom="${k}">${l}</button>`).join('')}</div>
+  <button class="btn pri full" data-act="newProd">+ 제품 등록</button>
+  <section class="card"><h3>쓰는 중 <span class="tag">${cur.length}</span></h3>${cur.map(p=>{const ex=expireOf(p);return `<button class="prod" data-pd="${p.id}"><span class="em">${cicon(p.cat)}</span><div><b>${esc(p.name)}</b><small>${esc(cn(p.cat))}${p.ings.length?' · '+p.ings.map(i=>ING[i]).join(', '):''}</small>
+    <small>${ex?(ex<T?'<span class="tag b">사용기한 지남</span>':diffDays(T,ex)<=30?`<span class="tag w">기한 ${diffDays(T,ex)}일 남음</span>`:`기한 ${ex}`):''}${!used.has(p.id)?' <span class="tag w">루틴에 없음</span>':''}${p.patch&&p.patch.state==='on'?' <span class="tag w">패치 테스트 중</span>':''}</small></div><span class="muted">›</span></button>`}).join('')||'<p class="hint">없어요.</p>'}</section>
+  ${old.length?`<section class="card"><h3>지난 제품</h3>${old.map(p=>`<button class="prod" data-pd="${p.id}"><span class="em" style="filter:grayscale(1)">${cicon(p.cat)}</span><div><b>${esc(p.name)}</b><small>${md(p.start)} ~ ${md(p.end)} · ${esc(p.reason||'그만 씀')}</small></div><span class="muted">›</span></button>`).join('')}</section>`:''}`;
+}
+function vPForm(){
+  const p=R.d,cats=Object.keys(CAT).filter(k=>cdom(k)===(R.d.dom||R.dom||'skin'));
+  main.innerHTML=`<div><button class="lnk" data-act="pformBack">‹ 돌아가기</button></div><h2>${R.sw?'다른 제품으로 바꾸기':p.id&&pById(p.id)?'제품 고치기':'제품 등록'}</h2>
+  ${R.sw?`<div class="banner a">'${esc(pById(R.sw).name)}' 대신 쓸 제품이에요. 저장하면 루틴 속 제품도 같이 바뀌고, 바꾼 날이 기록돼요.</div>`:''}
+  <section class="card"><label style="margin-top:0">제품 이름</label><input class="in" data-p="name" value="${esc(p.name)}" placeholder="예: OO 수분 토너">
+  <label>종류</label><select class="in" data-p="cat" ${R.sw?'disabled':''}>${cats.map(k=>`<option value="${k}"${p.cat===k?' selected':''}>${cicon(k)} ${cn(k)}</option>`).join('')}</select>
+  ${cdom(p.cat)!=='hair'?`<label>들어 있는 주요 성분 <small>(제품 뒷면 전성분에서 찾아 체크)</small></label><div class="chips">${Object.entries(ING).filter(([k])=>k!=='water_proof'||p.cat==='sun').map(([k,l])=>`<button class="chip ${p.ings.includes(k)?'on':''}" data-ing="${k}">${l}</button>`).join('')}</div>`:''}
+  <div class="row"><div style="flex:1"><label>개봉일</label><input type="date" class="in" data-p="opened" value="${p.opened}"></div><div style="flex:1"><label>개봉 후 사용기한</label><select class="in" data-p="pao">${[3,6,12,18,24].map(m=>`<option value="${m}"${+p.pao===m?' selected':''}>${m}개월</option>`).join('')}</select></div></div>
+  <p class="hint" style="margin-top:6px">통 뒷면의 열린 뚜껑 그림(예: 12M)이 개봉 후 사용기한이에요.</p>
+  <label>메모</label><input class="in" data-p="memo" value="${esc(p.memo)}" placeholder="예: 향이 좋음, 끈적임 있음">
+  ${R.sw?`<label>바꾸는 이유</label><div class="chips">${['다 써서','안 맞아서','트러블이 나서','더 좋은 걸 찾아서','기타'].map(r=>`<button class="chip ${R.reason===r?'on':''}" data-reason="${r}">${r}</button>`).join('')}</div>`:''}
+  ${cdom(p.cat)==='skin'&&!(p.id&&pById(p.id))?`<button class="tog${p.doPatch?' on':''}" style="margin-top:12px" data-act="togPatch"><span>🧪 패치 테스트 먼저 하기<small class="muted" style="display:block;font-size:12px">귀 뒤·턱선에 3일 발라 보고 괜찮으면 얼굴에</small></span><i></i></button>`:''}</section>
+  <button class="btn pri full" data-act="saveProd">저장</button>`;
+}
+function vPDetail(){
+  const p=pById(R.id);if(!p)return go('prod');const chain=[];let c=p;while(c&&c.prev&&pById(c.prev))c=pById(c.prev);while(c){chain.push(c);c=c.next?pById(c.next):null}
+  const inR=Object.entries(state.routines).filter(([,l])=>l.some(s=>s.pid===p.id)).map(([k])=>({am:'아침',pm:'저녁',hair:'머리',mk:'화장'}[k]));
+  const cmp=p.prev?compare(p):null,ex=expireOf(p);
+  main.innerHTML=`<div><button class="lnk" data-go="prod">‹ 제품</button></div><h2>${cicon(p.cat)} ${esc(p.name)}</h2><p class="hint">${esc(cn(p.cat))}${active(p)?'':' · 지금은 안 씀'}</p>
+  <section class="card">${p.ings.length?`<div class="chips">${p.ings.map(i=>`<span class="chip">${ING[i]}</span>`).join('')}</div>`:'<p class="hint" style="margin:0">체크한 성분 없음</p>'}
+  <p style="margin:10px 0 0;font-size:14px">${p.opened?`개봉 ${p.opened} · 기한 ${ex}`:'개봉일 미입력'}${inR.length?`<br>루틴: ${inR.join(', ')}`:''}${p.memo?`<br>메모: ${esc(p.memo)}`:''}</p>
+  ${cmp?`<div class="banner ${cmp.cls==='g'?'a':cmp.cls==='b'?'b':'w'}" style="margin-bottom:0">${cmp.cls==='g'?'👍':cmp.cls==='b'?'👎':'➖'} 이 제품으로 바꾼 뒤: ${cmp.txt}</div>`:p.prev?'<p class="hint" style="margin:10px 0 0">바꾸기 전후 2주씩 상태 기록이 3일 이상 있으면 효과를 비교해 드려요.</p>':''}</section>
+  ${chain.length>1?`<section class="card"><h3>${esc(cn(p.cat))} 바꾼 기록</h3><div class="hist">${chain.map(x=>`<div class="${x.id===p.id?'cur':''}"><b style="font-weight:${x.id===p.id?700:400}">${esc(x.name)}</b><br><small>${md(x.start)} ~ ${x.end?md(x.end)+' · '+esc(x.reason||''):'지금'}</small></div>`).join('')}</div></section>`:''}
+  ${active(p)?`<button class="btn pri full" data-act="switchProd">🔄 다른 제품으로 바꾸기</button><div class="row" style="margin-top:8px"><button class="btn" data-act="editProd">고치기</button><button class="btn danger" data-act="retireProd">그만 쓰기</button></div>`:`<button class="btn full" data-act="reviveProd">다시 쓰기</button>`}
+  <button class="lnk" style="margin-top:10px" data-act="delProd">기록에서 완전히 삭제</button>`;
+}
+
+/* ----- 설정 ----- */
+function vSet(){
+  main.innerHTML=`<h2>설정</h2>
+  <section class="card"><button class="tog${state.makeup?' on':''}" data-act="togMakeup"><span>💄 화장 관리 쓰기<small class="muted" style="display:block;font-size:12px">화장 제품·순서, 이중 세안, 브러시 세척 알림이 생겨요</small></span><i></i></button></section>
+  <section class="card"><h3>백업</h3><p class="hint">기록은 이 휴대폰 브라우저에만 저장돼요.</p><div class="row"><button class="btn" data-act="export">내보내기</button><button class="btn" data-act="import">불러오기</button></div><input type="file" id="impF" accept=".json,application/json" hidden></section>
+  <section class="card"><h3>둘러보기</h3><p class="hint">3주치 상태 기록과 제품 교체 예시를 넣어서 그래프·비교 기능을 볼 수 있어요. 지금 기록은 지워져요.</p><button class="btn full" data-act="sample">예시 데이터로 바꾸기</button></section>
+  <section class="card"><h3>처음부터</h3><p class="hint">처음 상태(내가 말한 기본 루틴)로 되돌려요.</p><button class="btn danger full" data-act="wipe">모두 지우고 처음으로</button></section>`;
+}
+
+/* ============ 동작 ============ */
+function newProd(cat,extra){return Object.assign({id:uid(),cat,name:'',ings:[],opened:TK(),pao:CAT[cat][4]||12,memo:'',start:TK(),end:'',reason:'',prev:'',next:'',patch:null,doPatch:cdom(cat)==='skin'},extra||{})}
+function sortRoutine(rt){state.routines[rt].sort((a,b)=>crank(a.cat)-crank(b.cat))}
+function makeSample(){
+  state=fresh();const T=today(),S=state;
+  S.skin={type:'combo',sens:false,concerns:['acne','pore'],answers:{0:3,1:2,2:1,3:2,4:1,5:1,6:1}};
+  S.hair={answers:{},scalp:'oily',damage:['split','frizz'],treat:['dye'],habits:{scalp:'oily',water:'hot',where:'scalp',wait:'0',towel:'rub',dryer:'hot',protect:'no',wetbed:'some',iron:'some',when:'am',brush:'wethard'}};
+  const toner=S.products.find(p=>p.cat==='toner'),old=Object.assign({},toner,{id:uid(),name:'예전 토너',start:keyOf(addDays(T,-60)),end:keyOf(addDays(T,-10)),reason:'트러블이 나서',ings:['alc','frag']});
+  toner.name='약산성 수분 토너';toner.start=keyOf(addDays(T,-10));toner.prev=old.id;old.next=toner.id;toner.ings=['niac'];S.products.push(old);
+  for(let i=24;i>=1;i--){const k=keyOf(addDays(T,-i)),after=i<=10;S.days[k]={sk:after?(Math.random()<.6?3:2):(Math.random()<.5?1:2),hc:Math.random()<.5?1:2,am:{},pm:{},hr:{}}}
+  save();
+}
+document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.nav)));
+main.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;const d=t.dataset,T=TK();
+  if(d.go){return go(d.go,d.sub?{sub:d.sub}:{})}
+  if(d.sub){R.sub=d.sub;return render()}
+  if(d.dom){R.dom=d.dom;return render()}
+  if(d.ck){const D=dayRec(T);D[d.ck]=D[d.ck]||{};D[d.ck][d.sid]?delete D[d.ck][d.sid]:D[d.ck][d.sid]=true;save();const y=scrollY;render();scrollTo(0,y);return}
+  if(d.cond){const D=dayRec(T);D[d.cond]=D[d.cond]===+d.v?0:+d.v;save();const y=scrollY;render();scrollTo(0,y);return}
+  if(d.patch){const p=pById(d.pid);if(d.patch==='ok'){p.patch.state='ok';toast('얼굴에 써도 좋아요. 처음 며칠은 지켜봐 주세요')}else{p.patch.state='bad';p.end=T;p.reason='패치 테스트 반응';Object.values(state.routines).forEach(l=>l.forEach(s=>{if(s.pid===p.id)s.pid=''}));toast('그만 쓰는 제품으로 옮겼어요')}save();return render()}
+  if(d.sq!==undefined){state.skin.answers[d.sq]=+d.j;save();const y=scrollY;render();scrollTo(0,y);return}
+  if(d.conc){R.conc=R.conc||[];const i=R.conc.indexOf(d.conc);i>=0?R.conc.splice(i,1):R.conc.push(d.conc);t.classList.toggle('on',i<0);return}
+  if(d.hdmg){const a=state.hair.damage,i=a.indexOf(d.hdmg);i>=0?a.splice(i,1):a.push(d.hdmg);t.classList.toggle('on',i<0);save();return}
+  if(d.htrt){const a=state.hair.treat,i=a.indexOf(d.htrt);i>=0?a.splice(i,1):a.push(d.htrt);t.classList.toggle('on',i<0);save();return}
+  if(d.hq){if(d.hq==='scalp')state.hair.scalp=d.v;else state.hair.habits[d.hq]=d.v;save();t.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t));return}
+  if(d.mv){const l=state.routines[d.mv],i=+d.i,j=i+(+d.d);if(j<0||j>=l.length)return;[l[i],l[j]]=[l[j],l[i]];save();return render()}
+  if(d.dw){const s=state.routines[d.dw][+d.i],dd=+d.d;let a=s.days?s.days.slice():[0,1,2,3,4,5,6];const k=a.indexOf(dd);k>=0?a.splice(k,1):a.push(dd);if(!a.length){toast('하루는 남겨 두세요');return}s.days=a.length===7?null:a.sort();save();return render()}
+  if(d.rm){state.routines[d.rm].splice(+d.i,1);save();return render()}
+  if(d.addstep){const cat=document.getElementById('add-'+d.addstep).value,p=state.products.find(x=>active(x)&&x.cat===cat);state.routines[d.addstep].push({id:uid(),cat,pid:p?p.id:'',days:cat==='exfol'||cat==='mask'?[2,5]:null});save();toast(p?`'${p.name}'로 추가했어요`:'추가했어요. 제품을 골라 주세요');return render()}
+  if(d.sort){sortRoutine(d.sort);save();toast('추천 순서로 정렬했어요');return render()}
+  if(d.pd){return go('pdetail',{id:d.pd})}
+  if(d.ing){const a=R.d.ings,i=a.indexOf(d.ing);i>=0?a.splice(i,1):a.push(d.ing);t.classList.toggle('on',i<0);return}
+  if(d.reason){R.reason=d.reason;t.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t));return}
+  const A=ACT[d.act];if(A)A(t);
+});
+const ACT={
+  mkToday(){const D=dayRec(TK());D.makeup=!D.makeup;save();render()},
+  washed(){const D=dayRec(TK());D.washed=!D.washed;save();render()},
+  brushDone(){state.brush=TK();save();toast('기록했어요');render()},
+  skinSave(){const r=skinResult(state.skin.answers);Object.assign(state.skin,{type:r.type,sens:r.sens,concerns:R.conc||[]});save();toast(`${TYPE[r.type]}${r.sens?' · 민감':''} 피부로 저장했어요`);go('skin',{sub:'check'})},
+  hairSave(){if(!state.hair.scalp){toast('두피 질문에 답해 주세요');return}const miss=Object.keys(HQ).filter(k=>k!=='scalp'&&!state.hair.habits[k]).length;state.hair.habits.scalp=state.hair.scalp;save();
+    toast(miss?`${miss}개 질문을 건너뛰었어요. 답한 것만으로 검사할게요`:'저장했어요');go('hair',{sub:'check'})},
+  newProd(){go('pform',{d:newProd(Object.keys(CAT).find(k=>cdom(k)===(R.dom||'skin'))),dom:R.dom||'skin',back:'prod'})},
+  pformBack(){R.back==='pdetail'?go('pdetail',{id:R.sw||R.d.id}):R.back==='routine'?go(R.backView,{sub:'routine'}):go('prod',{dom:R.dom})},
+  togPatch(){R.d.doPatch=!R.d.doPatch;render()},
+  saveProd(){const p=R.d;p.name=(p.name||'').trim();if(!p.name){toast('제품 이름을 넣어 주세요');return}
+    if(p.doPatch&&!pById(p.id))p.patch={start:TK(),state:'on'};delete p.doPatch;
+    if(R.sw){const o=pById(R.sw);o.end=TK();o.reason=R.reason||'바꿈';o.next=p.id;p.prev=o.id;p.start=TK();p.cat=o.cat;Object.values(state.routines).forEach(l=>l.forEach(s=>{if(s.pid===o.id)s.pid=p.id}));state.products.push(p);save();toast(`${o.name} → ${p.name} 바꿨어요`);return go('pdetail',{id:p.id})}
+    const i=state.products.findIndex(x=>x.id===p.id);if(i>=0)state.products[i]=p;else{state.products.push(p);if(R.stepRef){const s=state.routines[R.stepRef.rt][R.stepRef.i];if(s&&s.cat===p.cat)s.pid=p.id}}
+    save();toast('저장했어요');if(R.back==='routine')return go(R.backView,{sub:'routine'});go('pdetail',{id:p.id})},
+  editProd(){go('pform',{d:JSON.parse(JSON.stringify(pById(R.id))),dom:cdom(pById(R.id).cat),back:'pdetail'})},
+  switchProd(){const o=pById(R.id);go('pform',{d:newProd(o.cat,{ings:[],pao:o.pao}),dom:cdom(o.cat),sw:o.id,reason:'',back:'pdetail'})},
+  retireProd(){if(!confirm('그만 쓰는 제품으로 옮길까요? 루틴에서는 제품 없이 단계만 남아요.'))return;const p=pById(R.id);p.end=TK();p.reason='그만 씀';Object.values(state.routines).forEach(l=>l.forEach(s=>{if(s.pid===p.id)s.pid=''}));save();render()},
+  reviveProd(){const p=pById(R.id);p.end='';p.reason='';save();toast('다시 쓰는 제품으로 옮겼어요. 루틴에서 골라 주세요');render()},
+  delProd(){if(!confirm('이 제품 기록을 완전히 지울까요?'))return;const p=pById(R.id);state.products.forEach(x=>{if(x.prev===p.id)x.prev='';if(x.next===p.id)x.next=''});Object.values(state.routines).forEach(l=>l.forEach(s=>{if(s.pid===p.id)s.pid=''}));state.products=state.products.filter(x=>x.id!==p.id);save();go('prod')},
+  togMakeup(){state.makeup=!state.makeup;if(state.makeup&&!state.brush)state.brush='';save();toast(state.makeup?'화장 관리를 켰어요. 피부 탭 → 화장에서 순서를 만들어 보세요':'화장 관리를 껐어요');render()},
+  export(){download(new Blob([JSON.stringify({app:'gyeol',state})],{type:'application/json'}),`gyeol-backup-${TK()}.json`);toast('백업 파일을 내보냈어요')},
+  import(){document.getElementById('impF').click()},
+  sample(){if(!confirm('지금 기록을 지우고 예시 데이터로 바꿀까요?'))return;makeSample();toast('예시 데이터를 넣었어요');go('skin',{sub:'trend'})},
+  wipe(){if(!confirm('모든 기록을 지우고 처음 상태로 돌아갈까요?'))return;state=fresh();save();toast('처음 상태로 돌아갔어요');go('today')}
+};
+main.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+  if(d.sp){const rt=d.sp,i=+d.i,s=state.routines[rt][i];if(t.value==='__new'){return go('pform',{d:newProd(s.cat),dom:cdom(s.cat),back:'routine',backView:rt==='hair'?'hair':'skin',stepRef:{rt,i}})}s.pid=t.value;save();return}
+  if(d.p!==undefined){R.d[d.p]=d.p==='pao'?+t.value:t.value;if(d.p==='cat'){R.d.pao=CAT[t.value][4]||12;R.d.doPatch=cdom(t.value)==='skin';render()}return}
+  if(t.id==='impF'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(j.app!=='gyeol')throw 0;if(!confirm('지금 기록을 백업 내용으로 바꿀까요?'))return;state=Object.assign(fresh(),j.state);save();toast('불러왔어요');go('today')}catch(err){toast('올바른 백업 파일이 아니에요')}};r.readAsText(t.files[0]);t.value=''}
+});
+main.addEventListener('input',e=>{const t=e.target,d=t.dataset;if(d.p!==undefined&&t.tagName==='INPUT'&&t.type!=='date')R.d[d.p]=t.value});
+render();
+</script>
+</body>
+</html>
